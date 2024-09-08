@@ -1,0 +1,20 @@
+function fillReductionSelect(select_id) {
+    const reductionSelect = document.getElementById(select_id);
+
+    fetch('/reduction/fillReductionCategories')
+        .then(response => response.json())
+        .then(data => {
+            // Loop through the data and create option elements
+            data.forEach(o => {
+                const exists = Array.from(reductionSelect.options).some(option => option.value === o.name);
+
+                if (!exists) {
+                    const option = document.createElement('option');
+                    option.value = o.name;
+                    option.text = o.name;
+                    reductionSelect.appendChild(option);
+                }
+            });
+        })
+        .catch(error => console.error('Error fetching types data:', error));
+}

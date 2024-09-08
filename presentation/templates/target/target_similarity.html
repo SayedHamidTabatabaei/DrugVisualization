@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+
+{% block title %}Target Similarities {% endblock %}
+
+{% block style %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/grid.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/button.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/dropdown.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/spinner.css') }}">
+{% endblock %}
+
+{% block script %}
+<script src="{{ url_for('static', filename='js/spinner.js') }}"></script>
+<script src="{{ url_for('static', filename='js/target_similarity.js') }}"></script>
+<script src="{{ url_for('static', filename='js/fill_similarity_type_dropdown.js') }}"></script>
+{% endblock %}
+
+
+{% block content %}
+<h2>Target Similarities</h2>
+
+<!-- Dropdown and button -->
+<div>
+    <label for="similaritySelect">Choose a similarity:</label>
+
+    <div class="similarity-container">
+        <select id="similaritySelect">
+            <option value="">--Select an similarity--</option>
+            <!-- Add more options as needed -->
+        </select>
+        <button id="submitBtn" onclick="filterTargetSimilarity()">Submit</button>
+        <button id="calculateBtn" onclick="calculateTargetSimilarity()">(Re)Calculate</button>
+    </div>
+
+    <div id="loadingSpinner" class="spinner" style="display: none;"></div>
+
+</div>
+
+
+<table id="target_similarity_table" class="display">
+    <thead>
+        <tr id="tableHeaders"></tr>
+    </thead>
+    <tbody id="tableBody"></tbody>
+</table>
+
+{% endblock %}

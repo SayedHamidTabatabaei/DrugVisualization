@@ -1,0 +1,11 @@
+{
+  "mysql": {
+    "host": "localhost",
+    "user": "admin",
+    "password": "Sht#htt@1366!96~Taba",
+    "database": "ddi_gnn"
+  },
+  "management": {
+    "batch_size": "1000"
+  }
+}

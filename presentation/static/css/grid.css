@@ -1,0 +1,73 @@
+.dataTables_wrapper {
+    width: 750px;
+    margin: 20px 0;
+}
+.datagrid-table {
+    width: 100%;
+    border-collapse: collapse;
+    padding-right: 0 !important;
+}
+.datagrid-table th, .datagrid-table td {
+    padding: 10px;
+    text-align: left;
+}
+.datagrid-table th {
+    background-color: #f2f2f2;
+}
+.datagrid-table tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+.row {
+    margin-right: -350px !important;
+}
+
+.ten-percent-width {
+    width: 10% !important;
+}
+
+.twenty-percent-width {
+    width: 20% !important;
+}
+
+.thirty-percent-width {
+    width: 30% !important;
+}
+
+.forty-percent-width {
+    width: 40% !important;
+}
+
+.fifty-percent-width {
+    width: 50% !important;
+}
+
+.sixty-percent-width {
+    width: 60% !important;
+}
+
+.seventy-percent-width {
+    width: 70% !important;
+}
+
+.eighty-percent-width {
+    width: 80% !important;
+}
+
+.dataTables_paginate .pagination {
+    justify-content: center;
+}
+
+.dataTables_paginate .paginate_button {
+    margin: 0 -35px;
+}
+
+.dataTables_wrapper .dataTables_paginate .paginate_button:hover{
+    background: transparent !important;
+    border: none !important;
+}
+
+.dataTables_wrapper .dataTables_paginate .paginate_button:active{
+    background: transparent !important;
+    border-shadow: none !important;
+}

@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+
+{% block title %}SMILES-Similarities {% endblock %}
+
+{% block style %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/grid.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/button.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/dropdown.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/spinner.css') }}">
+{% endblock %}
+
+{% block script %}
+<script src="{{ url_for('static', filename='js/spinner.js') }}"></script>
+<script src="{{ url_for('static', filename='js/smiles_similarity.js') }}"></script>
+<script src="{{ url_for('static', filename='js/fill_similarity_type_dropdown.js') }}"></script>
+{% endblock %}
+
+
+{% block content %}
+<h2>SMILES-Similarities</h2>
+
+<!-- Dropdown and button -->
+<div>
+
+    <div class="similarity-container">
+        <label for="similaritySelect" class="label-for">Choose a similarity:</label>
+
+        <select id="similaritySelect">
+            <option value="">--Select an similarity--</option>
+            <!-- Add more options as needed -->
+        </select>
+        <button id="submitBtn" onclick="filterSmilesSimilarity()">Submit</button>
+        <button id="calculateBtn" onclick="calculateSmilesSimilarity()">(Re)Calculate</button>
+    </div>
+
+    <div id="loadingSpinner" class="spinner" style="display: none;"></div>
+
+</div>
+
+<table id="smiles_similarity_table" class="display">
+    <thead>
+        <tr id="tableHeaders"></tr>
+    </thead>
+    <tbody id="tableBody"></tbody>
+</table>
+
+{% endblock %}

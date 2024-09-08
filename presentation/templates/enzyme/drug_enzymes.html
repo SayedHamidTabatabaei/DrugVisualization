@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+
+{% block title %}Drug-Enzymes {% endblock %}
+
+{% block style %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/grid.css') }}">
+{% endblock %}
+
+{% block script %}
+<script src="{{ url_for('static', filename='js/drug_enzymes.js') }}"></script>
+{% endblock %}
+
+
+{% block content %}
+<h2>Drug-Enzymes</h2>
+<table id="drug_enzyme_table" class="display">
+    <thead>
+        <tr id="tableHeaders"></tr>
+    </thead>
+    <tbody id="tableBody"></tbody>
+</table>
+
+{% endblock %}

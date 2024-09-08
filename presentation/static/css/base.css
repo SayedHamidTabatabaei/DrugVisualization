@@ -1,0 +1,118 @@
+/* Reset default margin and padding */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Body styles */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f8f9fa;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+/* Header styles */
+header {
+    background-color: #343a40;
+    color: white;
+    text-align: center;
+    padding: 10px 0;
+}
+
+/* Container styles */
+.container {
+    display: flex;
+    flex: 1;
+    width: 100%;
+    max-width: 1500px !important;
+    margin: 20px 0 !important;
+}
+
+/* Sidebar (left-side menu) styles */
+.sidebar {
+    flex: 0 0 250px; /* Fixed width for sidebar */
+    background-color: #343a40;
+    color: white;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+}
+
+.sidebar .logo {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.sidebar nav ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+.sidebar nav ul li {
+    margin-bottom: 10px;
+}
+
+.sidebar nav ul li a {
+    color: white;
+    text-decoration: none;
+    display: block;
+    padding: 10px;
+    transition: background-color 0.3s ease;
+}
+
+.sidebar nav ul li a:hover {
+    background-color: #495057;
+}
+
+.sidebar nav ul .submenu {
+    display: none; /* Hide submenus by default */
+    list-style-type: none;
+    padding-left: 20px;
+    margin-top: 10px;
+}
+
+.sidebar nav ul .submenu li {
+    margin-bottom: 5px;
+}
+
+.sidebar nav ul .submenu li a {
+    background-color: #495057;
+    padding: 8px;
+}
+
+/* Content styles */
+.content {
+    flex: 1;
+    background-color: white;
+    padding: 20px;
+    margin-left: 20px; /* Ensure content doesn't overlap with sidebar */
+}
+
+/* Footer styles */
+footer {
+    background-color: #343a40;
+    color: white;
+    text-align: center;
+    padding: 10px 0;
+    margin-top: auto; /* Push footer to the bottom */
+}
+
+.similarity-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 10px;
+}
+
+.property-container {
+    display: flex;
+    align-items: center;
+    margin-top: 10px;
+}
+
+.label-for {
+    margin-right: 20px;
+}

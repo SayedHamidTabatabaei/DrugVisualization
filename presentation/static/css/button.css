@@ -1,0 +1,31 @@
+button {
+    padding: 10px 20px;
+    font-size: 16px;
+    color: white;
+    background-color: #007bff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+button:hover {
+    background-color: #0056b3;
+}
+
+button:focus {
+    outline: none;
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+}
+
+button:active {
+    background-color: #003f7f;
+}
+
+#submitBtn {
+    margin-right: 10px;
+}
+
+#calculateBtn {
+    margin-left: auto;
+}

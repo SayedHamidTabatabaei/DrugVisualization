@@ -1,0 +1,56 @@
+
+input[type="checkbox"] {
+    display: none;
+}
+
+/* Style for the custom checkbox container */
+.checkbox-label {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    position: relative;
+    padding-left: 40px;
+    padding-bottom: 10px;
+    padding-top: 10px;
+    line-height: 24px;
+    width: 250px;
+}
+
+/* Custom checkbox appearance */
+.checkbox-custom {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 24px; /* Set width */
+    height: 24px; /* Set height */
+    background-color: #fff;
+    border: 2px solid #ccc;
+    border-radius: 4px;
+    transition: background-color 0.3s, border-color 0.3s;
+    margin: 10px;
+}
+
+/* Style for checked state */
+.checkbox-label input[type="checkbox"]:checked + .checkbox-custom {
+    background-color: #007bff;
+    border-color: #007bff;
+}
+
+/* Checkmark inside the checkbox */
+.checkbox-custom::after {
+    content: '';
+    position: absolute;
+    left: 9px; /* Center the checkmark horizontally */
+    top: 4px; /* Center the checkmark vertically */
+    width: 6px;
+    height: 12px;
+    border: solid #fff;
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+    display: none;
+}
+
+/* Show checkmark when checked */
+.checkbox-label input[type="checkbox"]:checked + .checkbox-custom::after {
+    display: block;
+}

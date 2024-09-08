@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+
+{% block title %}Drug Visualization{% endblock %}
+
+{% block style %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/visualization.css') }}">
+{% endblock %}
+
+{% block script %}
+<script src="{{ url_for('static', filename='js/visualization.js') }}" defer></script>
+
+<script src="https://3Dmol.csb.pitt.edu/build/3Dmol.js"></script>
+{% endblock %}
+
+
+{% block content %}
+<h2>Drug Visualization</h2>
+<div>
+    <label for="drugbank-id">Enter DrugBank-Id:</label>
+    <input type="text" id="drugbank-id" name="drugbank-id">
+    <button id="submit-btn">Submit</button>
+    <div id="result"></div>
+    <div id="mol-container" style="width: 500px; height: 500px;"></div>
+</div>
+{% endblock %}

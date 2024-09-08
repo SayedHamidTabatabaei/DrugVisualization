@@ -1,0 +1,14 @@
+.radioButtonsContainer {
+    display: flex;
+    flex-wrap: nowrap;
+    gap: 15px;
+    align-items: center;
+}
+
+.radio-option {
+    display: inline-flex;
+    align-items: center;
+    margin-right: 100px;
+    margin-top: 20px;
+    margin-bottom: 20px;
+}

@@ -1,0 +1,113 @@
+{% extends 'base.html' %}
+
+{% block title %}Drug Information{% endblock %}
+
+{% block style %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/grid.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/drug_information.css') }}">
+{% endblock %}
+
+{% block script %}
+<script src="{{ url_for('static', filename='js/lib/3Dmol.js') }}"></script>
+<script src="{{ url_for('static', filename='js/drug_information.js') }}"></script>
+{% endblock %}
+
+
+{% block content %}
+<h2>Drug Information</h2>
+<div class="tab-container">
+
+    <div>
+        <label for="drugbank-id">Enter DrugBank-Id:</label>
+        <input type="text" id="drugbank-id" name="drugbank-id">
+        <button id="submit-btn">Submit</button>
+        <p id="error-message">Error: Invalid DrugBank ID.</p>
+    </div>
+    <div class="tabs">
+        <div class="tab active" onclick="openTab(event, 'info_tab')">Information</div>
+        <div class="tab" onclick="openTab(event, 'visualization_tab')">Visualization</div>
+        <div class="tab" onclick="openTab(event, 'enzyme_tab');fillEnzyme();">Enzymes</div>
+        <div class="tab" onclick="openTab(event, 'target_tab');fillTarget();">Targets</div>
+        <div class="tab" onclick="openTab(event, 'pathway_tab');fillPathway();">Pathways</div>
+        <div class="tab" onclick="openTab(event, 'int_tab');fillInteraction();">Interactions</div>
+    </div>
+    <div id="info_tab" class="tab-content active">
+        <div id="data-container"></div>
+    </div>
+    <div id="visualization_tab" class="tab-content">
+        <div id="result" style="display: none;"></div>
+        <div id="mol-container" style="width: 500px; height: 500px;"></div>
+    </div>
+    <div id="enzyme_tab" class="tab-content">
+        <div class="grid-container">
+            <table id="enzymeTable" class="datagrid-table; display">
+                <thead>
+                    <tr>
+                        <th>Id</th>
+                        <th>Enzyme code</th>
+                        <th>Enzyme name</th>
+                        <th>Position</th>
+                        <th>Organism</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Data will be populated by DataTables -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div id="target_tab" class="tab-content">
+        <div class="grid-container">
+            <table id="targetTable" class="datagrid-table; display">
+                <thead>
+                    <tr>
+                        <th>Id</th>
+                        <th>Target code</th>
+                        <th>Target name</th>
+                        <th>Position</th>
+                        <th>Organism</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Data will be populated by DataTables -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div id="pathway_tab" class="tab-content">
+        <div class="grid-container">
+            <table id="pathwayTable" class="datagrid-table; display">
+                <thead>
+                    <tr>
+                        <th>Id</th>
+                        <th>Pathway code</th>
+                        <th>Pathway name</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Data will be populated by DataTables -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div id="int_tab" class="tab-content">
+        <div class="grid-container">
+            <table id="interactionTable" class="datagrid-table; display">
+                <thead>
+                    <tr>
+                        <th>DrugBankId</th>
+                        <th>Drug name</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Data will be populated by DataTables -->
+                </tbody>
+            </table>
+
+        </div>
+    </div>
+</div>
+
+{% endblock %}
