@@ -3,7 +3,8 @@ from tqdm import tqdm
 
 from businesses import reduction_business
 from businesses.base_business import BaseBusiness
-from businesses.trains import train_plan1
+from businesses.trains import train_plan1, train_plan2
+from businesses.trains.train_instances import get_instance
 from common.enums.category import Category
 from common.enums.reduction_category import ReductionCategory
 from common.enums.similarity_type import SimilarityType
@@ -43,12 +44,10 @@ class TrainingBusiness(BaseBusiness):
         self.reduction_repository = reduction_repository
 
     def train(self, train_request: TrainRequestModel):
-        match train_request.train_model:
-            case TrainModel.SimpleOneInput:
-                data = self.prepare_data(train_request)[0]
-                train_plan1.train(data)
-            case _:
-                raise ValueError(f'Unsupported train model: {train_request.train_model}')
+        instance = get_instance(train_request.train_model)
+
+        data = self.prepare_data(train_request)
+        instance.train(data, 0)
 
     def get_training_data(self, similarity_type: SimilarityType, category: Category,
                           reduction_category: ReductionCategory) -> list[TrainingDataDTO]:
