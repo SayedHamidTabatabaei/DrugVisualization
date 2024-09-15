@@ -2,19 +2,18 @@ import numpy as np
 from sklearn.model_selection import StratifiedShuffleSplit
 from tensorflow.keras.layers import Dense, Dropout
 from tensorflow.keras.models import Sequential
-from sklearn.metrics import accuracy_score, f1_score, roc_auc_score, average_precision_score, precision_recall_curve
-from sklearn.preprocessing import label_binarize
 
 from businesses.trains.train_plan_base import TrainPlanBase
 from common.enums.train_models import TrainModel
 from core.repository_models.training_data_dto import TrainingDataDTO
+from core.repository_models.training_result_summary_dto import TrainingResultSummaryDTO
 
 train_model = TrainModel.SimpleOneInput
 
 
-class TrainPlan2(TrainPlanBase):
+class TrainPlan1(TrainPlanBase):
 
-    def train(self, data: list[list[TrainingDataDTO]], train_id):
+    def train(self, data: list[list[TrainingDataDTO]], train_id) -> TrainingResultSummaryDTO:
 
         data = data[0]
 
@@ -54,42 +53,9 @@ class TrainPlan2(TrainPlanBase):
         model.compile(optimizer='adam', loss='sparse_categorical_crossentropy', metrics=['accuracy'])
 
         # Train the model
-        model.fit(x_train, y_train, epochs=20, batch_size=32, validation_data=(x_test, y_test))
+        history = model.fit(x_train, y_train, epochs=20, batch_size=32, validation_data=(x_test, y_test))
 
-        loss, accuracy = model.evaluate(x_test, y_test)
-        print(f'Old Accuracy: {accuracy * 100:.2f}%')
+        super().plot_accuracy(history, train_id)
+        super().plot_loss(history, train_id)
 
-        # Predictions
-        y_pred = model.predict(x_test)
-        y_pred_classes = np.argmax(y_pred, axis=1)
-
-        # Calculate metrics
-        accuracy = accuracy_score(y_test, y_pred_classes)
-        f1 = f1_score(y_test, y_pred_classes, average='weighted')
-
-        # For multi-class AUC and AUPR, you need to binarize the labels
-        y_test_bin = label_binarize(y_test, classes=range(65))
-        auc = roc_auc_score(y_test_bin, y_pred, average='weighted', multi_class='ovr')
-        aupr = average_precision_score(y_test_bin, y_pred, average='weighted')
-
-        # Binarize the labels for AUC and AUPR calculation
-        y_test_bin = label_binarize(y_test, classes=range(65))
-        # results_per_labels: list[TrainingResultDetailDTO] = []
-        #
-        # for i in range(65):
-        #     class_accuracy = accuracy_score(y_test == i, y_pred_classes == i)
-        #
-        #     class_f1 = f1_score(y_test == i, y_pred_classes == i, average='binary')
-        #
-        #     class_auc = roc_auc_score(y_test_bin[:, i], y_pred[:, i])
-        #
-        #     precision, recall, _ = precision_recall_curve(y_test_bin[:, i], y_pred[:, i])
-        #     class_aupr = average_precision_score(y_test_bin[:, i], y_pred[:, i])
-        #
-        #     results_per_labels.append(TrainingResultDetailDTO(training_label=i,
-        #                                                       f1_score=class_f1,
-        #                                                       accuracy=class_accuracy,
-        #                                                       auc=class_auc,
-        #                                                       aupr=class_aupr))
-        #
-        # return f1, accuracy, auc, aupr, results_per_labels
+        return super().calculate_evaluation_metrics(model, x_test, y_test)

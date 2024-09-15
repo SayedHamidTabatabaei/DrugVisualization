@@ -23,6 +23,24 @@ def generate_insert_command(entity):
     return query, values
 
 
+def generate_update_command(entity, update_columns):
+    entity_vars = vars(entity)
+
+    entity_vars.pop('_sa_instance_state', None)
+
+    set_clause = ', '.join([f"{column} = %s" for column in update_columns])
+
+    query = (f"UPDATE {entity.__tablename__} SET {set_clause} "
+             f"WHERE id = %s")
+
+    values = [convert_value(entity_vars[column]) for column in update_columns]
+
+    # Add the id value to the end of the values list to be used in the WHERE clause
+    values.append(convert_value(entity_vars['id']))
+
+    return query, tuple(values)
+
+
 def generate_batch_insert_command(entities):
     if not entities:
         raise ValueError("The entities list cannot be empty")
@@ -32,7 +50,7 @@ def generate_batch_insert_command(entities):
 
     entity_vars.pop('_sa_instance_state', None)
 
-    value_placeholders = ', '.join([f'({', '.join(['%s' for _ in entity_vars])})' for _ in entities])
+    value_placeholders = ', '.join([f"({', '.join(['%s' for _ in entity_vars])})" for _ in entities])
 
     query = (f"INSERT INTO {entity.__tablename__} ({', '.join(entity_vars.keys())}) "
              f"VALUES {value_placeholders}")
@@ -52,7 +70,7 @@ def generate_batch_insert_check_duplicate_command(entities, update_properties):
 
     entity_vars.pop('_sa_instance_state', None)
 
-    value_placeholders = f'({', '.join(['%s' for _ in entity_vars])})'
+    value_placeholders = f"({', '.join(['%s' for _ in entity_vars])})"
 
     update_columns = [prop.name if hasattr(prop, 'name') else prop for prop in update_properties]
     update_columns = [col for col in update_columns if col in entity_vars]

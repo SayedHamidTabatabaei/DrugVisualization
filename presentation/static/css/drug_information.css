@@ -11,47 +11,6 @@ h2 {
     margin-bottom: 20px;
 }
 
-.tab-container {
-    max-width: 1150px;
-    margin: auto;
-}
-
-.tabs {
-    display: flex;
-    border-bottom: 1px solid #ccc;
-    cursor: pointer;
-}
-
-.tab {
-    flex: 1;
-    padding: 10px 20px;
-    text-align: center;
-    background-color: #eee;
-    border: 1px solid #ccc;
-    border-bottom: none;
-    border-radius: 8px 8px 0 0;
-    margin-right: 5px;
-    transition: background-color 0.3s;
-}
-
-.tab.active {
-    background-color: #fff;
-    font-weight: bold;
-    border-bottom: 1px solid #fff;
-}
-
-.tab-content {
-    display: none;
-    padding: 20px;
-    background-color: #fff;
-    border: 1px solid #ccc;
-    border-radius: 0 8px 8px 8px;
-}
-
-.tab-content.active {
-    display: block;
-}
-
 .grid-container {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));

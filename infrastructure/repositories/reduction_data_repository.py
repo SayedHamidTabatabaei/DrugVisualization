@@ -1,4 +1,5 @@
 import time
+from typing import Union
 
 from common.enums.category import Category
 from common.enums.reduction_category import ReductionCategory
@@ -37,7 +38,7 @@ class ReductionDataRepository(MySqlRepository):
     def insert_if_not_exits(self, drug_id: int, similarity_type: SimilarityType, category: Category,
                             reduction_category: ReductionCategory, reduction_values: list[float],
                             has_enzyme: bool, has_pathway: bool, has_target: bool,
-                            has_smiles: bool) -> ReductionData | None:
+                            has_smiles: bool) -> Union[ReductionData, None]:
         is_exists = self.is_exists_reduction_data(drug_id, similarity_type, category, reduction_category,
                                                   has_enzyme, has_pathway, has_target, has_smiles)
 

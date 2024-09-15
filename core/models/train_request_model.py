@@ -1,4 +1,5 @@
-from dataclasses import dataclass, field
+import json
+from dataclasses import dataclass, field, asdict
 from typing import Optional
 
 from common.enums.embedding_type import EmbeddingType
@@ -84,3 +85,6 @@ class TrainRequestModel:
             classification_description_embedding=EmbeddingType[data['classification_description_embedding']] if 'classification_description_embedding' in data else None,
             classification_description_reduction=ReductionCategory[data['classification_description_reduction']] if 'classification_description_reduction' in data else None
             )
+
+    def to_json(self):
+        return json.dumps(asdict(self), default=str, indent=4)

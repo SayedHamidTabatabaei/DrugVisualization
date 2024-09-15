@@ -1,4 +1,6 @@
-from flask import Blueprint, render_template
+import os
+
+from flask import Blueprint, render_template, send_from_directory, Response, abort
 
 main = Blueprint('main', __name__)
 
@@ -111,3 +113,29 @@ def train():
 @main.route('/training/training_history')
 def training_history():
     return render_template('training/training_history.html')
+
+
+@main.route('/training/compare')
+def training_compare():
+    return render_template('training/compare.html')
+
+
+@main.route('/training/training_history_details/<int:id>')
+def training_history_details(id):
+    return render_template('training/training_history_details.html', train_history_id=id)
+
+
+@main.route('/training/training_history_plots/<int:id>')
+def training_history_plots(id):
+    return render_template('training/training_history_plots.html', train_history_id=id)
+
+
+@main.route('/training/training_history_plots/<path:filename>')
+def serve_training_plots(filename):
+    file_path = os.path.join('', filename)
+
+    if os.path.exists(file_path):
+        with open(file_path, 'rb') as f:
+            return Response(f.read(), mimetype='image/png')
+    else:
+        abort(404)

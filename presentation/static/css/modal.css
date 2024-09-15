@@ -1,0 +1,25 @@
+.modal-content {
+    max-height: 400px; /* Set the maximum height for the modal content */
+    overflow-y: auto;  /* Enable vertical scrolling when the content overflows */
+    padding: 20px;
+}
+
+.modal {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 80%;
+    background-color: white;
+    border: 1px solid #ddd;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    z-index: 1000;
+}
+
+.modal-footer {
+    text-align: right;
+}
+
+.modal-open {
+    display: block;
+}

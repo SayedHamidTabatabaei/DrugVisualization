@@ -35,6 +35,15 @@ class MySqlRepository:
 
         return self.cursor.lastrowid
 
+    def update(self, entity: BaseModel, update_columns: list):
+        query, values = sql_helper.generate_update_command(entity, update_columns)
+
+        self.cursor.execute(query, values)
+
+        self.connection.commit()
+
+        return self.cursor.rowcount  # return the number of rows updated
+
     def insert_batch(self, entities: list[BaseModel]):
         for i in tqdm(range(0, len(entities), batch_size), desc="Inserting data"):
             batch = entities[i:i + batch_size]

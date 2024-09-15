@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+
+{% block title %}Train History Plots{% endblock %}
+
+{% block style %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/button.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/spinner.css') }}">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
+
+{% endblock %}
+
+{% block script %}
+<script src="{{ url_for('static', filename='js/spinner.js') }}"></script>
+<script src="{{ url_for('static', filename='js/train_history_plots.js') }}"></script>
+{% endblock %}
+
+
+{% block content %}
+<h2>Train History Plots</h2>
+
+<p>Train History ID: <span id="train-history-id">{{ train_history_id }}</span></p>
+
+
+<div id="plots">
+
+
+    <div id="loadingSpinner" class="spinner" style="display: none;"></div>
+</div>
+
+
+{% endblock %}

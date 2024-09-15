@@ -17,4 +17,3 @@ class TrainingDataDTO:
     def __post_init__(self):
         # Perform the concatenation here
         self.concat_values = np.concatenate((self.reduction_values_1, self.reduction_values_2))
-

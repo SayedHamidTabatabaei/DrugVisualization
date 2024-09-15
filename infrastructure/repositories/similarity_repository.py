@@ -1,4 +1,5 @@
 from decimal import Decimal
+from typing import Union
 
 from common.enums.category import Category
 from common.enums.similarity_type import SimilarityType
@@ -23,7 +24,7 @@ class SimilarityRepository(MySqlRepository):
         return similarity
 
     def insert_if_not_exits(self, similarity_type: SimilarityType, category: Category, drug_1: int, drug_2: int,
-                            value: Decimal) -> Similarity | None:
+                            value: Decimal) -> Union[Similarity, None]:
         is_exists = self.is_exists_similarity(similarity_type, category, drug_1, drug_2)
 
         if is_exists:

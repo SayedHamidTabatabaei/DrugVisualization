@@ -1,3 +1,5 @@
+from typing import Union
+
 from common.enums.embedding_type import EmbeddingType
 from common.enums.text_type import TextType
 from core.domain.drug_embedding import DrugEmbedding
@@ -24,7 +26,7 @@ class DrugEmbeddingRepository(MySqlRepository):
         return drug_embedding
 
     def insert_if_not_exits(self, drug_id: int, embedding_type: EmbeddingType, text_type: TextType, embedding: str) \
-            -> DrugEmbedding | None:
+            -> Union[DrugEmbedding, None]:
 
         is_exists = self.is_exists_drug_embedding(drug_id, embedding_type, text_type)
 

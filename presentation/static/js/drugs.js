@@ -28,7 +28,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "All"]],
                 language: {
                     search: "_INPUT_",
-                    searchPlaceholder: "Search enzymes..."
+                    searchPlaceholder: "Search drugs..."
                 }
             });
         } else {

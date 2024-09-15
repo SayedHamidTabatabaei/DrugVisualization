@@ -1,11 +1,9 @@
 from injector import inject
-from tqdm import tqdm
 
 from businesses.base_business import BaseBusiness
 from businesses.similarity_business import SimilarityBusiness
 from common.enums.category import Category
 from common.enums.similarity_type import SimilarityType
-from common.helpers import similarity_helper, matrix_helper
 from infrastructure.repositories.drug_repository import DrugRepository
 from infrastructure.repositories.enzyme_repository import EnzymeRepository
 from infrastructure.repositories.similarity_repository import SimilarityRepository

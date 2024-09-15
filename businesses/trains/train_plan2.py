@@ -1,13 +1,12 @@
-import numpy as np
-import tensorflow as tf
 from tensorflow.keras import layers, models
-from tensorflow.keras.utils import to_categorical
+from tqdm import tqdm
 
 from businesses.trains.train_plan_base import TrainPlanBase
 from common.enums.train_models import TrainModel
 from core.repository_models.training_data_dto import TrainingDataDTO
+from core.repository_models.training_result_summary_dto import TrainingResultSummaryDTO
 
-train_model = TrainModel.SimpleOneInput
+train_model = TrainModel.JoinSimplesBeforeSoftmax
 
 
 class TrainPlan2(TrainPlanBase):
@@ -19,19 +18,22 @@ class TrainPlan2(TrainPlanBase):
         x_data = layers.Dense(32, activation='relu')(x_data)
         return models.Model(inputs=input_data, outputs=x_data)
 
-    def train(self, data: list[list[TrainingDataDTO]], train_id: int):
+    def train(self, data: list[list[TrainingDataDTO]], train_id: int) -> TrainingResultSummaryDTO:
+
+        print('split data!')
         x_train, x_test, y_train, y_test = super().split_train_test(data)
 
         input_models = []
         input_layers = []
 
-        # Iterate over the datasets in 'data'
-        for d in x_train:
-            # # Extract the 'concat_values' from TrainingDataDTO for each TrainingDataDTO instance
-            # concat_values = np.array([item.concat_values for item in d])
+        for d in tqdm(x_train, "Creating Models..."):
+            shapes = {tuple(s.shape) for s in d}
+
+            if len(shapes) != 1:
+                raise ValueError(f"Error: Multiple shapes found: {shapes}")
 
             # Create a model for the shape of the 'concat_values'
-            model = self.create_model(d.shape[1:])  # Use the correct input shape for 'concat_values'
+            model = self.create_model(shapes.pop())  # Use the correct input shape for 'concat_values'
             input_models.append(model)
             input_layers.append(model.input)  # Store input layers for later use
 
@@ -42,7 +44,7 @@ class TrainPlan2(TrainPlanBase):
         x = layers.Dense(32, activation='relu')(concatenated)
 
         # Output layer with softmax activation
-        output = layers.Dense(65, activation='softmax')(x)
+        output = layers.Dense(self.num_classes, activation='softmax')(x)
 
         # Create the final model
         final_model = models.Model(inputs=input_layers, outputs=output)
@@ -50,6 +52,21 @@ class TrainPlan2(TrainPlanBase):
         # Compile the model
         final_model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
 
-        # Train the model
-        final_model.fit(x_train, y_train, epochs=20, batch_size=32, validation_data=(x_test, y_test))
-        print('Training complete.')
+        print('Ragged!')
+        x_train_ragged, x_test_ragged = super().create_ragged_tensors(x_train, x_test)
+
+        # Pass RaggedTensors to the model
+        print('Fit data!')
+        history = final_model.fit(x_train_ragged, y_train, epochs=20, batch_size=32,
+                                  validation_data=(x_test_ragged, y_test))
+
+        evaluations = super().calculate_evaluation_metrics(final_model, x_test_ragged, y_test)
+
+        super().plot_accuracy(history, train_id)
+        super().plot_loss(history, train_id)
+
+        super().plot_accuracy_radial([item.accuracy for item in evaluations.training_result_details], train_id)
+        super().plot_f1_score_radial([item.f1_score for item in evaluations.training_result_details], train_id)
+        super().plot_auc_radial([item.auc for item in evaluations.training_result_details], train_id)
+
+        return evaluations

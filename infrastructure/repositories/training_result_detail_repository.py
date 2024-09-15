@@ -1,4 +1,8 @@
+from typing import Union
+
 from core.domain.training_result_detail import TrainingResultDetail
+from core.mappers import training_result_mapper
+from core.repository_models.training_result_detail_dto import TrainingResultDetailDTO
 from infrastructure.mysqldb.mysql_repository import MySqlRepository
 
 
@@ -22,7 +26,7 @@ class TrainingResultDetailRepository(MySqlRepository):
         return training_result_detail
 
     def insert_if_not_exits(self, training_result_id: int, training_label: int, f1_score: float, accuracy: float,
-                            auc: float, aupr: float) -> TrainingResultDetail | None:
+                            auc: float, aupr: float) -> Union[TrainingResultDetail, None]:
         is_exists = self.is_exists_training_result_detail(training_result_id, training_label)
 
         if is_exists:
@@ -50,3 +54,11 @@ class TrainingResultDetailRepository(MySqlRepository):
                 (training_result_detail != []
                  if isinstance(training_result_detail, list)
                  else bool(training_result_detail)))
+
+    def find_all_training_result_details(self, train_result_id: int) -> list[TrainingResultDetailDTO]:
+
+        result, _ = self.call_procedure('FindAllTrainingResultDetails', [train_result_id])
+
+        training_result = result[0]
+
+        return training_result_mapper.map_training_result_details(training_result)

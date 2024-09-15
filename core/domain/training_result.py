@@ -1,15 +1,17 @@
-from sqlalchemy import Column, Enum as SqlEnum, Float, DateTime
+from sqlalchemy import Column, Enum as SqlEnum, Float, DateTime, TEXT
 
-from common.enums.training_category import TrainingCategory
+from common.enums.train_models import TrainModel
 from core.domain.base_model import BaseModel
 
 
 class TrainingResult(BaseModel):
     __tablename__ = 'training_results'
 
-    training_category = Column(SqlEnum(TrainingCategory), nullable=False)
+    train_model = Column(SqlEnum(TrainModel), nullable=False)
+    training_conditions = Column(TEXT, nullable=False)
     f1_score = Column(Float, nullable=False)
     accuracy = Column(Float, nullable=False)
+    loss = Column(Float, nullable=False)
     auc = Column(Float, nullable=False)
     aupr = Column(Float, nullable=False)
     execute_time = Column(DateTime, nullable=False)
