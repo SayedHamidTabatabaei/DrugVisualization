@@ -4,10 +4,11 @@ from injector import inject
 from tqdm import tqdm
 
 from businesses.base_business import BaseBusiness
+from businesses.similarity_services import similarity_instances
 from common.enums.category import Category
 from common.enums.similarity_type import SimilarityType
-from common.helpers import matrix_helper, similarity_helper
 from core.domain.similarity import Similarity
+from core.repository_models.drug_smiles_dto import DrugSmilesDTO
 from infrastructure.repositories.reduction_data_repository import ReductionDataRepository
 from infrastructure.repositories.similarity_repository import SimilarityRepository
 
@@ -89,27 +90,20 @@ class SimilarityBusiness(BaseBusiness):
 
         return aggregated_values
 
-    def generate_jacquard(self, results, columns_description, category):
+    def calculate_smiles_similarity(self, similarity_type: SimilarityType, drug_smiles: list[DrugSmilesDTO]):
+        instance = similarity_instances.get_instance(similarity_type)
 
-        codes = [item[0] for item in results[1]]
-        values = results[0]
+        similarities = instance.calculate_similes_similarity(drug_smiles)
 
-        features = matrix_helper.create_specific_matrix_by_column_names(values, codes, columns_description[0])
+        self.similarity_repository.insert_batch_check_duplicate(similarities)
 
-        jacquard = similarity_helper.generate_jacquard_similarity(features)
+    def calculate_similarity(self, codes, values, columns_description, similarity_type: SimilarityType,
+                             category: Category):
+        instance = similarity_instances.get_instance(similarity_type)
 
-        self.insert_similarities(jacquard, values, SimilarityType.Jacquard, category)
+        results = instance.calculate_similarity(codes, values, columns_description)
 
-    def generate_cosine(self, results, columns_description, category):
-
-        codes = [item[0] for item in results[1]]
-        values = results[0]
-
-        features = matrix_helper.create_specific_matrix_by_column_names(values, codes, columns_description[0])
-
-        cosine = similarity_helper.generate_cosine_similarity(features)
-
-        self.insert_similarities(cosine, values, SimilarityType.Cosine, category)
+        self.insert_similarities(results, values, similarity_type, category)
 
     def insert_similarities(self, values, items, similarity_type: SimilarityType, category: Category):
 

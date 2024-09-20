@@ -11,4 +11,7 @@ class TrainingResultSummaryDTO:
     loss: float
     auc: float
     aupr: float
+    recall: float
+    precision: float
+    model: bytes
     training_result_details: list[TrainingResultDetailSummaryDTO]

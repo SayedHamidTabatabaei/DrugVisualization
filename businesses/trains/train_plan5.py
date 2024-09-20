@@ -38,8 +38,8 @@ class TrainPlan5(TrainPlanBase):
         super().plot_accuracy(history, train_id)
         super().plot_loss(history, train_id)
 
-        super().plot_accuracy_radial([item.accuracy for item in evaluations.training_result_details], train_id)
-        super().plot_f1_score_radial([item.f1_score for item in evaluations.training_result_details], train_id)
-        super().plot_auc_radial([item.auc for item in evaluations.training_result_details], train_id)
+        # super().plot_accuracy_radial([item.accuracy for item in evaluations.training_result_details], train_id)
+        # super().plot_f1_score_radial([item.f1_score for item in evaluations.training_result_details], train_id)
+        # super().plot_auc_radial([item.auc for item in evaluations.training_result_details], train_id)
 
         return evaluations

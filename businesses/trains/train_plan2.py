@@ -53,7 +53,7 @@ class TrainPlan2(TrainPlanBase):
         final_model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
 
         print('Ragged!')
-        x_train_ragged, x_test_ragged = super().create_ragged_tensors(x_train, x_test)
+        x_train_ragged, x_test_ragged = super().create_input_tensors(x_train, x_test)
 
         # Pass RaggedTensors to the model
         print('Fit data!')
@@ -65,8 +65,8 @@ class TrainPlan2(TrainPlanBase):
         super().plot_accuracy(history, train_id)
         super().plot_loss(history, train_id)
 
-        super().plot_accuracy_radial([item.accuracy for item in evaluations.training_result_details], train_id)
-        super().plot_f1_score_radial([item.f1_score for item in evaluations.training_result_details], train_id)
-        super().plot_auc_radial([item.auc for item in evaluations.training_result_details], train_id)
+        # super().plot_accuracy_radial([item.accuracy for item in evaluations.training_result_details], train_id)
+        # super().plot_f1_score_radial([item.f1_score for item in evaluations.training_result_details], train_id)
+        # super().plot_auc_radial([item.auc for item in evaluations.training_result_details], train_id)
 
         return evaluations

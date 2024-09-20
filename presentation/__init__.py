@@ -4,6 +4,7 @@ from injector import Injector, Binder
 from businesses.drug_business import DrugBusiness
 from businesses.drug_embedding_business import DrugEmbeddingBusiness
 from businesses.enzyme_business import EnzymeBusiness
+from businesses.job_business import JobBusiness
 from businesses.pathway_business import PathwayBusiness
 from businesses.reduction_business import ReductionBusiness
 from businesses.similarity_business import SimilarityBusiness
@@ -29,9 +30,13 @@ def configure(binder: Binder) -> None:
     binder.bind(SimilarityBusiness, to=SimilarityBusiness)
     binder.bind(DrugEmbeddingBusiness, to=DrugEmbeddingBusiness)
     binder.bind(ReductionBusiness, to=ReductionBusiness)
+    binder.bind(JobBusiness, to=JobBusiness)
 
 
 injector = Injector([configure])
+
+job_business_instance = injector.get(JobBusiness)
+job_business_instance.run_scheduler()
 
 
 def map_actions(controller):
@@ -53,6 +58,7 @@ def map_actions(controller):
 
     app.register_blueprint(controller.blue_print, url_prefix=f'/{controller.blue_print.name}')
 
+jobs_started = False
 
 def create_app():
 

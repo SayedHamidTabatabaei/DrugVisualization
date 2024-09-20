@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, Enum as SqlEnum
+from sqlalchemy import Column, Integer, String, BOOLEAN, Enum as SqlEnum
 
 from common.enums.embedding_type import EmbeddingType
 from common.enums.text_type import TextType
@@ -12,3 +12,4 @@ class DrugEmbedding(BaseModel):
     embedding_type = Column(SqlEnum(EmbeddingType), nullable=False)
     text_type = Column(SqlEnum(TextType), nullable=False)
     embedding = Column(String, nullable=False)
+    issue_on_max_length = Column(BOOLEAN, nullable=False)

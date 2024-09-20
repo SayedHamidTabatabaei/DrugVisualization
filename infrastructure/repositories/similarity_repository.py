@@ -11,8 +11,7 @@ from infrastructure.mysqldb.mysql_repository import MySqlRepository
 
 class SimilarityRepository(MySqlRepository):
     def __init__(self):
-        super().__init__()
-        self.table_name = 'similarities'
+        super().__init__('similarities')
 
     def insert(self, similarity_type: SimilarityType, category: Category, drug_1: int, drug_2: int, value: Decimal) \
             -> Similarity:

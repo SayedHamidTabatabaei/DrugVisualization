@@ -1,15 +1,18 @@
 from dataclasses import dataclass, field
 import numpy as np
 
+from common.enums.category import Category
+
 
 @dataclass
 class TrainingDataDTO:
     drug_1: int
     drugbank_id_1: int
-    reduction_values_1: list[float]
+    reduction_values_1: list[object]
     drug_2: int
     drugbank_id_2: int
-    reduction_values_2: list[float]
+    reduction_values_2: list[object]
+    category: Category
     interaction_type: int
     concat_values: np.ndarray = field(init=False)
 

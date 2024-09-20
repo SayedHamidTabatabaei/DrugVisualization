@@ -3,8 +3,7 @@ from infrastructure.mysqldb.mysql_repository import MySqlRepository
 
 class TargetRepository(MySqlRepository):
     def __init__(self):
-        super().__init__()
-        self.table_name = 'targets'
+        super().__init__('targets')
 
     def generate_target_pivot(self, start, length):
         result, columns = self.call_procedure('GenerateTargetPivot', [start, length])

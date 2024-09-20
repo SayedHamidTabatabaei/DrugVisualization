@@ -18,8 +18,14 @@ from core.repository_models.drug_volume_of_distribution_dto import DrugVolumeOfD
 def map_drug_smiles(query_results) -> list[DrugSmilesDTO]:
     drugs = []
     for result in query_results:
-        drug_id, smiles = result
-        drug = DrugSmilesDTO(id=drug_id, smiles=smiles, fingerprint='')
+        drug_id, smiles, has_enzyme, has_pathway, has_target, has_smiles = result
+        drug = DrugSmilesDTO(id=drug_id,
+                             smiles=smiles,
+                             has_enzyme=has_enzyme,
+                             has_pathway=has_pathway,
+                             has_target=has_target,
+                             has_smiles=has_smiles,
+                             fingerprint='')
         drugs.append(drug)
 
     return drugs

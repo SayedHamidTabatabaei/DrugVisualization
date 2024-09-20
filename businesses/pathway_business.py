@@ -1,11 +1,9 @@
 from injector import inject
-from tqdm import tqdm
 
 from businesses.base_business import BaseBusiness
 from businesses.similarity_business import SimilarityBusiness
 from common.enums.category import Category
 from common.enums.similarity_type import SimilarityType
-from common.helpers import matrix_helper, similarity_helper
 from infrastructure.repositories.drug_repository import DrugRepository
 from infrastructure.repositories.pathway_repository import PathwayRepository
 from infrastructure.repositories.similarity_repository import SimilarityRepository
@@ -53,7 +51,7 @@ class PathwayBusiness(BaseBusiness):
     def generate_similarity(self, similarity_type: SimilarityType):
         results, columns_description = self.pathway_repository.generate_pathway_pivot(0, 100000)
 
-        if similarity_type == SimilarityType.Jacquard:
-            self.similarity_business.generate_jacquard(results, columns_description, Category.Pathway)
-        elif similarity_type == SimilarityType.Cosine:
-            self.similarity_business.generate_cosine(results, columns_description, Category.Pathway)
+        codes, values = results[1], results[0]
+
+        self.similarity_business.calculate_similarity(codes, values, columns_description, similarity_type,
+                                                      Category.Pathway)

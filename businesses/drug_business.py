@@ -1,17 +1,9 @@
-from decimal import Decimal
-
-from rdkit import Chem
-from rdkit.Chem import AllChem, DataStructs
-from tqdm import tqdm
-
-from businesses.base_business import BaseBusiness
 from injector import inject
 
+from businesses.base_business import BaseBusiness
 from businesses.similarity_business import SimilarityBusiness
 from common.enums.category import Category
 from common.enums.similarity_type import SimilarityType
-from core.domain.similarity import Similarity
-from core.repository_models.drug_smiles_dto import DrugSmilesDTO
 from infrastructure.repositories.drug_repository import DrugRepository
 from infrastructure.repositories.enzyme_repository import EnzymeRepository
 from infrastructure.repositories.pathway_repository import PathwayRepository
@@ -140,39 +132,4 @@ class DrugBusiness(BaseBusiness):
     def generate_similarity(self, similarity_type: SimilarityType):
         all_drug_smiles = self.drug_repository.get_all_drug_smiles()
 
-        if similarity_type == SimilarityType.Jacquard:
-            self.generate_jacquard(all_drug_smiles)
-        elif similarity_type == SimilarityType.Cosine:
-            pass
-
-    def generate_jacquard(self, all_drugs: list[DrugSmilesDTO]):
-
-        for drug in all_drugs:
-            drug.fingerprint = self.smiles_to_fingerprint(drug.smiles)
-
-        similarities: list[Similarity] = []
-
-        for drug_1 in tqdm(all_drugs, desc="Processing SMILES"):
-            for drug_2 in all_drugs:
-                similarity = self.jacquard_similarity(drug_1.fingerprint, drug_2.fingerprint)
-
-                similarities.append(Similarity(similarity_type=SimilarityType.Jacquard,
-                                               category=Category.Substructure,
-                                               drug_1=drug_1.id,
-                                               drug_2=drug_2.id,
-                                               value=similarity))
-
-    @staticmethod
-    def smiles_to_fingerprint(smiles, radius=2, n_bits=2048):
-        """Convert a SMILES string to a molecular fingerprint."""
-        try:
-            molecule = Chem.MolFromSmiles(smiles)
-            fingerprint = AllChem.GetMorganFingerprintAsBitVect(molecule, radius, nBits=n_bits)
-            return fingerprint
-        except Exception as e:
-            print(e)
-            raise
-
-    @staticmethod
-    def jacquard_similarity(fp1, fp2) -> Decimal:
-        return DataStructs.FingerprintSimilarity(fp1, fp2)
+        self.similarity_business.calculate_smiles_similarity(similarity_type, all_drug_smiles)

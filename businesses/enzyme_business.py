@@ -50,7 +50,7 @@ class EnzymeBusiness(BaseBusiness):
     def generate_similarity(self, similarity_type: SimilarityType):
         results, columns_description = self.enzyme_repository.generate_enzyme_pivot(0, 100000)
 
-        if similarity_type == SimilarityType.Jacquard:
-            self.similarity_business.generate_jacquard(results, columns_description, Category.Enzyme)
-        elif similarity_type == SimilarityType.Cosine:
-            self.similarity_business.generate_cosine(results, columns_description, Category.Enzyme)
+        codes, values = results[1], results[0]
+
+        self.similarity_business.calculate_similarity(codes, values, columns_description, similarity_type,
+                                                      Category.Enzyme)

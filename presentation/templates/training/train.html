@@ -3,6 +3,7 @@
 {% block title %}Train{% endblock %}
 
 {% block style %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/text.css') }}">
 <link rel="stylesheet" href="{{ url_for('static', filename='css/grid.css') }}">
 <link rel="stylesheet" href="{{ url_for('static', filename='css/button.css') }}">
 <link rel="stylesheet" href="{{ url_for('static', filename='css/dropdown.css') }}">
@@ -24,18 +25,28 @@
 
 
 {% block content %}
-<h2>Train</h2>
+<h2>Schedule Train</h2>
 
-<!-- Dropdown and button -->
 <div>
 
     <div class="property-container">
         <label for="trainModelSelect" class="label-for">Choose a Model:</label>
 
-        <select id="trainModelSelect">
+        <select id="trainModelSelect" onchange="updateDescription()">
             <option value="">--Select a Model--</option>
         </select>
-        <button id="submitBtn" onclick="train()">Train</button>
+        <button id="submitBtn" onclick="train()">Schedule</button>
+        <p id="trainModelDescription"></p>
+    </div>
+
+    <div class="property-container">
+        <label for="modelName" class="label-for">Name:</label>
+        <input type="text" id="modelName" placeholder="Enter model name" />
+    </div>
+
+    <div class="property-container">
+        <label for="modelDescription" class="label-for">Description:</label>
+        <textarea id="modelDescription" placeholder="Enter model description"></textarea>
     </div>
 
     <div class="section">

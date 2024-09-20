@@ -1,0 +1,73 @@
+{% extends 'base.html' %}
+
+{% block title %}Train History{% endblock %}
+
+{% block style %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/grid.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/button.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/dropdown.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/spinner.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/modal.css') }}">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
+
+{% endblock %}
+
+{% block script %}
+<script src="{{ url_for('static', filename='js/spinner.js') }}"></script>
+<script src="{{ url_for('static', filename='js/fill_train_model_dropdown.js') }}"></script>
+<script src="{{ url_for('static', filename='js/scheduled_training.js') }}"></script>
+<script src="{{ url_for('static', filename='js/condition_modal.js') }}"></script>
+{% endblock %}
+
+
+{% block content %}
+<h2>Scheduled Training</h2>
+
+<!-- Dropdown and button -->
+<div>
+    <div class="property-container">
+        <label for="trainModelSelect" class="label-for">Choose a property:</label>
+
+        <select id="trainModelSelect">
+            <option value="">--Select a property--</option>
+            <!-- Add more options as needed -->
+        </select>
+
+        <div class="buttons-container">
+            <button id="submitBtn" onclick="get_schedules()">Submit</button>
+            <button id="addDataBtn" onclick="add_schedule_training()">Add Schedule</button>
+        </div>
+    </div>
+
+    <div id="loadingSpinner" class="spinner" style="display: none;"></div>
+</div>
+<div class="grid-container">
+    <table id="trainHistoryTable" class="datagrid-table; display">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Train model</th>
+                <th>Name</th>
+                <th>Description</th>
+                <th>Schedule Time</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Data will be populated by DataTables -->
+        </tbody>
+    </table>
+</div>
+
+
+<div id="jsonModal" class="modal" style="display:none;">
+    <div class="modal-content" style="max-height: 400px; overflow-y: auto;">
+        <h4>JSON Data</h4>
+        <div id="jsonData"></div>
+    </div>
+    <div class="modal-footer">
+        <button onclick="closeModal()" class="btn">Close</button>
+    </div>
+</div>
+
+{% endblock %}

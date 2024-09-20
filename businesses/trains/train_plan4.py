@@ -50,19 +50,19 @@ class TrainPlan4(TrainPlanBase):
         full_model = Model(inputs=[input_layer for input_layer in input_layers], outputs=output)
         full_model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
 
-        x_train_ragged, x_test_ragged = super().create_ragged_tensors(x_train, x_test)
+        x_train, x_test = super().create_input_tensors(x_train, x_test)
 
         print('Fit data!')
-        history = full_model.fit(x_train_ragged, y_train, epochs=50, batch_size=256,
-                                 validation_data=(x_test_ragged, y_test))
+        history = full_model.fit(x_train, y_train, epochs=50, batch_size=256,
+                                 validation_data=(x_test, y_test))
 
-        evaluations = super().calculate_evaluation_metrics(full_model, x_test_ragged, y_test)
+        evaluations = super().calculate_evaluation_metrics(full_model, x_test, y_test)
 
         super().plot_accuracy(history, train_id)
         super().plot_loss(history, train_id)
 
-        super().plot_accuracy_radial([item.accuracy for item in evaluations.training_result_details], train_id)
-        super().plot_f1_score_radial([item.f1_score for item in evaluations.training_result_details], train_id)
-        super().plot_auc_radial([item.auc for item in evaluations.training_result_details], train_id)
+        # super().plot_accuracy_radial([item.accuracy for item in evaluations.training_result_details], train_id)
+        # super().plot_f1_score_radial([item.f1_score for item in evaluations.training_result_details], train_id)
+        # super().plot_auc_radial([item.auc for item in evaluations.training_result_details], train_id)
 
         return evaluations

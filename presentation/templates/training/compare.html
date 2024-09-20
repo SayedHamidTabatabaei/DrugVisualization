@@ -14,6 +14,8 @@
 {% endblock %}
 
 {% block script %}
+<script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 <script src="{{ url_for('static', filename='js/spinner.js') }}"></script>
 <script src="{{ url_for('static', filename='js/fill_train_model_dropdown.js') }}"></script>
 <script src="{{ url_for('static', filename='js/compare.js') }}"></script>
@@ -50,6 +52,8 @@
                 <th>Loss</th>
                 <th>AUC</th>
                 <th>AUPR</th>
+                <th>Recall</th>
+                <th>Precision</th>
                 <th>Execute Time</th>
             </tr>
         </thead>
@@ -61,24 +65,33 @@
 
 <div class="tab-container">
     <div class="tab-row">
-        <div class="tab-label" style="flex-basis: 55%;">Main results</div>
-        <div class="tab-label" style="flex-basis: 45%;">Per Category results</div>
+        <div class="tab-label" style="flex-basis: 54%;">Main results</div>
+        <div class="tab-label" style="flex-basis: 46%;">Per Category results</div>
     </div>
 
     <div class="tab-row">
         <div id="accuracy" class="tab active" onclick="openTab(event, 'accuracy-tab');fill_comparing_plot('accuracy');">Accuracy</div>
         <div id="loss" class="tab" onclick="openTab(event, 'loss-tab');fill_comparing_plot('loss');">Loss</div>
+        <div id="f1_score" class="tab" onclick="openTab(event, 'f1_score-tab');fill_comparing_plot('f1_score');">F1 Score</div>
         <div id="auc" class="tab" onclick="openTab(event, 'auc-tab');fill_comparing_plot('auc');">AUC</div>
         <div id="aupr" class="tab" onclick="openTab(event, 'aupr-tab');fill_comparing_plot('aupr');">AUPR</div>
-        <div id="f1_score" class="tab" onclick="openTab(event, 'f1_score-tab');fill_comparing_plot('f1_score');">F1 Score</div>
+        <div id="recall" class="tab" onclick="openTab(event, 'recall-tab');fill_comparing_plot('recall');">Recall</div>
+        <div id="precision" class="tab" onclick="openTab(event, 'precision-tab');fill_comparing_plot('precision');">Precision</div>
 
         <div id="details_accuracy" class="tab" onclick="openTab(event, 'details_accuracy-tab');fill_comparing_plot('details_accuracy');">Accuracy</div>
+        <div id="details_f1_score" class="tab" onclick="openTab(event, 'details_f1_score-tab');fill_comparing_plot('details_f1_score');">F1 Score</div>
         <div id="details_auc" class="tab" onclick="openTab(event, 'details_auc-tab');fill_comparing_plot('details_auc');">AUC</div>
         <div id="details_aupr" class="tab" onclick="openTab(event, 'details_aupr-tab');fill_comparing_plot('details_aupr');">AUPR</div>
-        <div id="details_f1_score" class="tab" onclick="openTab(event, 'details_f1_score-tab');fill_comparing_plot('details_f1_score');">F1 Score</div>
+        <div id="details_recall" class="tab" onclick="openTab(event, 'details_recall-tab');fill_comparing_plot('details_recall');">Recall</div>
+        <div id="details_precision" class="tab" onclick="openTab(event, 'details_precision-tab');fill_comparing_plot('details_precision');">Precision</div>
     </div>
     <div id="accuracy-tab" class="tab-content active">
         <div id="accuracy-container">
+            <p>
+                <span style="font-size: 1.2em;">
+                    \(\text{Accuracy} = \frac{\text{True Positives} + \text{True Negatives}}{\text{Total Number of Samples}}\)
+                </span>
+            </p>
             <img width="500px;" id="accuracy-plot"/>
             <table id="accuracy-table" class="display">
                 <thead>
@@ -90,6 +103,11 @@
     </div>
     <div id="loss-tab" class="tab-content">
         <div id="loss-container">
+            <p>
+                <span style="font-size: 1.2em;">
+
+                </span>
+            </p>
             <img width="500px;" id="loss-plot"/>
             <table id="loss-table" class="display">
                 <thead>
@@ -99,8 +117,29 @@
             </table>
         </div>
     </div>
+    <div id="f1_score-tab" class="tab-content">
+        <div id="f1_score-container">
+            <p>
+                <span style="font-size: 1.2em;">
+                    \(F1 = 2 \times \frac{\text{Precision} \times \text{Recall}}{\text{Precision} + \text{Recall}}\)
+                </span>
+            </p>
+            <img width="500px;" id="f1_score-plot"/>
+            <table id="f1_score-table" class="display">
+                <thead>
+                    <tr id="f1_score-tableHeaders"></tr>
+                </thead>
+                <tbody id="f1_score-tableBody"></tbody>
+            </table>
+        </div>
+    </div>
     <div id="auc-tab" class="tab-content">
         <div id="auc-container">
+            <p>
+                <span style="font-size: 1.2em;">
+                    \(\text{AUC} = \int_{0}^{1} \text{TPR}(FPR) \, d(\text{FPR})\)
+                </span>
+            </p>
             <img width="500px;" id="auc-plot"/>
             <table id="auc-table" class="display">
                 <thead>
@@ -112,6 +151,11 @@
     </div>
     <div id="aupr-tab" class="tab-content">
         <div id="aupr-container">
+            <p>
+                <span style="font-size: 1.2em;">
+                    \(\text{AUPR} = \int_{0}^{1} \text{Precision}(\text{Recall}) \, d(\text{Recall})\)
+                </span>
+            </p>
             <img width="500px;" id="aupr-plot"/>
             <table id="aupr-table" class="display">
                 <thead>
@@ -121,19 +165,45 @@
             </table>
         </div>
     </div>
-    <div id="f1_score-tab" class="tab-content">
-        <div id="f1_score-container">
-            <img width="500px;" id="f1_score-plot"/>
-            <table id="f1_score-table" class="display">
+    <div id="recall-tab" class="tab-content">
+        <div id="recall-container">
+            <p>
+                <span style="font-size: 1.2em;">
+                    \(\text{Recall} = \frac{\text{True Positives}}{\text{True Positives} + \text{False Negatives}}\)
+                </span>
+            </p>
+            <img width="500px;" id="recall-plot"/>
+            <table id="recall-table" class="display">
                 <thead>
-                    <tr id="f1_score-tableHeaders"></tr>
+                    <tr id="recall-tableHeaders"></tr>
                 </thead>
-                <tbody id="f1_score-tableBody"></tbody>
+                <tbody id="recall-tableBody"></tbody>
+            </table>
+        </div>
+    </div>
+    <div id="precision-tab" class="tab-content">
+        <div id="precision-container">
+            <p>
+                <span style="font-size: 1.2em;">
+                    \(\text{Precision} = \frac{\text{True Positives}}{\text{True Positives} + \text{False Positives}}\)
+                </span>
+            </p>
+            <img width="500px;" id="precision-plot"/>
+            <table id="precision-table" class="display">
+                <thead>
+                    <tr id="precision-tableHeaders"></tr>
+                </thead>
+                <tbody id="precision-tableBody"></tbody>
             </table>
         </div>
     </div>
     <div id="details_accuracy-tab" class="tab-content">
         <div id="details_accuracy-container">
+            <p>
+                <span style="font-size: 1.2em;">
+                    \(\text{Accuracy}_c = \frac{\text{TP}_c}{\text{TP}_c + \text{FN}_c}\)
+                </span>
+            </p>
             <img width="500px;" id="details_accuracy-plot"/>
             <table id="details_accuracy-table" class="display">
                 <thead>
@@ -143,8 +213,29 @@
             </table>
         </div>
     </div>
+    <div id="details_f1_score-tab" class="tab-content">
+        <div id="details_f1_score-container">
+            <p>
+                <span style="font-size: 1.2em;">
+                    \(F1 = 2 \times \frac{\text{Precision} \times \text{Recall}}{\text{Precision} + \text{Recall}}\)
+                </span>
+            </p>
+            <img width="500px;" id="details_f1_score-plot"/>
+            <table id="details_f1_score-table" class="display">
+                <thead>
+                    <tr id="details_f1_score-tableHeaders"></tr>
+                </thead>
+                <tbody id="details_f1_score-tableBody"></tbody>
+            </table>
+        </div>
+    </div>
     <div id="details_auc-tab" class="tab-content">
         <div id="details_auc-container">
+            <p>
+                <span style="font-size: 1.2em;">
+                    \(\text{AUC} = \int_{0}^{1} \text{TPR}(FPR) \, d(\text{FPR})\)
+                </span>
+            </p>
             <img width="500px;" id="details_auc-plot"/>
             <table id="details_auc-table" class="display">
                 <thead>
@@ -156,6 +247,11 @@
     </div>
     <div id="details_aupr-tab" class="tab-content">
         <div id="details_aupr-container">
+            <p>
+                <span style="font-size: 1.2em;">
+                    \(\text{AUPR} = \int_{0}^{1} \text{Precision}(\text{Recall}) \, d(\text{Recall})\)
+                </span>
+            </p>
             <img width="500px;" id="details_aupr-plot"/>
             <table id="details_aupr-table" class="display">
                 <thead>
@@ -165,14 +261,35 @@
             </table>
         </div>
     </div>
-    <div id="details_f1_score-tab" class="tab-content">
-        <div id="details_f1_score-container">
-            <img width="500px;" id="details_f1_score-plot"/>
-            <table id="details_f1_score-table" class="display">
+    <div id="details_recall-tab" class="tab-content">
+        <div id="details_recall-container">
+            <p>
+                <span style="font-size: 1.2em;">
+                    \(\text{Recall}_c = \frac{\text{True Positives}_c}{\text{True Positives}_c + \text{False Negatives}_c}\)
+                </span>
+            </p>
+            <img width="500px;" id="details_recall-plot"/>
+            <table id="details_recall-table" class="display">
                 <thead>
-                    <tr id="details_f1_score-tableHeaders"></tr>
+                    <tr id="details_recall-tableHeaders"></tr>
                 </thead>
-                <tbody id="details_f1_score-tableBody"></tbody>
+                <tbody id="details_recall-tableBody"></tbody>
+            </table>
+        </div>
+    </div>
+    <div id="details_precision-tab" class="tab-content">
+        <div id="details_precision-container">
+            <p>
+                <span style="font-size: 1.2em;">
+                    \(\text{Precision}_c = \frac{\text{True Positives}_c}{\text{True Positives}_c + \text{False Positives}_c}\)
+                </span>
+            </p>
+            <img width="500px;" id="details_precision-plot"/>
+            <table id="details_precision-table" class="display">
+                <thead>
+                    <tr id="details_precision-tableHeaders"></tr>
+                </thead>
+                <tbody id="details_precision-tableBody"></tbody>
             </table>
         </div>
     </div>

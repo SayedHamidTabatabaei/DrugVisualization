@@ -1,12 +1,14 @@
 import os
+import time
 
+import matplotlib.pyplot as plt
 import numpy as np
 import tensorflow as tf
+from sklearn.metrics import accuracy_score, f1_score, roc_auc_score, average_precision_score, precision_score, \
+    recall_score
 from sklearn.model_selection import StratifiedShuffleSplit
-from tensorflow.keras.utils import to_categorical
-from sklearn.metrics import accuracy_score, f1_score, roc_auc_score, average_precision_score, precision_recall_curve
 from sklearn.preprocessing import label_binarize
-import matplotlib.pyplot as plt
+from tensorflow.keras.utils import to_categorical
 from tqdm import tqdm
 
 from common.enums.train_models import TrainModel
@@ -75,12 +77,18 @@ class TrainPlanBase:
         y_test_bin = label_binarize(y_test_classes, classes=range(self.num_classes))
         auc = roc_auc_score(y_test_bin, y_pred, average='weighted', multi_class='ovr')
         aupr = average_precision_score(y_test_bin, y_pred, average='weighted')
+        precision = precision_score(y_test_classes, y_pred_classes, average='weighted')
+        recall = recall_score(y_test_classes, y_pred_classes, average='weighted')
 
         # Binarize the labels for AUC and AUPR calculation
         y_test_bin = label_binarize(y_test_classes, classes=range(self.num_classes))
         results_per_labels: list[TrainingResultDetailSummaryDTO] = []
 
         print('Calculate classes Evaluations!')
+
+        precision_per_class = precision_score(y_test_classes, y_pred_classes, average=None)
+        recall_per_class = recall_score(y_test_classes, y_pred_classes, average=None)
+
         for i in range(self.num_classes):
             class_accuracy = accuracy_score(y_test_classes == i, y_pred_classes == i)
 
@@ -88,20 +96,24 @@ class TrainPlanBase:
 
             class_auc = roc_auc_score(y_test_bin[:, i], y_pred[:, i])
 
-            precision, recall, _ = precision_recall_curve(y_test_bin[:, i], y_pred[:, i])
             class_aupr = average_precision_score(y_test_bin[:, i], y_pred[:, i])
 
             results_per_labels.append(TrainingResultDetailSummaryDTO(training_label=i,
                                                                      f1_score=class_f1,
                                                                      accuracy=class_accuracy,
                                                                      auc=class_auc,
-                                                                     aupr=class_aupr))
+                                                                     aupr=class_aupr,
+                                                                     recall=recall_per_class[i],
+                                                                     precision=precision_per_class[i]))
 
         return TrainingResultSummaryDTO(f1_score=f1,
                                         accuracy=accuracy,
                                         loss=loss,
                                         auc=auc,
                                         aupr=aupr,
+                                        recall=recall,
+                                        precision=precision,
+                                        model=model,
                                         training_result_details=results_per_labels)
 
     @staticmethod
@@ -216,7 +228,35 @@ class TrainPlanBase:
 
     # @tf.function
     @staticmethod
-    def create_ragged_tensors(x_train, x_test):
-        x_train_ragged = [tf.ragged.constant(d) for d in tqdm(x_train, desc="Creating Ragged Train data")]
-        x_test_ragged = [tf.ragged.constant(d) for d in tqdm(x_test, desc="Creating Ragged Test data")]
-        return x_train_ragged, x_test_ragged
+    def create_input_tensors(x_train, x_test):
+        start_time = time.time()
+        print(f"Start time: {time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(start_time))}")
+
+        x_train_processed = []
+        for d in tqdm(x_train, desc="Creating Ragged Train data"):
+            if isinstance(d[0], str):
+                x_train_processed.append(tf.constant(d, dtype=tf.string))
+            else:
+                x_train_processed.append(tf.ragged.constant(d))
+
+        x_test_processed = []
+        for d in tqdm(x_test, desc="Creating Ragged Test data"):
+            if isinstance(d[0], str):
+                x_test_processed.append(tf.constant(d, dtype=tf.string))
+            else:
+                x_test_processed.append(tf.ragged.constant(d))
+        #
+        # # if TrainPlanBase.check_dimensions(x_train):
+        # #     print('after check dimensions')
+        # #     x_train = np.array(x_train, dtype=object)
+        # # else:
+        # x_train = [tf.ragged.constant(d) for d in tqdm(x_train, desc="Creating Ragged Train data")]
+        #
+        # x_test = [tf.ragged.constant(d) for d in tqdm(x_test, desc="Creating Ragged Test data")]
+
+        end_time = time.time()
+        execution_time = end_time - start_time
+        print(f"Finished time: {time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(end_time))}")
+        print(f"Execution time: {execution_time} seconds")
+
+        return x_train_processed, x_test_processed

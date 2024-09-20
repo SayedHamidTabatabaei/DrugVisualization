@@ -12,3 +12,5 @@ class TrainingResultDetail(BaseModel):
     accuracy = Column(Float, nullable=False)
     auc = Column(Float, nullable=False)
     aupr = Column(Float, nullable=False)
+    recall = Column(Float, nullable=False)
+    precision = Column(Float, nullable=False)

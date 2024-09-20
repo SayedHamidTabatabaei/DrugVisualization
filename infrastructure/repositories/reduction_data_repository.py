@@ -14,8 +14,7 @@ from infrastructure.mysqldb.mysql_repository import MySqlRepository
 
 class ReductionDataRepository(MySqlRepository):
     def __init__(self):
-        super().__init__()
-        self.table_name = 'reduction_data'
+        super().__init__('reduction_data')
 
     def insert(self, drug_id: int, similarity_type: SimilarityType, category: Category,
                reduction_category: ReductionCategory, reduction_values: list[float],
@@ -94,14 +93,10 @@ class ReductionDataRepository(MySqlRepository):
 
         return map_result
 
-    def find_interactions(self, similarity_type: SimilarityType,
-                          category: Category,
-                          reduction_category: ReductionCategory,
-                          has_enzyme: bool, has_pathway: bool, has_target: bool, has_smiles: bool) \
+    def find_interactions(self, has_enzyme: bool, has_pathway: bool, has_target: bool, has_smiles: bool) \
             -> list[InteractionDTO]:
         result, _ = self.call_procedure('FindInteractions',
-                                        [similarity_type.value, category.value, reduction_category.value,
-                                         has_enzyme, has_pathway, has_target, has_smiles])
+                                        [has_enzyme, has_pathway, has_target, has_smiles])
 
         return reduction_data_mapper.map_interactions(result[0])
 

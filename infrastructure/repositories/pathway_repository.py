@@ -3,8 +3,7 @@ from infrastructure.mysqldb.mysql_repository import MySqlRepository
 
 class PathwayRepository(MySqlRepository):
     def __init__(self):
-        super().__init__()
-        self.table_name = 'pathways'
+        super().__init__('pathways')
 
     def generate_pathway_pivot(self, start, length):
         result, columns = self.call_procedure('GeneratePathwayPivot', [start, length])

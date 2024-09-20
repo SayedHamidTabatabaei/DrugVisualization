@@ -115,6 +115,11 @@ def training_history():
     return render_template('training/training_history.html')
 
 
+@main.route('/training/scheduled_training')
+def scheduled_training():
+    return render_template('training/scheduled_training.html')
+
+
 @main.route('/training/compare')
 def training_compare():
     return render_template('training/compare.html')

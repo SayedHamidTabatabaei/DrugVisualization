@@ -6,8 +6,7 @@ from infrastructure.mysqldb.mysql_repository import MySqlRepository
 
 class DrugRepository(MySqlRepository):
     def __init__(self):
-        super().__init__()
-        self.table_name = 'drugs'
+        super().__init__('drugs')
 
     def get_active_drug_number(self):
         result, _ = self.call_procedure('GetActiveDrugNumber')

@@ -22,7 +22,9 @@ document.addEventListener('DOMContentLoaded', function() {
                     { data: 'f1_score' },
                     { data: 'accuracy' },
                     { data: 'auc' },
-                    { data: 'aupr' }
+                    { data: 'aupr' },
+                    { data: 'recall' },
+                    { data: 'precision' }
                 ],
                 paging: false,
                 searching: true,

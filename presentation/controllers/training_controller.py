@@ -2,36 +2,49 @@ from flask import Blueprint, jsonify, request
 from flask.views import MethodView
 from injector import inject
 
+from businesses.job_business import JobBusiness
 from businesses.training_business import TrainingBusiness
 from common.attributes.route import route
 from common.enums.compare_plot_type import ComparePlotType
 from common.enums.train_models import TrainModel
-from core.models.train_request_model import TrainRequestModel
+from core.view_models.train_request_view_model import TrainRequestViewModel
+from infrastructure.repositories.training_scheduled_repository import TrainingScheduledRepository
 
 
 class TrainingController(MethodView):
     @inject
-    def __init__(self, training_business: TrainingBusiness):
+    def __init__(self, training_business: TrainingBusiness, job_business: JobBusiness,
+                 training_scheduled_repository: TrainingScheduledRepository):
         self.training_business = training_business
+        self.job_business = job_business
+        self.training_scheduled_repository = training_scheduled_repository
 
     blue_print = Blueprint('training', __name__)
 
     @route('fillTrainingModels', methods=['GET'])
-    def get_reduction_categories(self):
+    def get_training_models(self):
         types = [{"name": train_model.name, "value": train_model.value} for train_model in TrainModel]
         return jsonify(types)
+
+    @route('get_training_model_description', methods=['GET'])
+    def get_training_model_description(self):
+
+        train_model_str = request.args.get('trainModel')
+
+        if not train_model_str:
+            return jsonify({'status': False, 'data': ''})
+
+        train_model = TrainModel[train_model_str]
+
+        return jsonify({'status': True, 'data': train_model.description})
 
     @route('train', methods=['POST'])
     def train(self):
         data = request.get_json()
 
-        train_request = TrainRequestModel.from_dict(data)
-        #
-        # try:
-        self.training_business.train(train_request)
+        train_request = TrainRequestViewModel.from_dict(data)
 
-        # except Exception as e:
-        #     return jsonify({'status': False, "error": str(e)})
+        self.training_business.schedule_train(train_request)
 
         return jsonify({'status': True})
 
@@ -57,6 +70,19 @@ class TrainingController(MethodView):
                             'recordsFiltered': total_number, 'data': train_history,
                             'message': "No enzyme found!", 'status': False})
 
+    @route('get_schedules', methods=['GET'])
+    def get_schedules(self):
+        train_model_str = request.args.get('trainModel')
+
+        train_model = None
+
+        if train_model_str:
+            train_model = TrainModel[train_model_str]
+
+        train_schedules = self.training_business.get_training_scheduled(train_model)
+
+        return jsonify({'data': train_schedules, 'status': True})
+
     @route('get_history_details', methods=['GET'])
     def get_history_details(self):
         train_result_id = request.args.get('trainHistoryId')
@@ -67,7 +93,7 @@ class TrainingController(MethodView):
             return jsonify({'data': train_history_details, 'status': True})
         else:
             return jsonify({'data': train_history_details,
-                            'message': "No enzyme found!", 'status': False})
+                            'message': "No data found!", 'status': False})
 
     @route('get_history_conditions', methods=['GET'])
     def get_history_conditions(self):
@@ -79,7 +105,7 @@ class TrainingController(MethodView):
             return jsonify({'data': train_history_conditions, 'status': True})
         else:
             return jsonify({'data': train_history_conditions,
-                            'message': "No enzyme found!", 'status': False})
+                            'message': "No data found!", 'status': False})
 
     @route('get_history_plots', methods=['GET'])
     def get_history_plots(self):
@@ -92,24 +118,27 @@ class TrainingController(MethodView):
         else:
             return jsonify({'data': images, 'message': "No images found!", 'status': False})
 
-    @route('get_comparing_plots', methods=['GET'])
-    def get_comparing_plots(self):
-
-        train_result_ids = request.args.get('trainHistoryIds')
-
-        images = self.training_business.get_comparing_plots([int(train_result_id) for train_result_id in
-                                                             train_result_ids.split(',')])
-
-        if images:
-            return jsonify({'data': images, 'status': True})
-        else:
-            return jsonify({'data': images, 'message': "No images found!", 'status': False})
+    # @route('get_comparing_plots', methods=['GET'])
+    # def get_comparing_plots(self):
+    #
+    #     train_result_ids = request.args.get('trainHistoryIds')
+    #
+    #     images = self.training_business.get_comparing_plots([int(train_result_id) for train_result_id in
+    #                                                          train_result_ids.split(',')])
+    #
+    #     if images:
+    #         return jsonify({'data': images, 'status': True})
+    #     else:
+    #         return jsonify({'data': images, 'message': "No images found!", 'status': False})
 
     @route('get_comparing_plot', methods=['GET'])
     def get_comparing_plot(self):
 
         train_result_ids = request.args.get('trainHistoryIds')
         compare_plot_type = ComparePlotType.get_enum_from_string(request.args.get('ComparePlotType'))
+
+        if not train_result_ids:
+            return jsonify({'message': "No images found!", 'status': False})
 
         image = self.training_business.get_comparing_plot([int(train_result_id) for train_result_id in
                                                            train_result_ids.split(',')],
@@ -119,3 +148,25 @@ class TrainingController(MethodView):
             return jsonify({'image': image, 'status': True})
         else:
             return jsonify({'image': image, 'message': "No images found!", 'status': False})
+
+    @route('training_schedule_delete', methods=['DELETE'])
+    def training_schedule_delete(self):
+
+        id = int(request.args.get('id'))
+        row_count = self.training_scheduled_repository.delete(id)
+
+        if row_count and row_count != 0:
+            return jsonify({'status': True})
+        else:
+            return jsonify({'message': "No data found!", 'status': False})
+
+    @route('run_train', methods=['POST'])
+    def run_train(self):
+
+        id = int(request.args.get('id'))
+        row_count = self.job_business.training_job(id)
+
+        if row_count and row_count != 0:
+            return jsonify({'status': True})
+        else:
+            return jsonify({'message': "No data found!", 'status': False})

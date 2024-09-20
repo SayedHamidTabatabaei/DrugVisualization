@@ -14,21 +14,21 @@ from infrastructure.repositories.reduction_data_repository import ReductionDataR
 
 
 def get_str_pubmedbert_embedding(embedding_text):
-    embedding = embedding_helper.get_pubmedbert_embedding(embedding_text)
+    embedding, issue_on_max_length = embedding_helper.get_pubmedbert_embedding(embedding_text)
 
     str_embedding = str(embedding)
 
     str_embedding = re.sub(r'\[\[\s*', '[[', str_embedding)
-    return re.sub(r'\s+', ' ', str_embedding)
+    return re.sub(r'\s+', ' ', str_embedding), issue_on_max_length
 
 
 def get_str_scibert_embedding(embedding_text):
-    embedding = embedding_helper.get_scibert_embedding(embedding_text)
+    embedding, issue_on_max_length = embedding_helper.get_scibert_embedding(embedding_text)
 
     str_embedding = str(embedding)
 
     str_embedding = re.sub(r'\[\[\s*', '[[', str_embedding)
-    return re.sub(r'\s+', ' ', str_embedding)
+    return re.sub(r'\s+', ' ', str_embedding), issue_on_max_length
 
 
 class DrugEmbeddingBusiness(BaseBusiness):
@@ -191,23 +191,27 @@ class DrugEmbeddingBusiness(BaseBusiness):
     def generate_pubmedbert_embedding(self, drugs, text_type: TextType):
         drug_embeddings: list[DrugEmbedding] = []
         for drug in tqdm(drugs, desc=f"Processing embedding ({text_type.name} - PubMedBERT)"):
-            embedding = get_str_pubmedbert_embedding(drug.text)
+            embedding, issue_on_max_length = get_str_pubmedbert_embedding(drug.text)
 
             drug_embeddings.append(DrugEmbedding(drug_id=drug.id,
                                                  embedding_type=EmbeddingType.PubMedBERT,
                                                  text_type=text_type,
-                                                 embedding=embedding))
+                                                 embedding=embedding,
+                                                 issue_on_max_length=issue_on_max_length))
 
-        self.drug_embedding_repository.insert_batch_check_duplicate(drug_embeddings, [DrugEmbedding.embedding])
+        self.drug_embedding_repository.insert_batch_check_duplicate(
+            drug_embeddings, [DrugEmbedding.embedding, DrugEmbedding.issue_on_max_length])
 
     def generate_scibert_embedding(self, drugs, text_type: TextType):
         drug_embeddings: list[DrugEmbedding] = []
         for drug in tqdm(drugs, desc=f"Processing embedding ({text_type.name} - SciBERT)"):
-            embedding = get_str_scibert_embedding(drug.text)
+            embedding, issue_on_max_length = get_str_scibert_embedding(drug.text)
 
             drug_embeddings.append(DrugEmbedding(drug_id=drug.id,
                                                  embedding_type=EmbeddingType.SciBERT,
                                                  text_type=text_type,
-                                                 embedding=embedding))
+                                                 embedding=embedding,
+                                                 issue_on_max_length=issue_on_max_length))
 
-        self.drug_embedding_repository.insert_batch_check_duplicate(drug_embeddings, [DrugEmbedding.embedding])
+        self.drug_embedding_repository.insert_batch_check_duplicate(
+            drug_embeddings, [DrugEmbedding.embedding, DrugEmbedding.issue_on_max_length])

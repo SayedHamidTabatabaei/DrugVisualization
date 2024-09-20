@@ -15,7 +15,7 @@ def generate_insert_command(entity):
 
     entity_vars.pop('_sa_instance_state', None)
 
-    query = (f"INSERT INTO {entity.__tablename__}({', '.join(entity_vars.keys())}) "
+    query = (f"INSERT INTO {entity.__tablename__}({', '.join([f'`{k}`' for k in entity_vars.keys()])}) "
              f"VALUES ({', '.join(['%s' for _ in entity_vars])})")
 
     values = tuple(convert_value(value) for value in entity_vars.values())
@@ -28,7 +28,7 @@ def generate_update_command(entity, update_columns):
 
     entity_vars.pop('_sa_instance_state', None)
 
-    set_clause = ', '.join([f"{column} = %s" for column in update_columns])
+    set_clause = ', '.join([f"`{column}` = %s" for column in update_columns])
 
     query = (f"UPDATE {entity.__tablename__} SET {set_clause} "
              f"WHERE id = %s")
@@ -39,6 +39,13 @@ def generate_update_command(entity, update_columns):
     values.append(convert_value(entity_vars['id']))
 
     return query, tuple(values)
+
+
+def generate_delete_command(table_name, id: int):
+
+    query = f"DELETE FROM {table_name} WHERE id = {id}"
+
+    return query
 
 
 def generate_batch_insert_command(entities):
@@ -52,7 +59,7 @@ def generate_batch_insert_command(entities):
 
     value_placeholders = ', '.join([f"({', '.join(['%s' for _ in entity_vars])})" for _ in entities])
 
-    query = (f"INSERT INTO {entity.__tablename__} ({', '.join(entity_vars.keys())}) "
+    query = (f"INSERT INTO {entity.__tablename__} ({', '.join([f'`{k}`' for k in entity_vars.keys()])}) "
              f"VALUES {value_placeholders}")
 
     values = [tuple(convert_value(vars(entity).get(col)) for col in entity_vars.keys()) for entity in entities]
@@ -74,9 +81,9 @@ def generate_batch_insert_check_duplicate_command(entities, update_properties):
 
     update_columns = [prop.name if hasattr(prop, 'name') else prop for prop in update_properties]
     update_columns = [col for col in update_columns if col in entity_vars]
-    update_clause = ', '.join([f"{col} = VALUES({col})" for col in update_columns])
+    update_clause = ', '.join([f"`{col}` = VALUES(`{col}`)" for col in update_columns])
 
-    query = (f"INSERT INTO {entity.__tablename__} ({', '.join(entity_vars.keys())}) "
+    query = (f"INSERT INTO {entity.__tablename__} ({', '.join([f'`{k}`' for k in entity_vars.keys()])}) "
              f"VALUES {value_placeholders} "
              f"ON DUPLICATE KEY UPDATE {update_clause}")
 

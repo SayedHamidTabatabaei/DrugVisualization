@@ -29,3 +29,22 @@ button:active {
 #calculateBtn {
     margin-left: auto;
 }
+
+.buttons-container {
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+}
+
+#addDataBtn {
+    background-color: #4CAF50; /* Orange-Red */
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+#addDataBtn:hover {
+    background-color: #45a049;
+}

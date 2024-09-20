@@ -17,6 +17,15 @@ def map_drug_embedding(query_results) -> list[DrugEmbeddingDTO]:
     return embeddings
 
 
+def map_drug_embedding_dict(query_results) -> dict:
+    embeddings = {}
+    for result in query_results:
+        id, drug_id, drugbank_id, embedding_type, text_type, embedding = result
+        embeddings[drug_id] = embedding
+
+    return embeddings
+
+
 def map_text_embedding(query_results) -> list[TextEmbeddingDTO]:
     embeddings = []
     for result in query_results:

@@ -49,6 +49,9 @@ function find_body(){
         return false;
     }
 
+    body.model_name = document.getElementById('modelName').value
+    body.model_description = document.getElementById('modelDescription').value
+
     if(document.getElementById('substructure-check').checked)
     {
         body.substructure_similarity = find_select_value('substructure-similarity-select');
@@ -171,4 +174,32 @@ function find_select_value(dropdown){
     }
 
     return value
+}
+
+function updateDescription() {
+
+    const selectedModel = document.getElementById("trainModelSelect").value;
+
+    const descriptionElement = document.getElementById("trainModelDescription");
+
+    fetch(`/training/get_training_model_description?start=0&length=10&trainModel=${selectedModel}`, {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status) {
+            descriptionElement.textContent = data.data;
+        } else {
+            console.log('Error: No data found.');
+        }
+        hideSpinner(true);
+    })
+    .catch(error => {
+        console.log('Error:', error)
+        hideSpinner(false);
+    });
+
 }

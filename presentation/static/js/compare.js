@@ -24,10 +24,13 @@ function get_history()
             const minLoss = Math.min(...data.data.map(item => item.loss));
             const maxAuc = Math.max(...data.data.map(item => item.auc));
             const maxAupr = Math.max(...data.data.map(item => item.aupr));
+            const maxRecall = Math.max(...data.data.map(item => item.recall));
+            const maxPrecision = Math.max(...data.data.map(item => item.precision));
 
             $('#selectableTrainTable').DataTable({
                 data: data.data,
                 destroy: true,
+                paging: false,
                 columns: [
                     {
                         data: null,
@@ -89,6 +92,26 @@ function get_history()
                                 return '<strong>' + row.aupr + '</strong>';
                             } else {
                                 return row.aupr;
+                            }
+                        }
+                    },
+                    {
+                        data: 'recall',
+                        render: function(data, type, row) {
+                            if (row.recall === maxRecall) {
+                                return '<strong>' + row.recall + '</strong>';
+                            } else {
+                                return row.recall;
+                            }
+                        }
+                    },
+                    {
+                        data: 'precision',
+                        render: function(data, type, row) {
+                            if (row.precision === maxPrecision) {
+                                return '<strong>' + row.precision + '</strong>';
+                            } else {
+                                return row.precision;
                             }
                         }
                     },

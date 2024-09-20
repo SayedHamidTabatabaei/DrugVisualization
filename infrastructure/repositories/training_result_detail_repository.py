@@ -8,31 +8,34 @@ from infrastructure.mysqldb.mysql_repository import MySqlRepository
 
 class TrainingResultDetailRepository(MySqlRepository):
     def __init__(self):
-        super().__init__()
-        self.table_name = 'training_result_details'
+        super().__init__('training_result_details')
 
     def insert(self, training_result_id: int, training_label: int, f1_score: float, accuracy: float,
-               auc: float, aupr: float) \
+               auc: float, aupr: float, recall: float, precision: float) \
             -> TrainingResultDetail:
         training_result_detail = TrainingResultDetail(training_result_id=training_result_id,
                                                       training_label=training_label,
                                                       f1_score=f1_score,
                                                       accuracy=accuracy,
                                                       auc=auc,
-                                                      aupr=aupr)
+                                                      aupr=aupr,
+                                                      recall=recall,
+                                                      precision=precision)
 
         super().insert(training_result_detail)
 
         return training_result_detail
 
     def insert_if_not_exits(self, training_result_id: int, training_label: int, f1_score: float, accuracy: float,
-                            auc: float, aupr: float) -> Union[TrainingResultDetail, None]:
+                            auc: float, aupr: float, recall: float, precision: float) \
+            -> Union[TrainingResultDetail, None]:
         is_exists = self.is_exists_training_result_detail(training_result_id, training_label)
 
         if is_exists:
             return None
 
-        reduction_data = self.insert(training_result_id, training_label, f1_score, accuracy, auc, aupr)
+        reduction_data = self.insert(training_result_id, training_label, f1_score, accuracy, auc, aupr, recall,
+                                     precision)
 
         return reduction_data
 
@@ -41,7 +44,9 @@ class TrainingResultDetailRepository(MySqlRepository):
                                              [TrainingResultDetail.f1_score,
                                               TrainingResultDetail.accuracy,
                                               TrainingResultDetail.auc,
-                                              TrainingResultDetail.aupr])
+                                              TrainingResultDetail.aupr,
+                                              TrainingResultDetail.recall,
+                                              TrainingResultDetail.precision])
 
     def is_exists_training_result_detail(self, training_result_id: int, training_label: int) \
             -> bool:

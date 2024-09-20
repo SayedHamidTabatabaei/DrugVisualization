@@ -7,12 +7,13 @@ from core.domain.base_model import BaseModel
 
 
 class MySqlRepository:
-    def __init__(self):
+    def __init__(self, table_name):
         self.host = mysql_host
         self.user = mysql_user
         self.password = mysql_password
         self.database = mysql_database_name
         self.batch_size = batch_size
+        self.table_name = table_name
 
         try:
             self.connection = mysql.connector.connect(
@@ -42,7 +43,16 @@ class MySqlRepository:
 
         self.connection.commit()
 
-        return self.cursor.rowcount  # return the number of rows updated
+        return self.cursor.rowcount
+
+    def delete(self, id: int):
+        query = sql_helper.generate_delete_command(self.table_name, id)
+
+        self.cursor.execute(query)
+
+        self.connection.commit()
+
+        return self.cursor.rowcount
 
     def insert_batch(self, entities: list[BaseModel]):
         for i in tqdm(range(0, len(entities), batch_size), desc="Inserting data"):

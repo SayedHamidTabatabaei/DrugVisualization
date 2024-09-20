@@ -9,8 +9,6 @@ function get_history()
 
     showSpinner();
 
-    debugger;
-
     fetch(`/training/get_history?start=0&length=10&trainModel=${train_model}`, {
         method: 'GET',
         headers: {
@@ -49,6 +47,8 @@ function get_history()
                     { data: 'loss' },
                     { data: 'auc' },
                     { data: 'aupr' },
+                    { data: 'recall' },
+                    { data: 'precision' },
                     { data: 'execute_time' },
                     {
                         data: null,

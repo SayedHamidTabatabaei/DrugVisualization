@@ -3,7 +3,7 @@ from typing import Union
 from common.enums.embedding_type import EmbeddingType
 from common.enums.text_type import TextType
 from core.domain.drug_embedding import DrugEmbedding
-from core.mappers.drug_embedding_mapper import map_drug_embedding, map_text_embedding
+from core.mappers.drug_embedding_mapper import map_drug_embedding, map_text_embedding, map_drug_embedding_dict
 from core.repository_models.drug_embedding_dto import DrugEmbeddingDTO
 from core.repository_models.text_embedding_dto import TextEmbeddingDTO
 from infrastructure.mysqldb.mysql_repository import MySqlRepository
@@ -11,15 +11,15 @@ from infrastructure.mysqldb.mysql_repository import MySqlRepository
 
 class DrugEmbeddingRepository(MySqlRepository):
     def __init__(self):
-        super().__init__()
-        self.table_name = 'drug_embeddings'
+        super().__init__('drug_embeddings')
 
-    def insert(self, drug_id: int, embedding_type: EmbeddingType, text_type: TextType, embedding: str) \
+    def insert(self, drug_id: int, embedding_type: EmbeddingType, text_type: TextType, embedding: str, issue_on_max_length: bool) \
             -> DrugEmbedding:
         drug_embedding = DrugEmbedding(drug_id=drug_id,
                                        embedding_type=embedding_type,
                                        text_type=text_type,
-                                       embedding=embedding)
+                                       embedding=embedding,
+                                       issue_on_max_length=issue_on_max_length)
 
         super().insert(drug_embedding)
 
@@ -61,6 +61,12 @@ class DrugEmbeddingRepository(MySqlRepository):
         result, _ = self.call_procedure('FindAllEmbedding', [embedding_type.value, text_type.value])
 
         return map_drug_embedding(result[0])
+
+    def find_all_embedding_dict(self, embedding_type: EmbeddingType, text_type: TextType) \
+            -> dict:
+        result, _ = self.call_procedure('FindAllEmbedding', [embedding_type.value, text_type.value])
+
+        return map_drug_embedding_dict(result[0])
 
     def find_drug_embedding_description(self, embedding_type: EmbeddingType, start: int, length: int) \
             -> list[TextEmbeddingDTO]:

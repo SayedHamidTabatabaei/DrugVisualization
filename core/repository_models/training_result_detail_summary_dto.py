@@ -9,3 +9,5 @@ class TrainingResultDetailSummaryDTO:
     accuracy: float
     auc: float
     aupr: float
+    recall: float
+    precision: float
