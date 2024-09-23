@@ -6,11 +6,9 @@
 <link rel="stylesheet" href="{{ url_for('static', filename='css/grid.css') }}">
 <link rel="stylesheet" href="{{ url_for('static', filename='css/button.css') }}">
 <link rel="stylesheet" href="{{ url_for('static', filename='css/dropdown.css') }}">
-<link rel="stylesheet" href="{{ url_for('static', filename='css/spinner.css') }}">
 {% endblock %}
 
 {% block script %}
-<script src="{{ url_for('static', filename='js/spinner.js') }}"></script>
 <script src="{{ url_for('static', filename='js/enzyme_similarity.js') }}"></script>
 <script src="{{ url_for('static', filename='js/fill_similarity_type_dropdown.js') }}"></script>
 {% endblock %}
@@ -32,8 +30,6 @@
         <button id="submitBtn" onclick="filterEnzymeSimilarity()">Submit</button>
         <button id="calculateBtn" onclick="calculateEnzymeSimilarity()">(Re)Calculate</button>
     </div>
-
-    <div id="loadingSpinner" class="spinner" style="display: none;"></div>
 
 </div>
 

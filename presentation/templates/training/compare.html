@@ -6,7 +6,6 @@
 <link rel="stylesheet" href="{{ url_for('static', filename='css/grid.css') }}">
 <link rel="stylesheet" href="{{ url_for('static', filename='css/button.css') }}">
 <link rel="stylesheet" href="{{ url_for('static', filename='css/dropdown.css') }}">
-<link rel="stylesheet" href="{{ url_for('static', filename='css/spinner.css') }}">
 <link rel="stylesheet" href="{{ url_for('static', filename='css/checkbox.css') }}">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
 <link rel="stylesheet" href="{{ url_for('static', filename='css/tab.css') }}">
@@ -16,7 +15,6 @@
 {% block script %}
 <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
 <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-<script src="{{ url_for('static', filename='js/spinner.js') }}"></script>
 <script src="{{ url_for('static', filename='js/fill_train_model_dropdown.js') }}"></script>
 <script src="{{ url_for('static', filename='js/compare.js') }}"></script>
 {% endblock %}
@@ -36,8 +34,6 @@
         </select>
         <button id="submitBtn" onclick="get_history()">Submit</button>
     </div>
-
-    <div id="loadingSpinner" class="spinner" style="display: none;"></div>
 
 </div>
 <div class="grid-container">

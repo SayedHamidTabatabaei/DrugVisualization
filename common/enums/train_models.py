@@ -9,6 +9,8 @@ class TrainModel(Enum):
     ContactDataWithOneDNN = (5, 'Just join all data and send to DNN.')
     KNN = (6, 'This network learns by KNN.')
     KNNWithAutoEncoder = (7, 'This network learns by KNN and reduce dimension by AutoEncoder.')
+    SVM = (8, "This network learns by SVM.")
+    
 
     def __init__(self, value, description):
         self._value_ = value

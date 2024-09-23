@@ -6,14 +6,12 @@
 <link rel="stylesheet" href="{{ url_for('static', filename='css/grid.css') }}">
 <link rel="stylesheet" href="{{ url_for('static', filename='css/button.css') }}">
 <link rel="stylesheet" href="{{ url_for('static', filename='css/dropdown.css') }}">
-<link rel="stylesheet" href="{{ url_for('static', filename='css/spinner.css') }}">
 <link rel="stylesheet" href="{{ url_for('static', filename='css/modal.css') }}">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
 
 {% endblock %}
 
 {% block script %}
-<script src="{{ url_for('static', filename='js/spinner.js') }}"></script>
 <script src="{{ url_for('static', filename='js/fill_train_model_dropdown.js') }}"></script>
 <script src="{{ url_for('static', filename='js/train_history.js') }}"></script>
 <script src="{{ url_for('static', filename='js/condition_modal.js') }}"></script>
@@ -34,8 +32,6 @@
         </select>
         <button id="submitBtn" onclick="get_history()">Submit</button>
     </div>
-
-    <div id="loadingSpinner" class="spinner" style="display: none;"></div>
 
 </div>
 <div class="grid-container">

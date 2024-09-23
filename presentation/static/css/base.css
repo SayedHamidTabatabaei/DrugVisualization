@@ -96,8 +96,44 @@ footer {
     background-color: #343a40;
     color: white;
     text-align: center;
-    padding: 10px 0;
+    padding: 10px;
     margin-top: auto; /* Push footer to the bottom */
+}
+
+.footer-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.footer-buttons {
+    display: flex;
+    gap: 10px;
+}
+
+.footer-icon-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 20px;
+    color: #fff;
+    margin-left: 50px;
+}
+
+.footer-icon-btn:hover {
+    color: #007bff; /* Color change on hover */
+}
+
+.footer-icon-btn i {
+    pointer-events: none; /* Prevent tooltip from being triggered on icon itself */
+}
+
+footer p {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    margin: 0;
+
 }
 
 .similarity-container {

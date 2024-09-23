@@ -50,7 +50,11 @@ class TrainPlan4(TrainPlanBase):
         full_model = Model(inputs=[input_layer for input_layer in input_layers], outputs=output)
         full_model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
 
+        print('Fix data')
+
         x_train, x_test = super().create_input_tensors(x_train, x_test)
+        # x_train = super().create_tf_dataset(x_train, y_train)
+        # x_test = super().create_tf_dataset(x_test, y_test)
 
         print('Fit data!')
         history = full_model.fit(x_train, y_train, epochs=50, batch_size=256,

@@ -47,3 +47,6 @@ class JobRepository(MySqlRepository):
 
         id, job_type, start, end = result[0][0]
         return Job(id=id, job_type=job_type, start=start, end=end)
+
+    def incorrect_job_delete(self):
+        self.call_procedure('DeleteIncorrectJobs')

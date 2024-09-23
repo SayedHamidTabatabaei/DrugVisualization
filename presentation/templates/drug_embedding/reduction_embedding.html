@@ -7,11 +7,9 @@
 <link rel="stylesheet" href="{{ url_for('static', filename='css/button.css') }}">
 <link rel="stylesheet" href="{{ url_for('static', filename='css/dropdown.css') }}">
 <link rel="stylesheet" href="{{ url_for('static', filename='css/radiobutton.css') }}">
-<link rel="stylesheet" href="{{ url_for('static', filename='css/spinner.css') }}">
 {% endblock %}
 
 {% block script %}
-<script src="{{ url_for('static', filename='js/spinner.js') }}"></script>
 <script src="{{ url_for('static', filename='js/reduction_embedding.js') }}"></script>
 <script src="{{ url_for('static', filename='js/fill_embedding_category_radio.js') }}"></script>
 <script src="{{ url_for('static', filename='js/fill_reduction_category_radio.js') }}"></script>
@@ -46,8 +44,6 @@
         <button id="submitBtn" onclick="filterReductionEmbeddings()">Submit</button>
         <button id="calculateBtn" onclick="calculateReductionEmbeddings()">(Re)Calculate</button>
     </div>
-
-    <div id="loadingSpinner" class="spinner" style="display: none;"></div>
 
 </div>
 

@@ -120,3 +120,8 @@ class SimilarityBusiness(BaseBusiness):
                                                value=values[i][j]))
 
         self.similarity_repository.insert_batch_check_duplicate(similarities)
+
+    def get_similarities_by_category(self, category: Category):
+        similarities = self.similarity_repository.find_similarity_from_reduction_by_category(category)
+
+        return similarities

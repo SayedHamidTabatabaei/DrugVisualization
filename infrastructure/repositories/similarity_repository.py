@@ -73,3 +73,9 @@ class SimilarityRepository(MySqlRepository):
                                          check_target, check_pathway, check_enzyme, check_smiles])
 
         return result[0]
+
+    def find_similarity_from_reduction_by_category(self, category: Category):
+
+        result, _ = self.call_procedure('FindSimilarityFromReductionByCategory', [category.value])
+
+        return [SimilarityType(r[0]) for r in result[0]]

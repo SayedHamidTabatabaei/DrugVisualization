@@ -12,5 +12,5 @@ document.addEventListener('DOMContentLoaded', function() {
                 similaritySelect.appendChild(option);
             });
         })
-        .catch(error => console.error('Error fetching types data:', error));
+        .catch(error => console.log('Error fetching types data:', error));
 });

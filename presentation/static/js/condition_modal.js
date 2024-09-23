@@ -25,7 +25,7 @@ function showconditions(id) {
                 console.log('Error: No data found.');
             }
         })
-        .catch(error => console.error('Error:', error));
+        .catch(error => console.log('Error:', error));
 }
 
 // Function to close the modal

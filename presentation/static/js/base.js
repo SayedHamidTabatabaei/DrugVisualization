@@ -12,3 +12,29 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 });
+
+function remove_incorrect_jobs(){
+
+    showSpinner();
+
+    fetch(`/job/incorrect_job_delete`, {
+        method: 'DELETE',
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status) {
+            hideSpinner(true);
+
+        } else {
+            console.log('Error: No data found.');
+            hideSpinner(false);
+        }
+    })
+    .catch(error => {
+        console.log('Error:', error)
+        hideSpinner(false);
+    });
+}

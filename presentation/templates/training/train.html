@@ -10,11 +10,9 @@
 <link rel="stylesheet" href="{{ url_for('static', filename='css/radiobutton.css') }}">
 <link rel="stylesheet" href="{{ url_for('static', filename='css/checkbox.css') }}">
 <link rel="stylesheet" href="{{ url_for('static', filename='css/section.css') }}">
-<link rel="stylesheet" href="{{ url_for('static', filename='css/spinner.css') }}">
 {% endblock %}
 
 {% block script %}
-<script src="{{ url_for('static', filename='js/spinner.js') }}"></script>
 <script src="{{ url_for('static', filename='js/train.js') }}"></script>
 <script src="{{ url_for('static', filename='js/fill_reduction_category_dropdown.js') }}"></script>
 <script src="{{ url_for('static', filename='js/fill_similarity_type_dropdown.js') }}"></script>
@@ -54,7 +52,8 @@
 
         <div class="checkbox-container">
             <label class="checkbox-label">
-                <input type="checkbox" id="substructure-check" onclick="toggleDropdowns(this, 'substructure-details');fillSimilaritySelect('substructure-similarity-select');fillReductionSelect('substructure-reduction-select');">
+                <input type="checkbox" id="substructure-check" value="Substructure"
+                       onclick="toggleDropdowns(this, 'substructure-details');filterSimilaritySelect('substructure-similarity-select', 'substructure-check');fillReductionSelect('substructure-reduction-select');">
                 <span class="checkbox-custom"></span>
                 Substructure
             </label>
@@ -70,7 +69,8 @@
 
         <div class="checkbox-container">
             <label class="checkbox-label">
-                <input type="checkbox" id="target-check" onclick="toggleDropdowns(this, 'target-details');fillSimilaritySelect('target-similarity-select');fillReductionSelect('target-reduction-select');">
+                <input type="checkbox" id="target-check" value="Target"
+                       onclick="toggleDropdowns(this, 'target-details');filterSimilaritySelect('target-similarity-select', 'target-check');fillReductionSelect('target-reduction-select');">
                 <span class="checkbox-custom"></span>
                 Target
             </label>
@@ -86,7 +86,8 @@
 
         <div class="checkbox-container">
             <label class="checkbox-label">
-                <input type="checkbox" id="enzyme-check" onclick="toggleDropdowns(this, 'enzyme-details');fillSimilaritySelect('enzyme-similarity-select');fillReductionSelect('enzyme-reduction-select');">
+                <input type="checkbox" id="enzyme-check" value="Enzyme"
+                       onclick="toggleDropdowns(this, 'enzyme-details');filterSimilaritySelect('enzyme-similarity-select', 'enzyme-check');fillReductionSelect('enzyme-reduction-select');">
                 <span class="checkbox-custom"></span>
                 Enzyme
             </label>
@@ -102,7 +103,8 @@
 
         <div class="checkbox-container">
             <label class="checkbox-label">
-                <input type="checkbox" id="pathway-check" onclick="toggleDropdowns(this, 'pathway-details');fillSimilaritySelect('pathway-similarity-select');fillReductionSelect('pathway-reduction-select');">
+                <input type="checkbox" id="pathway-check" value="Pathway"
+                       onclick="toggleDropdowns(this, 'pathway-details');filterSimilaritySelect('pathway-similarity-select', 'pathway-check');fillReductionSelect('pathway-reduction-select');">
                 <span class="checkbox-custom"></span>
                 Pathway
             </label>
@@ -329,25 +331,6 @@
             </div>
         </div>
     </div>
-<!--    <div class="property-container">-->
-<!--        <label for="trainModel" class="label-for">Model:</label>-->
-<!--        <div id="trainModel" class="radioButtonsContainer"></div>-->
-<!--    </div>-->
-
-<!--    <hr/>-->
-
-<!--    <div class="property-container">-->
-<!--        <label for="similaritySelect" class="label-for">Choose a Similarity type:</label>-->
-
-<!--        <select id="similaritySelect">-->
-<!--            <option value="">&#45;&#45;Select a similarity type&#45;&#45;</option>-->
-<!--            &lt;!&ndash; Add more options as needed &ndash;&gt;-->
-<!--        </select>-->
-<!--        <button id="submitBtn" onclick="filterReductionSimilarities('Target')">Submit</button>-->
-<!--        <button id="calculateBtn" onclick="calculateReductionSimilarities('Target')">(Re)Calculate</button>-->
-<!--    </div>-->
-
-    <div id="loadingSpinner" class="spinner" style="display: none;"></div>
 
 </div>
 

@@ -28,7 +28,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         .then(data => {
                             callback(data);
                         })
-                        .catch(error => console.error('Error fetching data:', error));
+                        .catch(error => console.log('Error fetching data:', error));
                 },
                 columns: data.columns.map(col => ({ data: col })),
                 paging: true,

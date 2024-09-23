@@ -12,6 +12,7 @@ from businesses.target_business import TargetBusiness
 from presentation.controllers.drug_controller import DrugController
 from presentation.controllers.drug_embedding_controller import DrugEmbeddingController
 from presentation.controllers.enzyme_controller import EnzymeController
+from presentation.controllers.job_controller import JobController
 from presentation.controllers.pathway_controller import PathwayController
 from presentation.controllers.reduction_controller import ReductionController
 from presentation.controllers.similarity_controller import SimilarityController
@@ -73,5 +74,6 @@ def create_app():
     map_actions(DrugEmbeddingController)
     map_actions(ReductionController)
     map_actions(TrainingController)
+    map_actions(JobController)
 
     return app

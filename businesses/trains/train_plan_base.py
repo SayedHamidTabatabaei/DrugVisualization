@@ -232,27 +232,36 @@ class TrainPlanBase:
         start_time = time.time()
         print(f"Start time: {time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(start_time))}")
 
-        x_train_processed = []
-        for d in tqdm(x_train, desc="Creating Ragged Train data"):
-            if isinstance(d[0], str):
-                x_train_processed.append(tf.constant(d, dtype=tf.string))
-            else:
-                x_train_processed.append(tf.ragged.constant(d))
+        # x_train_processed = []
+        # x_test_processed = []
+        #
+        # # Preprocess SMILES data (assumed to be in the first set)
+        # smiles_train = [d[0] for d in x_train[0]]
+        # smiles_test = [d[0] for d in x_test[0]]
+        #
+        # # Convert SMILES to tensors (use batching instead of element-wise conversion)
+        # smiles_train_tensor = tf.constant(smiles_train, dtype=tf.string)
+        # smiles_test_tensor = tf.constant(smiles_test, dtype=tf.string)
+        #
+        # # Append to the processed list
+        # x_train_processed.append(smiles_train_tensor)
+        # x_test_processed.append(smiles_test_tensor)
+        #
+        # # Handle the float data (other sets)
+        # for i in range(1, len(x_train)):  # Assuming the other sets are from 1 to n
+        #     float_train = [d for d in x_train[i]]
+        #     float_test = [d for d in x_test[i]]
+        #
+        #     # If the shapes are irregular, use ragged tensors
+        #     if any(len(f) != len(float_train[0]) for f in float_train):
+        #         x_train_processed.append(tf.ragged.constant(float_train))
+        #         x_test_processed.append(tf.ragged.constant(float_test))
+        #     else:
+        #         x_train_processed.append(tf.constant(float_train, dtype=tf.float32))
+        #         x_test_processed.append(tf.constant(float_test, dtype=tf.float32))
 
-        x_test_processed = []
-        for d in tqdm(x_test, desc="Creating Ragged Test data"):
-            if isinstance(d[0], str):
-                x_test_processed.append(tf.constant(d, dtype=tf.string))
-            else:
-                x_test_processed.append(tf.ragged.constant(d))
-        #
-        # # if TrainPlanBase.check_dimensions(x_train):
-        # #     print('after check dimensions')
-        # #     x_train = np.array(x_train, dtype=object)
-        # # else:
-        # x_train = [tf.ragged.constant(d) for d in tqdm(x_train, desc="Creating Ragged Train data")]
-        #
-        # x_test = [tf.ragged.constant(d) for d in tqdm(x_test, desc="Creating Ragged Test data")]
+        x_train_processed = TrainPlanBase.pad_sequences(x_train)
+        x_test_processed = TrainPlanBase.pad_sequences(x_test)
 
         end_time = time.time()
         execution_time = end_time - start_time
@@ -260,3 +269,15 @@ class TrainPlanBase:
         print(f"Execution time: {execution_time} seconds")
 
         return x_train_processed, x_test_processed
+
+    @staticmethod
+    def pad_sequences(data, maxlen=None, padding_value='0'):
+        return tf.keras.preprocessing.sequence.pad_sequences(data, maxlen=maxlen, padding='post', value=padding_value)
+
+    @staticmethod
+    def create_tf_dataset(x_train, y_train, batch_size=256):
+        dataset = tf.data.Dataset.from_tensor_slices((x_train, y_train))
+        dataset = dataset.batch(batch_size)
+        dataset = dataset.prefetch(tf.data.experimental.AUTOTUNE)
+        return dataset
+
