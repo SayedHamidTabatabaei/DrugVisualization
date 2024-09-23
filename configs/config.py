@@ -21,3 +21,4 @@ mysql_password = config['mysql']['password']
 mysql_database_name = config['mysql']['database']
 
 batch_size = int(config['management']['batch_size'])
+enable_bert_embedding = int(config['management']['enable_bert_embedding'])

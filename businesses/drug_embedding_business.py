@@ -1,34 +1,14 @@
-import re
-
 from injector import inject
 from tqdm import tqdm
 
 from businesses.base_business import BaseBusiness
+from businesses.embedding_services import embedding_instances
 from common.enums.embedding_type import EmbeddingType
 from common.enums.text_type import TextType
-from common.helpers import embedding_helper
 from core.domain.drug_embedding import DrugEmbedding
 from infrastructure.repositories.drug_embedding_repository import DrugEmbeddingRepository
 from infrastructure.repositories.drug_repository import DrugRepository
 from infrastructure.repositories.reduction_data_repository import ReductionDataRepository
-
-
-def get_str_pubmedbert_embedding(embedding_text):
-    embedding, issue_on_max_length = embedding_helper.get_pubmedbert_embedding(embedding_text)
-
-    str_embedding = str(embedding)
-
-    str_embedding = re.sub(r'\[\[\s*', '[[', str_embedding)
-    return re.sub(r'\s+', ' ', str_embedding), issue_on_max_length
-
-
-def get_str_scibert_embedding(embedding_text):
-    embedding, issue_on_max_length = embedding_helper.get_scibert_embedding(embedding_text)
-
-    str_embedding = str(embedding)
-
-    str_embedding = re.sub(r'\[\[\s*', '[[', str_embedding)
-    return re.sub(r'\s+', ' ', str_embedding), issue_on_max_length
 
 
 class DrugEmbeddingBusiness(BaseBusiness):
@@ -81,134 +61,100 @@ class DrugEmbeddingBusiness(BaseBusiness):
                                                                                                  start, length)
 
     def calculate_embeddings(self, embedding_type: EmbeddingType, text_type: TextType):
-        if (embedding_type, text_type) == (EmbeddingType.PubMedBERT, TextType.Description):
-            drugs = self.drug_repository.find_all_drug_description()
-            self.generate_pubmedbert_embedding(drugs, text_type)
+        match (embedding_type, text_type):
+            case (EmbeddingType.PubMedBERT, TextType.Description):
+                drugs = self.drug_repository.find_all_drug_description()
 
-        elif (embedding_type, text_type) == (EmbeddingType.PubMedBERT, TextType.Indication):
-            drugs = self.drug_repository.find_all_drug_indication()
-            self.generate_pubmedbert_embedding(drugs, text_type)
+            case (EmbeddingType.PubMedBERT, TextType.Indication):
+                drugs = self.drug_repository.find_all_drug_indication()
 
-        elif (embedding_type, text_type) == (EmbeddingType.PubMedBERT, TextType.Pharmacodynamics):
-            drugs = self.drug_repository.find_all_drug_pharmacodynamics()
-            self.generate_pubmedbert_embedding(drugs, text_type)
+            case (EmbeddingType.PubMedBERT, TextType.Pharmacodynamics):
+                drugs = self.drug_repository.find_all_drug_pharmacodynamics()
 
-        elif (embedding_type, text_type) == (EmbeddingType.PubMedBERT, TextType.MechanismOfAction):
-            drugs = self.drug_repository.find_all_drug_mechanism_of_action()
-            self.generate_pubmedbert_embedding(drugs, text_type)
+            case (EmbeddingType.PubMedBERT, TextType.MechanismOfAction):
+                drugs = self.drug_repository.find_all_drug_mechanism_of_action()
 
-        elif (embedding_type, text_type) == (EmbeddingType.PubMedBERT, TextType.Toxicity):
-            drugs = self.drug_repository.find_all_drug_toxicity()
-            self.generate_pubmedbert_embedding(drugs, text_type)
+            case (EmbeddingType.PubMedBERT, TextType.Toxicity):
+                drugs = self.drug_repository.find_all_drug_toxicity()
 
-        elif (embedding_type, text_type) == (EmbeddingType.PubMedBERT, TextType.Metabolism):
-            drugs = self.drug_repository.find_all_drug_metabolism()
-            self.generate_pubmedbert_embedding(drugs, text_type)
+            case (EmbeddingType.PubMedBERT, TextType.Metabolism):
+                drugs = self.drug_repository.find_all_drug_metabolism()
 
-        elif (embedding_type, text_type) == (EmbeddingType.PubMedBERT, TextType.Absorption):
-            drugs = self.drug_repository.find_all_drug_absorption()
-            self.generate_pubmedbert_embedding(drugs, text_type)
+            case (EmbeddingType.PubMedBERT, TextType.Absorption):
+                drugs = self.drug_repository.find_all_drug_absorption()
 
-        elif (embedding_type, text_type) == (EmbeddingType.PubMedBERT, TextType.HalfLife):
-            drugs = self.drug_repository.find_all_drug_half_life()
-            self.generate_pubmedbert_embedding(drugs, text_type)
+            case (EmbeddingType.PubMedBERT, TextType.HalfLife):
+                drugs = self.drug_repository.find_all_drug_half_life()
 
-        elif (embedding_type, text_type) == (EmbeddingType.PubMedBERT, TextType.ProteinBinding):
-            drugs = self.drug_repository.find_all_drug_protein_binding()
-            self.generate_pubmedbert_embedding(drugs, text_type)
+            case (EmbeddingType.PubMedBERT, TextType.ProteinBinding):
+                drugs = self.drug_repository.find_all_drug_protein_binding()
 
-        elif (embedding_type, text_type) == (EmbeddingType.PubMedBERT, TextType.RouteOfElimination):
-            drugs = self.drug_repository.find_all_drug_route_of_elimination()
-            self.generate_pubmedbert_embedding(drugs, text_type)
+            case (EmbeddingType.PubMedBERT, TextType.RouteOfElimination):
+                drugs = self.drug_repository.find_all_drug_route_of_elimination()
 
-        elif (embedding_type, text_type) == (EmbeddingType.PubMedBERT, TextType.VolumeOfDistribution):
-            drugs = self.drug_repository.find_all_drug_volume_of_distribution()
-            self.generate_pubmedbert_embedding(drugs, text_type)
+            case (EmbeddingType.PubMedBERT, TextType.VolumeOfDistribution):
+                drugs = self.drug_repository.find_all_drug_volume_of_distribution()
 
-        elif (embedding_type, text_type) == (EmbeddingType.PubMedBERT, TextType.Clearance):
-            drugs = self.drug_repository.find_all_drug_clearance()
-            self.generate_pubmedbert_embedding(drugs, text_type)
+            case (EmbeddingType.PubMedBERT, TextType.Clearance):
+                drugs = self.drug_repository.find_all_drug_clearance()
 
-        elif (embedding_type, text_type) == (EmbeddingType.PubMedBERT, TextType.ClassificationDescription):
-            drugs = self.drug_repository.find_all_drug_classification_description()
-            self.generate_pubmedbert_embedding(drugs, text_type)
+            case (EmbeddingType.PubMedBERT, TextType.ClassificationDescription):
+                drugs = self.drug_repository.find_all_drug_classification_description()
 
-        elif (embedding_type, text_type) == (EmbeddingType.SciBERT, TextType.Description):
-            drugs = self.drug_repository.find_all_drug_description()
-            self.generate_scibert_embedding(drugs, text_type)
+            case (EmbeddingType.SciBERT, TextType.Description):
+                drugs = self.drug_repository.find_all_drug_description()
 
-        elif (embedding_type, text_type) == (EmbeddingType.SciBERT, TextType.Indication):
-            drugs = self.drug_repository.find_all_drug_indication()
-            self.generate_scibert_embedding(drugs, text_type)
+            case (EmbeddingType.SciBERT, TextType.Indication):
+                drugs = self.drug_repository.find_all_drug_indication()
 
-        elif (embedding_type, text_type) == (EmbeddingType.SciBERT, TextType.Pharmacodynamics):
-            drugs = self.drug_repository.find_all_drug_pharmacodynamics()
-            self.generate_scibert_embedding(drugs, text_type)
+            case (EmbeddingType.SciBERT, TextType.Pharmacodynamics):
+                drugs = self.drug_repository.find_all_drug_pharmacodynamics()
 
-        elif (embedding_type, text_type) == (EmbeddingType.SciBERT, TextType.MechanismOfAction):
-            drugs = self.drug_repository.find_all_drug_mechanism_of_action()
-            self.generate_scibert_embedding(drugs, text_type)
+            case (EmbeddingType.SciBERT, TextType.MechanismOfAction):
+                drugs = self.drug_repository.find_all_drug_mechanism_of_action()
 
-        elif (embedding_type, text_type) == (EmbeddingType.SciBERT, TextType.Toxicity):
-            drugs = self.drug_repository.find_all_drug_toxicity()
-            self.generate_scibert_embedding(drugs, text_type)
+            case (EmbeddingType.SciBERT, TextType.Toxicity):
+                drugs = self.drug_repository.find_all_drug_toxicity()
 
-        elif (embedding_type, text_type) == (EmbeddingType.SciBERT, TextType.Metabolism):
-            drugs = self.drug_repository.find_all_drug_metabolism()
-            self.generate_scibert_embedding(drugs, text_type)
+            case (EmbeddingType.SciBERT, TextType.Metabolism):
+                drugs = self.drug_repository.find_all_drug_metabolism()
 
-        elif (embedding_type, text_type) == (EmbeddingType.SciBERT, TextType.Absorption):
-            drugs = self.drug_repository.find_all_drug_absorption()
-            self.generate_scibert_embedding(drugs, text_type)
+            case (EmbeddingType.SciBERT, TextType.Absorption):
+                drugs = self.drug_repository.find_all_drug_absorption()
 
-        elif (embedding_type, text_type) == (EmbeddingType.SciBERT, TextType.HalfLife):
-            drugs = self.drug_repository.find_all_drug_half_life()
-            self.generate_scibert_embedding(drugs, text_type)
+            case (EmbeddingType.SciBERT, TextType.HalfLife):
+                drugs = self.drug_repository.find_all_drug_half_life()
 
-        elif (embedding_type, text_type) == (EmbeddingType.SciBERT, TextType.ProteinBinding):
-            drugs = self.drug_repository.find_all_drug_protein_binding()
-            self.generate_scibert_embedding(drugs, text_type)
+            case (EmbeddingType.SciBERT, TextType.ProteinBinding):
+                drugs = self.drug_repository.find_all_drug_protein_binding()
 
-        elif (embedding_type, text_type) == (EmbeddingType.SciBERT, TextType.RouteOfElimination):
-            drugs = self.drug_repository.find_all_drug_route_of_elimination()
-            self.generate_scibert_embedding(drugs, text_type)
+            case (EmbeddingType.SciBERT, TextType.RouteOfElimination):
+                drugs = self.drug_repository.find_all_drug_route_of_elimination()
 
-        elif (embedding_type, text_type) == (EmbeddingType.SciBERT, TextType.VolumeOfDistribution):
-            drugs = self.drug_repository.find_all_drug_volume_of_distribution()
-            self.generate_scibert_embedding(drugs, text_type)
+            case (EmbeddingType.SciBERT, TextType.VolumeOfDistribution):
+                drugs = self.drug_repository.find_all_drug_volume_of_distribution()
 
-        elif (embedding_type, text_type) == (EmbeddingType.SciBERT, TextType.Clearance):
-            drugs = self.drug_repository.find_all_drug_clearance()
-            self.generate_scibert_embedding(drugs, text_type)
+            case (EmbeddingType.SciBERT, TextType.Clearance):
+                drugs = self.drug_repository.find_all_drug_clearance()
 
-        elif (embedding_type, text_type) == (EmbeddingType.SciBERT, TextType.ClassificationDescription):
-            drugs = self.drug_repository.find_all_drug_classification_description()
-            self.generate_scibert_embedding(drugs, text_type)
+            case (EmbeddingType.SciBERT, TextType.ClassificationDescription):
+                drugs = self.drug_repository.find_all_drug_classification_description()
 
-        else:
-            raise
+            case _:
+                raise
 
-    def generate_pubmedbert_embedding(self, drugs, text_type: TextType):
+        self.generate_embedding(drugs, embedding_type, text_type)
+
+    def generate_embedding(self, drugs, embedding_type: EmbeddingType, text_type: TextType):
+
+        instance = embedding_instances.get_instance(embedding_type)
+
         drug_embeddings: list[DrugEmbedding] = []
-        for drug in tqdm(drugs, desc=f"Processing embedding ({text_type.name} - PubMedBERT)"):
-            embedding, issue_on_max_length = get_str_pubmedbert_embedding(drug.text)
+        for drug in tqdm(drugs, desc=f"Processing embedding ({text_type.name} - {embedding_type.name})"):
+            embedding, issue_on_max_length = instance.embed(drug.text)
 
             drug_embeddings.append(DrugEmbedding(drug_id=drug.id,
-                                                 embedding_type=EmbeddingType.PubMedBERT,
-                                                 text_type=text_type,
-                                                 embedding=embedding,
-                                                 issue_on_max_length=issue_on_max_length))
-
-        self.drug_embedding_repository.insert_batch_check_duplicate(
-            drug_embeddings, [DrugEmbedding.embedding, DrugEmbedding.issue_on_max_length])
-
-    def generate_scibert_embedding(self, drugs, text_type: TextType):
-        drug_embeddings: list[DrugEmbedding] = []
-        for drug in tqdm(drugs, desc=f"Processing embedding ({text_type.name} - SciBERT)"):
-            embedding, issue_on_max_length = get_str_scibert_embedding(drug.text)
-
-            drug_embeddings.append(DrugEmbedding(drug_id=drug.id,
-                                                 embedding_type=EmbeddingType.SciBERT,
+                                                 embedding_type=embedding_type,
                                                  text_type=text_type,
                                                  embedding=embedding,
                                                  issue_on_max_length=issue_on_max_length))

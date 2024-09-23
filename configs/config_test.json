@@ -6,6 +6,7 @@
     "database": "ddi_gnn"
   },
   "management": {
-    "batch_size": "1000"
+    "batch_size": "1000",
+    "enable_bert_embedding": true
   }
 }
