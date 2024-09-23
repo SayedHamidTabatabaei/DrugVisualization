@@ -1,48 +1,6 @@
-from transformers import AutoTokenizer, AutoModel
-
 from common.enums.category import Category
 from common.enums.embedding_type import EmbeddingType
 from common.enums.text_type import TextType
-
-pubmedbert_tokenizer = AutoTokenizer.from_pretrained("microsoft/BiomedNLP-PubMedBERT-base-uncased-abstract",
-                                                     clean_up_tokenization_spaces=False)
-pubmedbert_model = AutoModel.from_pretrained("microsoft/BiomedNLP-PubMedBERT-base-uncased-abstract")
-
-
-def get_pubmedbert_embedding(text):
-    issue_on_max_length = False
-
-    try:
-        inputs = pubmedbert_tokenizer(text, return_tensors="pt", padding=True, truncation=True)
-        outputs = pubmedbert_model(**inputs)
-    except Exception as e:
-        inputs = pubmedbert_tokenizer(text, return_tensors="pt", padding=True, truncation=True, max_length=512)
-        outputs = pubmedbert_model(**inputs)
-        issue_on_max_length = True
-
-    return outputs.last_hidden_state.mean(dim=1).detach().numpy(), issue_on_max_length
-    pass
-
-
-scibert_tokenizer = AutoTokenizer.from_pretrained("allenai/scibert_scivocab_uncased",
-                                                  clean_up_tokenization_spaces=False)
-scibert_model = AutoModel.from_pretrained("allenai/scibert_scivocab_uncased")
-
-
-def get_scibert_embedding(text):
-
-    issue_on_max_length = False
-
-    try:
-        inputs = scibert_tokenizer(text, return_tensors="pt", padding=True, truncation=True)
-        outputs = scibert_model(**inputs)
-    except Exception as e:
-        inputs = scibert_tokenizer(text, return_tensors="pt", padding=True, truncation=True, max_length=512)
-        outputs = scibert_model(**inputs)
-        issue_on_max_length = True
-
-    return outputs.last_hidden_state.mean(dim=1).detach().numpy(), issue_on_max_length
-    pass
 
 
 def find_category(embedding_type: EmbeddingType, text_type: TextType) -> Category:
