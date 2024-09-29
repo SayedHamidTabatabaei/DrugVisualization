@@ -1,9 +1,9 @@
-from datetime import datetime, timezone
+from typing import Union
 
-from common.enums.train_models import TrainModel
+from common.enums.training_result_type import TrainingResultType
 from core.domain.training_result import TrainingResult
-from core.mappers import training_result_mapper
-from core.repository_models.training_result_dto import TrainingResultDTO
+from core.mappers import training_mapper
+from core.repository_models.training_result_detail_dto import TrainingResultDetailDTO
 from infrastructure.mysqldb.mysql_repository import MySqlRepository
 
 
@@ -11,82 +11,51 @@ class TrainingResultRepository(MySqlRepository):
     def __init__(self):
         super().__init__('training_results')
 
-    def insert(self, name: str, description: str, train_model: TrainModel, training_conditions: str, f1_score: float,
-               accuracy: float, loss: float, auc: float, aupr: float, recall: float, precision: float) -> int:
+    def insert(self, training_id: int, training_result_type: int, result_value: float) \
+            -> TrainingResult:
+        training_result_detail = TrainingResult(training_id=training_id,
+                                                training_result_type=training_result_type,
+                                                result_value=result_value)
 
-        data = TrainingResult(name=name,
-                              description=description,
-                              train_model=train_model,
-                              training_conditions=training_conditions,
-                              f1_score=f1_score,
-                              accuracy=accuracy,
-                              loss=loss,
-                              auc=auc,
-                              aupr=aupr,
-                              recall=recall,
-                              precision=precision,
-                              execute_time=datetime.now(timezone.utc))
+        super().insert(training_result_detail)
 
-        id = super().insert(data)
+        return training_result_detail
 
-        return id
+    def insert_if_not_exits(self, training_id: int, training_result_type: int, result_value: float) \
+            -> Union[TrainingResult, None]:
+        is_exists = self.is_exists_training_result(training_id, training_result_type)
 
-    def insert(self, name: str, description: str, train_model: TrainModel, training_conditions: str) \
-            -> int:
-        reduction_data = TrainingResult(name=name,
-                                        description=description,
-                                        train_model=train_model,
-                                        training_conditions=training_conditions,
-                                        f1_score=0.0,
-                                        accuracy=0.0,
-                                        loss=0.0,
-                                        auc=0.0,
-                                        aupr=0.0,
-                                        recall=0.0,
-                                        precision=0.0,
-                                        execute_time=datetime.now(timezone.utc))
+        if is_exists:
+            return None
 
-        id = super().insert(reduction_data)
+        data = self.insert(training_id, training_result_type, result_value)
 
-        return id
+        return data
 
-    def update(self, id: int, f1_score: float, accuracy: float, loss: float, auc: float, aupr: float,
-               recall: float, precision: float):
+    def insert_batch_check_duplicate(self, training_results: list[TrainingResult]):
+        super().insert_batch_check_duplicate(training_results, [TrainingResult.result_value])
 
-        training_result = self.get_training_result_by_id(id)
-
-        training_result.f1_score = f1_score
-        training_result.accuracy = accuracy
-        training_result.loss = loss
-        training_result.auc = auc
-        training_result.aupr = aupr
-        training_result.recall = recall
-        training_result.precision = precision
-
-        update_columns = ['f1_score', 'accuracy', 'loss', 'auc', 'aupr', 'recall', 'precision']
-
-        rowcount = super().update(training_result, update_columns)
-
-        return rowcount
-
-    def get_training_result_by_id(self, id) -> TrainingResult:
-        result, _ = self.call_procedure('GetTrainingResultById', [id])
-        return training_result_mapper.map_training_result(result)
-
-    def get_training_result_count(self, train_model: TrainModel):
-        model_value = train_model.value if train_model is not None else None
-
-        result, _ = self.call_procedure('GetTrainingResultCount', [model_value])
-
-        return result[0][0]
-
-    def find_all_training_result(self, train_model: TrainModel, start: int, length: int) \
-            -> list[TrainingResultDTO]:
-        model_value = train_model.value if train_model is not None else None
-
-        result, _ = self.call_procedure('FindAllTrainingResults',
-                                        [model_value, start, length])
+    def is_exists_training_result(self, training_id: int, training_result_type: int) \
+            -> bool:
+        result, _ = self.call_procedure('FindTrainingResult', [training_id, training_result_type])
 
         training_result = result[0]
 
-        return training_result_mapper.map_training_results(training_result)
+        return (training_result is not None and
+                (training_result != []
+                 if isinstance(training_result, list)
+                 else bool(training_result)))
+
+    def find_all_training_result_details(self, train_id: int) -> list[TrainingResultDetailDTO]:
+        result, _ = self.call_procedure('FindAllTrainingResults', [train_id])
+
+        training_result = result[0]
+
+        return training_mapper.map_training_results(training_result)
+
+    def get_training_result(self, train_id: int, training_result_type: TrainingResultType) -> TrainingResult:
+        result, _ = self.call_procedure('FindTrainingResult', [train_id, training_result_type.value])
+
+        training_result = result[0][0]
+
+        return training_mapper.map_training_result(training_result)

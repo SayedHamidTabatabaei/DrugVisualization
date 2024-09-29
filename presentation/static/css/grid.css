@@ -1,5 +1,5 @@
 .dataTables_wrapper {
-    width: 1000px;
+    width: 100%;
     margin: 20px 0;
 }
 .datagrid-table {
@@ -19,7 +19,7 @@
 }
 
 .row {
-    margin-right: -350px !important;
+    margin-right: 0 !important;
 }
 
 .ten-percent-width {

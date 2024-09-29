@@ -41,6 +41,6 @@ function removeStatusStrip(ok) {
             setTimeout(() => {
                 document.body.removeChild(statusStrip);
             }, 500);  // Time for opacity transition
-        }, 3000);  // Wait before starting fade out
+        }, 1000);  // Wait before starting fade out
     }
 }

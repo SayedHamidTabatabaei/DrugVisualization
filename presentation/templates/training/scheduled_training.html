@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 
-{% block title %}Train History{% endblock %}
+{% block title %}Scheduled Training - {% endblock %}
 
 {% block style %}
 <link rel="stylesheet" href="{{ url_for('static', filename='css/grid.css') }}">
@@ -24,10 +24,10 @@
 <!-- Dropdown and button -->
 <div>
     <div class="property-container">
-        <label for="trainModelSelect" class="label-for">Choose a property:</label>
+        <label for="trainModelSelect" class="label-for">Choose a model:</label>
 
         <select id="trainModelSelect">
-            <option value="">--Select a property--</option>
+            <option value="">--Select a model--</option>
             <!-- Add more options as needed -->
         </select>
 

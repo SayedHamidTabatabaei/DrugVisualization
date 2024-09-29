@@ -1,17 +1,10 @@
 from dataclasses import dataclass
 
-from core.repository_models.training_result_detail_summary_dto import TrainingResultDetailSummaryDTO
+from common.enums.training_result_type import TrainingResultType
 
 
 @dataclass
 class TrainingResultSummaryDTO:
 
-    f1_score: float
-    accuracy: float
-    loss: float
-    auc: float
-    aupr: float
-    recall: float
-    precision: float
-    model: bytes
-    training_result_details: list[TrainingResultDetailSummaryDTO]
+    training_result_type: TrainingResultType
+    result_value: float

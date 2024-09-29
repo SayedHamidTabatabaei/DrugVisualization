@@ -5,20 +5,21 @@ from tensorflow.keras.models import Sequential
 
 from businesses.trains.train_plan_base import TrainPlanBase
 from common.enums.train_models import TrainModel
+from core.models.training_parameter_model import TrainingParameterModel
 from core.repository_models.training_data_dto import TrainingDataDTO
-from core.repository_models.training_result_summary_dto import TrainingResultSummaryDTO
+from core.repository_models.training_summary_dto import TrainingSummaryDTO
 
 train_model = TrainModel.SimpleOneInput
 
 
 class TrainPlan1(TrainPlanBase):
 
-    def train(self, data: list[list[TrainingDataDTO]], train_id) -> TrainingResultSummaryDTO:
+    def train(self, parameters: TrainingParameterModel, data: list[list[TrainingDataDTO]]) -> TrainingSummaryDTO:
 
         data = data[0]
 
         # Prepare input for the model
-        x_pairs = np.array([np.concatenate((item.reduction_values_1, item.reduction_values_2)) for item in data])
+        x_pairs = np.array([item.concat_values for item in data])
 
         # Example labels (replace this with your actual interaction data)
         y = np.array([item.interaction_type for item in data])
@@ -55,7 +56,7 @@ class TrainPlan1(TrainPlanBase):
         # Train the model
         history = model.fit(x_train, y_train, epochs=20, batch_size=32, validation_data=(x_test, y_test))
 
-        super().plot_accuracy(history, train_id)
-        super().plot_loss(history, train_id)
+        super().plot_accuracy(history, parameters.train_id)
+        super().plot_loss(history, parameters.train_id)
 
         return super().calculate_evaluation_metrics(model, x_test, y_test)

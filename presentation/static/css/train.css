@@ -1,0 +1,8 @@
+.form-elements {
+    display: flex;
+    flex-direction: column;
+}
+
+#test-algorithm-label {
+    margin-left: auto;
+}

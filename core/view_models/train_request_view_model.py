@@ -14,6 +14,7 @@ class TrainRequestViewModel:
     train_model: TrainModel
     name: str
     description: str
+    is_test_algorithm: bool
     substructure_similarity: Optional[SimilarityType] = field(default=None)
     substructure_reduction: Optional[ReductionCategory] = field(default=None)
     target_similarity: Optional[SimilarityType] = field(default=None)
@@ -55,6 +56,7 @@ class TrainRequestViewModel:
             train_model=TrainModel[data.get('train_model')],
             name=data.get('model_name'),
             description=data.get('model_description'),
+            is_test_algorithm=data.get('is_test_algorithm'),
             substructure_similarity=SimilarityType[data['substructure_similarity']] if 'substructure_similarity' in data and data['substructure_similarity'] else None,
             substructure_reduction=ReductionCategory[data['substructure_reduction']] if 'substructure_reduction' in data and data['substructure_reduction'] else None,
             target_similarity=SimilarityType[data['target_similarity']] if 'target_similarity' in data and data['target_similarity'] else None,

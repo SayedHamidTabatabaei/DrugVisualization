@@ -27,7 +27,7 @@ header {
     display: flex;
     flex: 1;
     width: 100%;
-    max-width: 1700px !important;
+    max-width: 1900px !important;
     margin: 20px 0 !important;
 }
 
@@ -146,6 +146,7 @@ footer p {
 .property-container {
     display: flex;
     align-items: center;
+    /*justify-content: space-between;*/
     margin-top: 10px;
 }
 

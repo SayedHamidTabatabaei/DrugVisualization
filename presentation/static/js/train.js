@@ -51,6 +51,7 @@ function find_body(){
 
     body.model_name = document.getElementById('modelName').value
     body.model_description = document.getElementById('modelDescription').value
+    body.is_test_algorithm = document.getElementById('test-algorithm-check').checked;
 
     if(document.getElementById('substructure-check').checked)
     {
@@ -153,7 +154,6 @@ function find_body(){
         body.classification_description_embedding = find_select_value('classification-description-embedding-select');
         body.classification_description_reduction = find_select_value('classification-description-reduction-select');
     }
-
 
     return body;
 }

@@ -55,7 +55,7 @@ class SimilarityBusiness(BaseBusiness):
         unique_drugs_1 = sorted({similarity.drug_1 for similarity in similarities})
         unique_drugs_2 = sorted({similarity.drug_2 for similarity in similarities})
 
-        matrix = [[0] * (len(unique_drugs_2) + 1) for _ in range(len(unique_drugs_1))]
+        matrix = [[0 for _ in range(len(unique_drugs_2) + 1)] for _ in range(len(unique_drugs_1))]
 
         columns = [''] * (len(unique_drugs_2) + 1)
         columns[0] = 'DrugBankId'

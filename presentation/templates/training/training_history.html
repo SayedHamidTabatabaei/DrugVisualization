@@ -15,6 +15,7 @@
 <script src="{{ url_for('static', filename='js/fill_train_model_dropdown.js') }}"></script>
 <script src="{{ url_for('static', filename='js/train_history.js') }}"></script>
 <script src="{{ url_for('static', filename='js/condition_modal.js') }}"></script>
+<script src="{{ url_for('static', filename='js/data_report_modal.js') }}"></script>
 {% endblock %}
 
 
@@ -38,17 +39,54 @@
     <table id="trainHistoryTable" class="datagrid-table; display">
         <thead>
             <tr>
-                <th>Id</th>
-                <th>Train model</th>
-                <th>F1 Score</th>
-                <th>Accuracy</th>
-                <th>Loss</th>
-                <th>AUC</th>
-                <th>AUPR</th>
-                <th>Recall</th>
-                <th>Precision</th>
-                <th>Execute Time</th>
-                <th>Actions</th>
+                <th rowspan="2">Id</th>
+                <th rowspan="2">Train model</th>
+                <th rowspan="2">Accuracy</th>
+                <th rowspan="2">Loss</th>
+
+                <!-- F1 Score Group -->
+                <th colspan="3">F1 Score</th>
+
+                <!-- AUC Group -->
+                <th colspan="3">AUC</th>
+
+                <!-- AUPR Group -->
+                <th colspan="3">AUPR</th>
+
+                <!-- Recall Group -->
+                <th colspan="3">Recall</th>
+
+                <!-- Precision Group -->
+                <th colspan="3">Precision</th>
+
+<!--                <th rowspan="2">Execute Time</th>-->
+                <th rowspan="2">Actions</th>
+            </tr>
+            <tr>
+                <!-- F1 Score sub-columns -->
+                <th>W</th>
+                <th>Mi</th>
+                <th>Ma</th>
+
+                <!-- AUC sub-columns -->
+                <th>W</th>
+                <th>Mi</th>
+                <th>Ma</th>
+
+                <!-- AUPR sub-columns -->
+                <th>W</th>
+                <th>Mi</th>
+                <th>Ma</th>
+
+                <!-- Recall sub-columns -->
+                <th>W</th>
+                <th>Mi</th>
+                <th>Ma</th>
+
+                <!-- Precision sub-columns -->
+                <th>W</th>
+                <th>Mi</th>
+                <th>Ma</th>
             </tr>
         </thead>
         <tbody>

@@ -26,7 +26,7 @@ class JobBusiness:
             return
 
         job_id = self.job_repository.insert(JobType.Training, datetime.now(timezone.utc))
-
+        #
         # try:
         self.training_business.run_trainings(training_id)
         # except Exception as e:

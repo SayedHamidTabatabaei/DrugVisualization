@@ -1,8 +1,11 @@
 import base64
 import io
+import json
 import mimetypes
 import os
 import pickle
+import random
+from collections import defaultdict
 from datetime import datetime, timezone
 
 import matplotlib.colors as mcolors
@@ -19,8 +22,11 @@ from common.enums.reduction_category import ReductionCategory
 from common.enums.similarity_type import SimilarityType
 from common.enums.text_type import TextType
 from common.enums.train_models import TrainModel
-from common.helpers import math_helper, embedding_helper
+from common.enums.training_result_type import TrainingResultType
+from common.helpers import math_helper, embedding_helper, json_helper
+from core.domain.training_result import TrainingResult
 from core.domain.training_result_detail import TrainingResultDetail
+from core.models.training_parameter_model import TrainingParameterModel
 from core.view_models.train_request_view_model import TrainRequestViewModel
 from core.repository_models.compare_plot_dto import ComparePlotDTO
 from core.repository_models.interaction_dto import InteractionDTO
@@ -34,13 +40,14 @@ from core.view_models.training_history_details_view_model import TrainingHistory
 from core.view_models.training_history_view_model import TrainingHistoryViewModel
 from core.view_models.training_scheduled_view_model import TrainingScheduledViewModel
 from infrastructure.repositories.reduction_data_repository import ReductionDataRepository
+from infrastructure.repositories.training_repository import TrainingRepository
 from infrastructure.repositories.training_result_detail_repository import TrainingResultDetailRepository
 from infrastructure.repositories.training_result_repository import TrainingResultRepository
 from infrastructure.repositories.training_scheduled_repository import TrainingScheduledRepository
 
 
 def map_training_data(interactions: list[InteractionDTO], reductions: list[ReductionDataDTO], category: Category) -> list[TrainingDataDTO]:
-    reduction_dict = {reduction.drug_id: [val for val in reduction.reduction_value[1:-1].split(',')]
+    reduction_dict = {reduction.drug_id: [float(val) for val in reduction.reduction_value[1:-1].split(',')]
                       for reduction in reductions}
 
     training_data = []
@@ -67,12 +74,22 @@ def map_training_history_view_model(results: list[TrainingResultDTO]) -> list[Tr
         train_model=item.train_model.name,
         training_conditions=item.training_conditions,
         accuracy=item.accuracy,
-        f1_score=item.f1_score,
-        auc=item.auc,
-        aupr=item.aupr,
         loss=item.loss,
-        recall=item.recall,
-        precision=item.precision,
+        f1_score_weighted=item.f1_score_weighted,
+        f1_score_micro=item.f1_score_micro,
+        f1_score_macro=item.f1_score_macro,
+        auc_weighted=item.auc_weighted,
+        auc_micro=item.auc_micro,
+        auc_macro=item.auc_macro,
+        aupr_weighted=item.aupr_weighted,
+        aupr_micro=item.aupr_micro,
+        aupr_macro=item.aupr_macro,
+        recall_weighted=item.recall_weighted,
+        recall_micro=item.recall_micro,
+        recall_macro=item.recall_macro,
+        precision_weighted=item.precision_weighted,
+        precision_micro=item.precision_micro,
+        precision_macro=item.precision_macro,
         execute_time=item.execute_time
     ) for item in results]
 
@@ -107,11 +124,13 @@ colors = list(mcolors.TABLEAU_COLORS.values())
 class TrainingBusiness(BaseBusiness):
     @inject
     def __init__(self, reduction_repository: ReductionDataRepository,
+                 training_repository: TrainingRepository,
                  training_result_repository: TrainingResultRepository,
                  training_result_detail_repository: TrainingResultDetailRepository,
                  training_scheduled_repository: TrainingScheduledRepository):
         BaseBusiness.__init__(self)
         self.reduction_repository = reduction_repository
+        self.training_repository = training_repository
         self.training_result_repository = training_result_repository
         self.training_result_detail_repository = training_result_detail_repository
         self.training_scheduled_repository = training_scheduled_repository
@@ -119,9 +138,8 @@ class TrainingBusiness(BaseBusiness):
 
     def schedule_train(self, train_request: TrainRequestViewModel):
 
-        self.training_scheduled_repository.insert(train_request.name, train_request.description,
-                                                  train_request.train_model, train_request.to_json(),
-                                                  datetime.now(timezone.utc))
+        self.training_scheduled_repository.insert(train_request.name, train_request.description, train_request.train_model, train_request.is_test_algorithm,
+                                                  train_request.to_json(), datetime.now(timezone.utc))
 
     def run_trainings(self, training_id: int = None):
 
@@ -137,32 +155,29 @@ class TrainingBusiness(BaseBusiness):
 
     def train(self, train_schedule: TrainingScheduledDTO):
 
-        train_id = self.training_result_repository.insert(train_schedule.name, train_schedule.description,
-                                                          train_schedule.train_model,
-                                                          train_schedule.training_conditions)
+        train_id = self.training_repository.insert(train_schedule.name, train_schedule.description,
+                                                   train_schedule.train_model, train_schedule.is_test_algorithm,
+                                                   train_schedule.training_conditions)
 
-        instance = train_instances.get_instance(train_schedule.train_model)
-
-        data = self.prepare_data(TrainRequestViewModel.from_json(train_schedule.training_conditions))
+        data = self.prepare_data(TrainRequestViewModel.from_json(train_schedule.training_conditions), train_schedule.is_test_algorithm)
 
         print('Start training...')
-        training_result = instance.train(data, train_id)
+        instance = train_instances.get_instance(train_schedule.train_model)
+        training_result = instance.train(TrainingParameterModel(train_id, train_schedule.is_test_algorithm), data)
 
-        print('Updating...')
-        self.training_result_repository.update(train_id,
-                                               training_result.f1_score,
-                                               training_result.accuracy,
-                                               training_result.loss,
-                                               training_result.auc,
-                                               training_result.aupr,
-                                               training_result.recall,
-                                               training_result.precision)
+        print('Update...')
+        self.training_repository.update(train_id, json.dumps(training_result.data_report, default=json_helper.convert_numpy_types))
+
+        print('Training Results...')
+        training_results = [TrainingResult(training_id=train_id, training_result_type=item.training_result_type, result_value=item.result_value)
+                            for item in training_result.training_results]
+        self.training_result_repository.insert_batch_check_duplicate(training_results)
 
         model_binary = pickle.dumps(training_result.model)
         model = pickle.loads(model_binary)
         model.save(f'training_models/{train_id}.h5')
 
-        train_result_details = [TrainingResultDetail(training_result_id=train_id,
+        train_result_details = [TrainingResultDetail(training_id=train_id,
                                                      training_label=item.training_label,
                                                      f1_score=item.f1_score,
                                                      accuracy=item.accuracy,
@@ -177,8 +192,7 @@ class TrainingBusiness(BaseBusiness):
         self.training_scheduled_repository.delete(train_schedule.id)
 
     def get_training_data(self, similarity_type: SimilarityType, category: Category,
-                          reduction_category: ReductionCategory) -> list[TrainingDataDTO]:
-        interactions = self.reduction_repository.find_interactions(True, True, True, True)
+                          reduction_category: ReductionCategory, interactions: list[InteractionDTO]) -> list[TrainingDataDTO]:
 
         reductions = self.reduction_repository.find_reductions(reduction_category, similarity_type, category,
                                                                True, True, True, True,
@@ -191,106 +205,111 @@ class TrainingBusiness(BaseBusiness):
 
         return results
 
-    def prepare_data(self, train_request):
+    def prepare_data(self, train_request: TrainRequestViewModel, is_test_algorithm: bool):
 
         data = []
+
+        interactions = self.reduction_repository.find_interactions(True, True, True, True)
+
+        if is_test_algorithm:
+            interactions = self.stratified_sample(interactions, test_size=0.1, min_samples_per_category=5)
 
         if train_request.substructure_similarity and train_request.substructure_reduction:
             print('Fetching Substructure data!')
             data.append(self.get_training_data(train_request.substructure_similarity, Category.Substructure,
-                                               train_request.substructure_reduction))
+                                               train_request.substructure_reduction, interactions))
 
         if train_request.target_similarity and train_request.target_reduction:
             print('Fetching Target data!')
             data.append(self.get_training_data(train_request.target_similarity, Category.Target,
-                                               train_request.target_reduction))
+                                               train_request.target_reduction, interactions))
 
         if train_request.enzyme_similarity and train_request.enzyme_reduction:
             print('Fetching Enzyme data!')
             data.append(self.get_training_data(train_request.enzyme_similarity, Category.Enzyme,
-                                               train_request.enzyme_reduction))
+                                               train_request.enzyme_reduction, interactions))
 
         if train_request.pathway_similarity and train_request.pathway_reduction:
             print('Fetching Pathway data!')
             data.append(self.get_training_data(train_request.pathway_similarity, Category.Pathway,
-                                               train_request.pathway_reduction))
+                                               train_request.pathway_reduction, interactions))
 
         if train_request.description_embedding and train_request.description_reduction:
             print('Fetching Description data!')
             category = embedding_helper.find_category(train_request.description_embedding, TextType.Description)
-            data.append(self.get_training_data(SimilarityType.Original, category, train_request.description_reduction))
+            data.append(self.get_training_data(SimilarityType.Original, category, train_request.description_reduction, interactions))
 
         if train_request.indication_embedding and train_request.indication_reduction:
             print('Fetching Indication data!')
             category = embedding_helper.find_category(train_request.indication_embedding, TextType.Indication)
-            data.append(self.get_training_data(SimilarityType.Original, category, train_request.indication_reduction))
+            data.append(self.get_training_data(SimilarityType.Original, category, train_request.indication_reduction, interactions))
 
         if train_request.pharmacodynamics_embedding and train_request.pharmacodynamics_reduction:
             print('Fetching Pharmacodynamics data!')
             category = embedding_helper.find_category(train_request.pharmacodynamics_embedding,
                                                       TextType.Pharmacodynamics)
             data.append(self.get_training_data(SimilarityType.Original, category,
-                                               train_request.pharmacodynamics_reduction))
+                                               train_request.pharmacodynamics_reduction, interactions))
 
         if train_request.mechanism_of_action_embedding and train_request.mechanism_of_action_reduction:
             print('Fetching Mechanism of action data!')
             category = embedding_helper.find_category(train_request.mechanism_of_action_embedding,
                                                       TextType.MechanismOfAction)
             data.append(self.get_training_data(SimilarityType.Original, category,
-                                               train_request.mechanism_of_action_reduction))
+                                               train_request.mechanism_of_action_reduction, interactions))
 
         if train_request.toxicity_embedding and train_request.toxicity_reduction:
             print('Fetching Toxicity data!')
             category = embedding_helper.find_category(train_request.toxicity_embedding, TextType.Toxicity)
-            data.append(self.get_training_data(SimilarityType.Original, category, train_request.toxicity_reduction))
+            data.append(self.get_training_data(SimilarityType.Original, category, train_request.toxicity_reduction, interactions))
 
         if train_request.metabolism_embedding and train_request.metabolism_reduction:
             print('Fetching Metabolism data!')
             category = embedding_helper.find_category(train_request.metabolism_embedding, TextType.Metabolism)
-            data.append(self.get_training_data(SimilarityType.Original, category, train_request.metabolism_reduction))
+            data.append(self.get_training_data(SimilarityType.Original, category, train_request.metabolism_reduction, interactions))
 
         if train_request.absorption_embedding and train_request.absorption_reduction:
             print('Fetching Absorption data!')
             category = embedding_helper.find_category(train_request.absorption_embedding, TextType.Absorption)
-            data.append(self.get_training_data(SimilarityType.Original, category, train_request.absorption_reduction))
+            data.append(self.get_training_data(SimilarityType.Original, category, train_request.absorption_reduction, interactions))
 
         if train_request.half_life_embedding and train_request.half_life_reduction:
             print('Fetching Half life data!')
             category = embedding_helper.find_category(train_request.half_life_embedding, TextType.HalfLife)
-            data.append(self.get_training_data(SimilarityType.Original, category, train_request.half_life_reduction))
+            data.append(self.get_training_data(SimilarityType.Original, category, train_request.half_life_reduction, interactions))
 
         if train_request.protein_binding_embedding and train_request.protein_binding_reduction:
             print('Fetching Protein binding data!')
             category = embedding_helper.find_category(train_request.protein_binding_embedding,
                                                       TextType.ProteinBinding)
             data.append(self.get_training_data(SimilarityType.Original, category,
-                                               train_request.protein_binding_reduction))
+                                               train_request.protein_binding_reduction, interactions))
 
         if train_request.route_of_elimination_embedding and train_request.route_of_elimination_reduction:
             print('Fetching Route of elimination data!')
             category = embedding_helper.find_category(train_request.route_of_elimination_embedding,
                                                       TextType.RouteOfElimination)
             data.append(self.get_training_data(SimilarityType.Original, category,
-                                               train_request.route_of_elimination_reduction))
+                                               train_request.route_of_elimination_reduction, interactions))
 
         if train_request.volume_of_distribution_embedding and train_request.volume_of_distribution_reduction:
             print('Fetching Volume of distribution data!')
             category = embedding_helper.find_category(train_request.volume_of_distribution_embedding,
                                                       TextType.VolumeOfDistribution)
             data.append(self.get_training_data(SimilarityType.Original, category,
-                                               train_request.volume_of_distribution_reduction))
+                                               train_request.volume_of_distribution_reduction, interactions))
 
         if train_request.clearance_embedding and train_request.clearance_reduction:
             print('Fetching Clearance data!')
             category = embedding_helper.find_category(train_request.clearance_embedding, TextType.Clearance)
-            data.append(self.get_training_data(SimilarityType.Original, category, train_request.clearance_reduction))
+            data.append(self.get_training_data(SimilarityType.Original, category, train_request.clearance_reduction, interactions))
 
         if train_request.classification_description_embedding and train_request.classification_description_reduction:
             print('Fetching Classification Description data!')
             category = embedding_helper.find_category(train_request.classification_description_embedding,
                                                       TextType.ClassificationDescription)
             data.append(self.get_training_data(SimilarityType.Original, category,
-                                               train_request.classification_description_reduction))
+                                               train_request.classification_description_reduction, interactions))
 
         return data
 
@@ -302,27 +321,33 @@ class TrainingBusiness(BaseBusiness):
 
     def get_history(self, train_model: TrainModel, start: int, length: int):
 
-        total_number = self.training_result_repository.get_training_result_count(train_model)
+        total_number = self.training_repository.get_training_count(train_model)
 
-        results = self.training_result_repository.find_all_training_result(train_model, start, length)
+        results = self.training_repository.find_all_training(train_model, start, length)
 
         return map_training_history_view_model(results), total_number[0]
 
-    def get_history_details(self, train_result_id: int):
+    def get_history_details(self, train_id: int):
 
-        results = self.training_result_detail_repository.find_all_training_result_details(train_result_id)
+        results = self.training_result_detail_repository.find_all_training_result_details(train_id)
 
         return map_training_history_details_view_model(results)
 
-    def get_history_conditions(self, train_result_id: int):
+    def get_history_conditions(self, train_id: int):
 
-        result = self.training_result_repository.get_training_result_by_id(train_result_id)
+        result = self.training_repository.get_training_by_id(train_id)
 
         return result.training_conditions
 
-    def get_history_plots(self, train_result_id: int) -> list[ImageInfoViewModel]:
+    def get_history_data_reports(self, train_id: int):
 
-        image_folder = f'{self.plot_folder_name}/{train_result_id}'
+        result = self.training_repository.get_training_by_id(train_id)
+
+        return result.data_report
+
+    def get_history_plots(self, train_id: int) -> list[ImageInfoViewModel]:
+
+        image_folder = f'{self.plot_folder_name}/{train_id}'
 
         image_files: list[ImageInfoViewModel] = []
 
@@ -421,69 +446,149 @@ class TrainingBusiness(BaseBusiness):
 
         return plt
 
-    def get_plot_info(self, compare_plot_type: ComparePlotType, train_result_ids: list[int]) -> ComparePlotDTO:
+    def get_plot_info(self, compare_plot_type: ComparePlotType, train_ids: list[int]) -> ComparePlotDTO:
         match compare_plot_type:
             case ComparePlotType.Accuracy:
-                data_result = [self.training_result_repository.get_training_result_by_id(train_result_id)
-                               for train_result_id in train_result_ids]
+                data_result = [self.training_result_repository.get_training_result(train_id, TrainingResultType.accuracy)
+                               for train_id in train_ids]
 
                 return ComparePlotDTO(compare_plot_type=compare_plot_type,
-                                      datas=[i.accuracy for i in data_result],
+                                      datas=[i.result_value for i in data_result],
                                       labels=[i.id for i in data_result])
 
             case ComparePlotType.Loss:
-                data_result = [self.training_result_repository.get_training_result_by_id(train_result_id)
-                               for train_result_id in train_result_ids]
+                data_result = [self.training_result_repository.get_training_result(train_id, TrainingResultType.loss)
+                               for train_id in train_ids]
 
                 return ComparePlotDTO(compare_plot_type=compare_plot_type,
-                                      datas=[i.loss for i in data_result],
+                                      datas=[i.result_value for i in data_result],
                                       labels=[i.id for i in data_result])
 
-            case ComparePlotType.F1_Score:
-                data_result = [self.training_result_repository.get_training_result_by_id(train_result_id)
-                               for train_result_id in train_result_ids]
+            case ComparePlotType.F1_Score_Weighted:
+                data_result = [self.training_result_repository.get_training_result(train_id, TrainingResultType.f1_score_weighted)
+                               for train_id in train_ids]
 
                 return ComparePlotDTO(compare_plot_type=compare_plot_type,
-                                      datas=[i.f1_score for i in data_result],
+                                      datas=[i.result_value for i in data_result],
                                       labels=[i.id for i in data_result])
 
-            case ComparePlotType.AUC:
-                data_result = [self.training_result_repository.get_training_result_by_id(train_result_id)
-                               for train_result_id in train_result_ids]
+            case ComparePlotType.F1_Score_Micro:
+                data_result = [self.training_result_repository.get_training_result(train_id, TrainingResultType.f1_score_micro)
+                               for train_id in train_ids]
 
                 return ComparePlotDTO(compare_plot_type=compare_plot_type,
-                                      datas=[i.auc for i in data_result],
+                                      datas=[i.result_value for i in data_result],
                                       labels=[i.id for i in data_result])
 
-            case ComparePlotType.AUPR:
-                data_result = [self.training_result_repository.get_training_result_by_id(train_result_id)
-                               for train_result_id in train_result_ids]
+            case ComparePlotType.F1_Score_Macro:
+                data_result = [self.training_result_repository.get_training_result(train_id, TrainingResultType.f1_score_macro)
+                               for train_id in train_ids]
 
                 return ComparePlotDTO(compare_plot_type=compare_plot_type,
-                                      datas=[i.aupr for i in data_result],
+                                      datas=[i.result_value for i in data_result],
                                       labels=[i.id for i in data_result])
 
-            case ComparePlotType.Recall:
-                data_result = [self.training_result_repository.get_training_result_by_id(train_result_id)
-                               for train_result_id in train_result_ids]
+            case ComparePlotType.AUC_Weighted:
+                data_result = [self.training_result_repository.get_training_result(train_id, TrainingResultType.auc_weighted)
+                               for train_id in train_ids]
 
                 return ComparePlotDTO(compare_plot_type=compare_plot_type,
-                                      datas=[i.recall for i in data_result],
+                                      datas=[i.result_value for i in data_result],
                                       labels=[i.id for i in data_result])
 
-            case ComparePlotType.Precision:
-                data_result = [self.training_result_repository.get_training_result_by_id(train_result_id)
-                               for train_result_id in train_result_ids]
+            case ComparePlotType.AUC_Micro:
+                data_result = [self.training_result_repository.get_training_result(train_id, TrainingResultType.auc_micro)
+                               for train_id in train_ids]
 
                 return ComparePlotDTO(compare_plot_type=compare_plot_type,
-                                      datas=[i.precision for i in data_result],
+                                      datas=[i.result_value for i in data_result],
+                                      labels=[i.id for i in data_result])
+
+            case ComparePlotType.AUC_Macro:
+                data_result = [self.training_result_repository.get_training_result(train_id, TrainingResultType.auc_macro)
+                               for train_id in train_ids]
+
+                return ComparePlotDTO(compare_plot_type=compare_plot_type,
+                                      datas=[i.result_value for i in data_result],
+                                      labels=[i.id for i in data_result])
+
+            case ComparePlotType.AUPR_Weighted:
+                data_result = [self.training_result_repository.get_training_result(train_id, TrainingResultType.aupr_weighted)
+                               for train_id in train_ids]
+
+                return ComparePlotDTO(compare_plot_type=compare_plot_type,
+                                      datas=[i.result_value for i in data_result],
+                                      labels=[i.id for i in data_result])
+
+            case ComparePlotType.AUPR_Micro:
+                data_result = [self.training_result_repository.get_training_result(train_id, TrainingResultType.aupr_micro)
+                               for train_id in train_ids]
+
+                return ComparePlotDTO(compare_plot_type=compare_plot_type,
+                                      datas=[i.result_value for i in data_result],
+                                      labels=[i.id for i in data_result])
+
+            case ComparePlotType.AUPR_Macro:
+                data_result = [self.training_result_repository.get_training_result(train_id, TrainingResultType.aupr_macro)
+                               for train_id in train_ids]
+
+                return ComparePlotDTO(compare_plot_type=compare_plot_type,
+                                      datas=[i.result_value for i in data_result],
+                                      labels=[i.id for i in data_result])
+
+            case ComparePlotType.Recall_Weighted:
+                data_result = [self.training_result_repository.get_training_result(train_id, TrainingResultType.recall_weighted)
+                               for train_id in train_ids]
+
+                return ComparePlotDTO(compare_plot_type=compare_plot_type,
+                                      datas=[i.result_value for i in data_result],
+                                      labels=[i.id for i in data_result])
+
+            case ComparePlotType.Recall_Micro:
+                data_result = [self.training_result_repository.get_training_result(train_id, TrainingResultType.recall_micro)
+                               for train_id in train_ids]
+
+                return ComparePlotDTO(compare_plot_type=compare_plot_type,
+                                      datas=[i.result_value for i in data_result],
+                                      labels=[i.id for i in data_result])
+
+            case ComparePlotType.Recall_Macro:
+                data_result = [self.training_result_repository.get_training_result(train_id, TrainingResultType.recall_macro)
+                               for train_id in train_ids]
+
+                return ComparePlotDTO(compare_plot_type=compare_plot_type,
+                                      datas=[i.result_value for i in data_result],
+                                      labels=[i.id for i in data_result])
+
+            case ComparePlotType.Precision_Weighted:
+                data_result = [self.training_result_repository.get_training_result(train_id, TrainingResultType.precision_weighted)
+                               for train_id in train_ids]
+
+                return ComparePlotDTO(compare_plot_type=compare_plot_type,
+                                      datas=[i.result_value for i in data_result],
+                                      labels=[i.id for i in data_result])
+
+            case ComparePlotType.Precision_Micro:
+                data_result = [self.training_result_repository.get_training_result(train_id, TrainingResultType.precision_micro)
+                               for train_id in train_ids]
+
+                return ComparePlotDTO(compare_plot_type=compare_plot_type,
+                                      datas=[i.result_value for i in data_result],
+                                      labels=[i.id for i in data_result])
+
+            case ComparePlotType.Precision_Macro:
+                data_result = [self.training_result_repository.get_training_result(train_id, TrainingResultType.precision_macro)
+                               for train_id in train_ids]
+
+                return ComparePlotDTO(compare_plot_type=compare_plot_type,
+                                      datas=[i.result_value for i in data_result],
                                       labels=[i.id for i in data_result])
 
             case ComparePlotType.Details_Accuracy:
 
                 data_result_details = [
-                    self.training_result_detail_repository.find_all_training_result_details(train_result_id)
-                    for train_result_id in train_result_ids]
+                    self.training_result_detail_repository.find_all_training_result_details(train_id)
+                    for train_id in train_ids]
 
                 return ComparePlotDTO(compare_plot_type=compare_plot_type,
                                       datas=[[i.accuracy for i in r] for r in data_result_details],
@@ -492,8 +597,8 @@ class TrainingBusiness(BaseBusiness):
             case ComparePlotType.Details_F1_Score:
 
                 data_result_details = [
-                    self.training_result_detail_repository.find_all_training_result_details(train_result_id)
-                    for train_result_id in train_result_ids]
+                    self.training_result_detail_repository.find_all_training_result_details(train_id)
+                    for train_id in train_ids]
 
                 return ComparePlotDTO(compare_plot_type=compare_plot_type,
                                       datas=[[i.f1_score for i in r] for r in data_result_details],
@@ -502,8 +607,8 @@ class TrainingBusiness(BaseBusiness):
             case ComparePlotType.Details_AUC:
 
                 data_result_details = [
-                    self.training_result_detail_repository.find_all_training_result_details(train_result_id)
-                    for train_result_id in train_result_ids]
+                    self.training_result_detail_repository.find_all_training_result_details(train_id)
+                    for train_id in train_ids]
 
                 return ComparePlotDTO(compare_plot_type=compare_plot_type,
                                       datas=[[i.auc for i in r] for r in data_result_details],
@@ -512,8 +617,8 @@ class TrainingBusiness(BaseBusiness):
             case ComparePlotType.Details_AUPR:
 
                 data_result_details = [
-                    self.training_result_detail_repository.find_all_training_result_details(train_result_id)
-                    for train_result_id in train_result_ids]
+                    self.training_result_detail_repository.find_all_training_result_details(train_id)
+                    for train_id in train_ids]
 
                 return ComparePlotDTO(compare_plot_type=compare_plot_type,
                                       datas=[[i.aupr for i in r] for r in data_result_details],
@@ -522,8 +627,8 @@ class TrainingBusiness(BaseBusiness):
             case ComparePlotType.Details_Recall:
 
                 data_result_details = [
-                    self.training_result_detail_repository.find_all_training_result_details(train_result_id)
-                    for train_result_id in train_result_ids]
+                    self.training_result_detail_repository.find_all_training_result_details(train_id)
+                    for train_id in train_ids]
 
                 return ComparePlotDTO(compare_plot_type=compare_plot_type,
                                       datas=[[i.recall for i in r] for r in data_result_details],
@@ -532,9 +637,31 @@ class TrainingBusiness(BaseBusiness):
             case ComparePlotType.Details_Precision:
 
                 data_result_details = [
-                    self.training_result_detail_repository.find_all_training_result_details(train_result_id)
-                    for train_result_id in train_result_ids]
+                    self.training_result_detail_repository.find_all_training_result_details(train_id)
+                    for train_id in train_ids]
 
                 return ComparePlotDTO(compare_plot_type=compare_plot_type,
                                       datas=[[i.precision for i in r] for r in data_result_details],
                                       labels=[r[0].training_result_id for r in data_result_details if len(r) > 0])
+
+    @staticmethod
+    def group_by_category(data):
+        grouped_data = defaultdict(list)
+        for item in data:
+            grouped_data[item.interaction_type].append(item)
+        return grouped_data
+
+    def stratified_sample(self, data: list[InteractionDTO], test_size=0.1, min_samples_per_category=5) -> list[InteractionDTO]:
+        grouped_data = self.group_by_category(data)
+
+        test_data = []
+
+        for category, items in grouped_data.items():
+            sample_size = max(int(len(items) * test_size), min_samples_per_category)
+
+            if len(items) <= sample_size:
+                test_data.extend(items)
+            else:
+                test_data.extend(random.sample(items, sample_size))
+
+        return test_data

@@ -85,63 +85,59 @@ class TrainingController(MethodView):
 
     @route('get_history_details', methods=['GET'])
     def get_history_details(self):
-        train_result_id = request.args.get('trainHistoryId')
+        train_id = request.args.get('trainHistoryId')
 
-        train_history_details = self.training_business.get_history_details(int(train_result_id))
+        train_history_details = self.training_business.get_history_details(int(train_id))
 
         if train_history_details:
             return jsonify({'data': train_history_details, 'status': True})
         else:
-            return jsonify({'data': train_history_details,
-                            'message': "No data found!", 'status': False})
+            return jsonify({'data': train_history_details, 'message': "No data found!", 'status': False})
 
     @route('get_history_conditions', methods=['GET'])
     def get_history_conditions(self):
-        train_result_id = request.args.get('trainHistoryId')
+        train_id = request.args.get('trainHistoryId')
 
-        train_history_conditions = self.training_business.get_history_conditions(int(train_result_id))
+        train_history_conditions = self.training_business.get_history_conditions(int(train_id))
 
         if train_history_conditions:
             return jsonify({'data': train_history_conditions, 'status': True})
         else:
-            return jsonify({'data': train_history_conditions,
-                            'message': "No data found!", 'status': False})
+            return jsonify({'data': train_history_conditions, 'message': "No data found!", 'status': False})
+
+    @route('get_history_data_reports', methods=['GET'])
+    def get_history_data_reports(self):
+        train_id = request.args.get('trainHistoryId')
+
+        train_history_data_reports = self.training_business.get_history_data_reports(int(train_id))
+
+        if train_history_data_reports:
+            return jsonify({'data': train_history_data_reports, 'status': True})
+        else:
+            return jsonify({'data': train_history_data_reports, 'message': "No data found!", 'status': False})
 
     @route('get_history_plots', methods=['GET'])
     def get_history_plots(self):
-        train_result_id = request.args.get('trainHistoryId')
+        train_id = request.args.get('trainHistoryId')
 
-        images = self.training_business.get_history_plots(int(train_result_id))
+        images = self.training_business.get_history_plots(int(train_id))
 
         if images:
             return jsonify({'data': images, 'status': True})
         else:
             return jsonify({'data': images, 'message': "No images found!", 'status': False})
 
-    # @route('get_comparing_plots', methods=['GET'])
-    # def get_comparing_plots(self):
-    #
-    #     train_result_ids = request.args.get('trainHistoryIds')
-    #
-    #     images = self.training_business.get_comparing_plots([int(train_result_id) for train_result_id in
-    #                                                          train_result_ids.split(',')])
-    #
-    #     if images:
-    #         return jsonify({'data': images, 'status': True})
-    #     else:
-    #         return jsonify({'data': images, 'message': "No images found!", 'status': False})
-
     @route('get_comparing_plot', methods=['GET'])
     def get_comparing_plot(self):
 
-        train_result_ids = request.args.get('trainHistoryIds')
+        train_ids = request.args.get('trainHistoryIds')
         compare_plot_type = ComparePlotType.get_enum_from_string(request.args.get('ComparePlotType'))
 
-        if not train_result_ids:
+        if not train_ids:
             return jsonify({'message': "No images found!", 'status': False})
 
-        image = self.training_business.get_comparing_plot([int(train_result_id) for train_result_id in
-                                                           train_result_ids.split(',')],
+        image = self.training_business.get_comparing_plot([int(train_id) for train_id in
+                                                           train_ids.split(',')],
                                                           compare_plot_type)
 
         if image:

@@ -1,6 +1,8 @@
 import os
 import time
+from typing import overload
 
+import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
 import tensorflow as tf
@@ -12,9 +14,12 @@ from tensorflow.keras.utils import to_categorical
 from tqdm import tqdm
 
 from common.enums.train_models import TrainModel
+from common.enums.training_result_type import TrainingResultType
+from core.models.training_parameter_model import TrainingParameterModel
 from core.repository_models.training_data_dto import TrainingDataDTO
 from core.repository_models.training_result_detail_summary_dto import TrainingResultDetailSummaryDTO
 from core.repository_models.training_result_summary_dto import TrainingResultSummaryDTO
+from core.repository_models.training_summary_dto import TrainingSummaryDTO
 
 
 class TrainPlanBase:
@@ -25,6 +30,7 @@ class TrainPlanBase:
         self.num_classes = 65
 
     def split_train_test(self, data: list[list[TrainingDataDTO]]):
+
         # Prepare input for the model
         x_pairs = [[item.concat_values for item in d] for d in data]
 
@@ -54,13 +60,17 @@ class TrainPlanBase:
     def save_image(self, train_id):
         pass
 
-    def train(self, data: list[list[TrainingDataDTO]], train_id: int) -> TrainingResultSummaryDTO:
+    def train(self, parameters: TrainingParameterModel, data: list[list[TrainingDataDTO]]) -> TrainingSummaryDTO:
         pass
 
-    def calculate_evaluation_metrics(self, model, x_test, y_test) -> TrainingResultSummaryDTO:
+    def calculate_evaluation_metrics(self, model, x_test, y_test) -> TrainingSummaryDTO:
+
+        training_results: list[TrainingResultSummaryDTO] = []
 
         print('Calculate loss!')
         loss, total_accuracy = model.evaluate(x_test, y_test)
+
+        training_results.append(TrainingResultSummaryDTO(TrainingResultType.loss, loss))
 
         # Predictions
         y_pred = model.predict(x_test)
@@ -70,15 +80,54 @@ class TrainPlanBase:
 
         accuracy = accuracy_score(y_test_classes, y_pred_classes)
         print(f'Total Accuracy: {total_accuracy * 100:.2f}% and Accuracy on Pred: {accuracy * 100:.2f}')
+        training_results.append(TrainingResultSummaryDTO(TrainingResultType.accuracy, accuracy))
 
-        f1 = f1_score(y_test_classes, y_pred_classes, average='weighted')
+        f1_score_weighted = f1_score(y_test_classes, y_pred_classes, average='weighted')
+        training_results.append(TrainingResultSummaryDTO(TrainingResultType.f1_score_weighted, f1_score_weighted))
+
+        f1_score_micor = f1_score(y_test_classes, y_pred_classes, average='micro')
+        training_results.append(TrainingResultSummaryDTO(TrainingResultType.f1_score_micro, f1_score_micor))
+
+        f1_score_macro = f1_score(y_test_classes, y_pred_classes, average='macro')
+        training_results.append(TrainingResultSummaryDTO(TrainingResultType.f1_score_macro, f1_score_macro))
 
         # For multi-class AUC and AUPR, you need to binarize the labels
         y_test_bin = label_binarize(y_test_classes, classes=range(self.num_classes))
-        auc = roc_auc_score(y_test_bin, y_pred, average='weighted', multi_class='ovr')
-        aupr = average_precision_score(y_test_bin, y_pred, average='weighted')
-        precision = precision_score(y_test_classes, y_pred_classes, average='weighted')
-        recall = recall_score(y_test_classes, y_pred_classes, average='weighted')
+        auc_weighted = roc_auc_score(y_test_bin, y_pred, average='weighted', multi_class='ovr')
+        training_results.append(TrainingResultSummaryDTO(TrainingResultType.auc_weighted, auc_weighted))
+
+        auc_micro = roc_auc_score(y_test_bin, y_pred, average='micro', multi_class='ovr')
+        training_results.append(TrainingResultSummaryDTO(TrainingResultType.auc_micro, auc_micro))
+
+        auc_macro = roc_auc_score(y_test_bin, y_pred, average='macro', multi_class='ovr')
+        training_results.append(TrainingResultSummaryDTO(TrainingResultType.auc_macro, auc_macro))
+
+        aupr_weighted = average_precision_score(y_test_bin, y_pred, average='weighted')
+        training_results.append(TrainingResultSummaryDTO(TrainingResultType.aupr_weighted, aupr_weighted))
+
+        aupr_micro = average_precision_score(y_test_bin, y_pred, average='micro')
+        training_results.append(TrainingResultSummaryDTO(TrainingResultType.aupr_micro, aupr_micro))
+
+        aupr_macro = average_precision_score(y_test_bin, y_pred, average='macro')
+        training_results.append(TrainingResultSummaryDTO(TrainingResultType.aupr_macro, aupr_macro))
+
+        precision_weighted = precision_score(y_test_classes, y_pred_classes, average='weighted')
+        training_results.append(TrainingResultSummaryDTO(TrainingResultType.precision_weighted, precision_weighted))
+
+        precision_micro = precision_score(y_test_classes, y_pred_classes, average='micro')
+        training_results.append(TrainingResultSummaryDTO(TrainingResultType.precision_micro, precision_micro))
+
+        precision_macro = precision_score(y_test_classes, y_pred_classes, average='macro')
+        training_results.append(TrainingResultSummaryDTO(TrainingResultType.precision_macro, precision_macro))
+
+        recall_weighted = recall_score(y_test_classes, y_pred_classes, average='weighted')
+        training_results.append(TrainingResultSummaryDTO(TrainingResultType.recall_weighted, recall_weighted))
+
+        recall_micro = recall_score(y_test_classes, y_pred_classes, average='micro')
+        training_results.append(TrainingResultSummaryDTO(TrainingResultType.recall_micro, recall_micro))
+
+        recall_macro = recall_score(y_test_classes, y_pred_classes, average='macro')
+        training_results.append(TrainingResultSummaryDTO(TrainingResultType.recall_macro, recall_macro))
 
         # Binarize the labels for AUC and AUPR calculation
         y_test_bin = label_binarize(y_test_classes, classes=range(self.num_classes))
@@ -106,15 +155,10 @@ class TrainPlanBase:
                                                                      recall=recall_per_class[i],
                                                                      precision=precision_per_class[i]))
 
-        return TrainingResultSummaryDTO(f1_score=f1,
-                                        accuracy=accuracy,
-                                        loss=loss,
-                                        auc=auc,
-                                        aupr=aupr,
-                                        recall=recall,
-                                        precision=precision,
-                                        model=model,
-                                        training_result_details=results_per_labels)
+        return TrainingSummaryDTO(training_results=training_results,
+                                  model=model,
+                                  training_result_details=results_per_labels,
+                                  data_report=None)
 
     @staticmethod
     def plot_accuracy(history, train_id: int):
@@ -189,48 +233,51 @@ class TrainPlanBase:
 
         folder_name = TrainPlanBase.get_image_folder_name(train_id)
 
-        plt = TrainPlanBase.plot_radial(values)
+        plt_radial = TrainPlanBase.plot_radial(values)
 
-        plt.title('Accuracy')
+        plt_radial.title('Accuracy')
 
         plot_path = os.path.join(folder_name, 'accuracies.png')
-        plt.savefig(plot_path)
+        plt_radial.savefig(plot_path)
 
-        plt.close()
+        plt_radial.close()
 
     @staticmethod
     def plot_f1_score_radial(values, train_id: int):
 
         folder_name = TrainPlanBase.get_image_folder_name(train_id)
 
-        plt = TrainPlanBase.plot_radial(values)
+        plt_radial = TrainPlanBase.plot_radial(values)
 
-        plt.title('F1 Score')
+        plt_radial.title('F1 Score')
 
         plot_path = os.path.join(folder_name, 'f1_score.png')
-        plt.savefig(plot_path)
+        plt_radial.savefig(plot_path)
 
-        plt.close()
+        plt_radial.close()
 
     @staticmethod
     def plot_auc_radial(values, train_id: int):
 
         folder_name = TrainPlanBase.get_image_folder_name(train_id)
 
-        plt = TrainPlanBase.plot_radial(values)
+        plt_radial = TrainPlanBase.plot_radial(values)
 
-        plt.title('AUC')
+        plt_radial.title('AUC')
 
         plot_path = os.path.join(folder_name, 'auc.png')
-        plt.savefig(plot_path)
+        plt_radial.savefig(plot_path)
 
-        plt.close()
+        plt_radial.close()
 
     # @tf.function
     @staticmethod
     def create_input_tensors(x_train, x_test):
         start_time = time.time()
         print(f"Start time: {time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(start_time))}")
+
+        x_train_ragged = [tf.ragged.constant(d) for d in tqdm(x_train, desc="Creating Ragged Train data")]
+        x_test_ragged = [tf.ragged.constant(d) for d in tqdm(x_test, desc="Creating Ragged Test data")]
 
         # x_train_processed = []
         # x_test_processed = []
@@ -260,15 +307,15 @@ class TrainPlanBase:
         #         x_train_processed.append(tf.constant(float_train, dtype=tf.float32))
         #         x_test_processed.append(tf.constant(float_test, dtype=tf.float32))
 
-        x_train_processed = TrainPlanBase.pad_sequences(x_train)
-        x_test_processed = TrainPlanBase.pad_sequences(x_test)
+        # x_train_processed = TrainPlanBase.pad_sequences(x_train)
+        # x_test_processed = TrainPlanBase.pad_sequences(x_test)
 
         end_time = time.time()
         execution_time = end_time - start_time
         print(f"Finished time: {time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(end_time))}")
         print(f"Execution time: {execution_time} seconds")
 
-        return x_train_processed, x_test_processed
+        return x_train_ragged, x_test_ragged
 
     @staticmethod
     def pad_sequences(data, maxlen=None, padding_value='0'):
@@ -281,3 +328,30 @@ class TrainPlanBase:
         dataset = dataset.prefetch(tf.data.experimental.AUTOTUNE)
         return dataset
 
+    @staticmethod
+    def get_data_report(data: list[TrainingDataDTO]):
+        df = pd.DataFrame([vars(d) for d in data])
+
+        grouped_counts = df.groupby('interaction_type').size()
+
+        grouped_counts_dict = grouped_counts.reset_index().to_dict(orient='records')
+
+        return [{g['interaction_type']: g[0]} for g in grouped_counts_dict]
+
+    @staticmethod
+    def get_data_report_by_labels(labels: list[int]):
+        indices = np.argmax(labels, axis=1)
+
+        counts = np.bincount(indices, minlength=65)
+
+        return [{i: c} for i, c in enumerate(counts)]
+
+    def get_data_report_split(self, data: list[TrainingDataDTO], y_train, y_test):
+        return {
+            "total_count": len(data),
+            "train_count": len(y_train),
+            "test_count": len(y_test),
+            "total_report": self.get_data_report(data),
+            "train_report": self.get_data_report_by_labels(y_train),
+            "test_report": self.get_data_report_by_labels(y_test)
+        }

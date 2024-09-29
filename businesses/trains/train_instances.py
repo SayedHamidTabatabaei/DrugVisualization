@@ -5,6 +5,7 @@ from businesses.trains.train_plan4 import TrainPlan4
 from businesses.trains.train_plan5 import TrainPlan5
 from businesses.trains.train_plan6 import TrainPlan6
 from businesses.trains.train_plan_base import TrainPlanBase
+from businesses.trains.train_plan_test import TrainPlanTest
 from common.enums.train_models import TrainModel
 
 
@@ -21,5 +22,7 @@ def get_instance(category: TrainModel) -> TrainPlanBase:
         return TrainPlan5(category)
     elif category == TrainModel.KNN:
         return TrainPlan6(category)
+    elif category == TrainModel.Test:
+        return TrainPlanTest(category)
     else:
         raise ValueError("No suitable subclass found")

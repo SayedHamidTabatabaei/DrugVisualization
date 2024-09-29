@@ -1,11 +1,11 @@
 import tensorflow as tf
 from tensorflow.keras import layers, models
-from tqdm import tqdm
 
 from businesses.trains.train_plan_base import TrainPlanBase
 from common.enums.train_models import TrainModel
+from core.models.training_parameter_model import TrainingParameterModel
 from core.repository_models.training_data_dto import TrainingDataDTO
-from core.repository_models.training_result_summary_dto import TrainingResultSummaryDTO
+from core.repository_models.training_summary_dto import TrainingSummaryDTO
 
 train_model = TrainModel.SumSoftmaxOutputs
 
@@ -20,7 +20,7 @@ class TrainPlan3(TrainPlanBase):
         model.add(layers.Dense(self.num_classes, activation='softmax'))  # Softmax output
         return model
 
-    def train(self, data: list[list[TrainingDataDTO]], train_id: int) -> TrainingResultSummaryDTO:
+    def train(self, parameters: TrainingParameterModel, data: list[list[TrainingDataDTO]]) -> TrainingSummaryDTO:
 
         x_train, x_test, y_train, y_test = super().split_train_test(data)
 
@@ -45,12 +45,12 @@ class TrainPlan3(TrainPlanBase):
 
         evaluations = super().calculate_evaluation_metrics(final_model, x_test_ragged, y_test)
 
-        super().plot_accuracy(history, train_id)
-        super().plot_loss(history, train_id)
+        super().plot_accuracy(history, parameters.train_id)
+        super().plot_loss(history, parameters.train_id)
 
-        # super().plot_accuracy_radial([item.accuracy for item in evaluations.training_result_details], train_id)
-        # super().plot_f1_score_radial([item.f1_score for item in evaluations.training_result_details], train_id)
-        # super().plot_auc_radial([item.auc for item in evaluations.training_result_details], train_id)
+        # super().plot_accuracy_radial([item.accuracy for item in evaluations.training_result_details], parameters.train_id)
+        # super().plot_f1_score_radial([item.f1_score for item in evaluations.training_result_details], parameters.train_id)
+        # super().plot_auc_radial([item.auc for item in evaluations.training_result_details], parameters.train_id)
 
         return evaluations
 

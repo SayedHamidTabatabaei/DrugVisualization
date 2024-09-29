@@ -13,12 +13,10 @@ def map_training_data(query_results) -> list[TrainingDataDTO]:
          drugbank_id_2, reduction_values_2, interaction_type) = result
         training_entity = TrainingDataDTO(drug_1=drug_1_id,
                                           drugbank_id_1=drugbank_id_1,
-                                          reduction_values_1=[float(val) for val in
-                                                              reduction_values_1[1:-1].split(',')],
+                                          reduction_values_1=[float(val) for val in reduction_values_1[1:-1].split(',')],
                                           drug_2=drug_2_id,
                                           drugbank_id_2=drugbank_id_2,
-                                          reduction_values_2=[float(val) for val in
-                                                              reduction_values_2[1:-1].split(',')],
+                                          reduction_values_2=[float(val) for val in reduction_values_2[1:-1].split(',')],
                                           interaction_type=interaction_type)
         training_data.append(training_entity)
 

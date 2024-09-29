@@ -8,10 +8,10 @@ from common.enums.category import Category
 class TrainingDataDTO:
     drug_1: int
     drugbank_id_1: int
-    reduction_values_1: list[object]
+    reduction_values_1: list[float]
     drug_2: int
     drugbank_id_2: int
-    reduction_values_2: list[object]
+    reduction_values_2: list[float]
     category: Category
     interaction_type: int
     concat_values: np.ndarray = field(init=False)

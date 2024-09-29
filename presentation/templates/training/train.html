@@ -10,6 +10,7 @@
 <link rel="stylesheet" href="{{ url_for('static', filename='css/radiobutton.css') }}">
 <link rel="stylesheet" href="{{ url_for('static', filename='css/checkbox.css') }}">
 <link rel="stylesheet" href="{{ url_for('static', filename='css/section.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/train.css') }}">
 {% endblock %}
 
 {% block script %}
@@ -35,6 +36,11 @@
         </select>
         <button id="submitBtn" onclick="train()">Schedule</button>
         <p id="trainModelDescription"></p>
+        <label id="test-algorithm-label" class="checkbox-label">
+            <input type="checkbox" id="test-algorithm-check" value="Substructure">
+            <span class="checkbox-custom"></span>
+            Test Algorithm
+        </label>
     </div>
 
     <div class="property-container">

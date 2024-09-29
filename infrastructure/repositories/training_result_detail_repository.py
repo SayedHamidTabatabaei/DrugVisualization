@@ -1,7 +1,7 @@
 from typing import Union
 
 from core.domain.training_result_detail import TrainingResultDetail
-from core.mappers import training_result_mapper
+from core.mappers import training_mapper
 from core.repository_models.training_result_detail_dto import TrainingResultDetailDTO
 from infrastructure.mysqldb.mysql_repository import MySqlRepository
 
@@ -10,10 +10,10 @@ class TrainingResultDetailRepository(MySqlRepository):
     def __init__(self):
         super().__init__('training_result_details')
 
-    def insert(self, training_result_id: int, training_label: int, f1_score: float, accuracy: float,
+    def insert(self, training_id: int, training_label: int, f1_score: float, accuracy: float,
                auc: float, aupr: float, recall: float, precision: float) \
             -> TrainingResultDetail:
-        training_result_detail = TrainingResultDetail(training_result_id=training_result_id,
+        training_result_detail = TrainingResultDetail(training_id=training_id,
                                                       training_label=training_label,
                                                       f1_score=f1_score,
                                                       accuracy=accuracy,
@@ -26,15 +26,15 @@ class TrainingResultDetailRepository(MySqlRepository):
 
         return training_result_detail
 
-    def insert_if_not_exits(self, training_result_id: int, training_label: int, f1_score: float, accuracy: float,
+    def insert_if_not_exits(self, training_id: int, training_label: int, f1_score: float, accuracy: float,
                             auc: float, aupr: float, recall: float, precision: float) \
             -> Union[TrainingResultDetail, None]:
-        is_exists = self.is_exists_training_result_detail(training_result_id, training_label)
+        is_exists = self.is_exists_training_result_detail(training_id, training_label)
 
         if is_exists:
             return None
 
-        reduction_data = self.insert(training_result_id, training_label, f1_score, accuracy, auc, aupr, recall,
+        reduction_data = self.insert(training_id, training_label, f1_score, accuracy, auc, aupr, recall,
                                      precision)
 
         return reduction_data
@@ -48,10 +48,10 @@ class TrainingResultDetailRepository(MySqlRepository):
                                               TrainingResultDetail.recall,
                                               TrainingResultDetail.precision])
 
-    def is_exists_training_result_detail(self, training_result_id: int, training_label: int) \
+    def is_exists_training_result_detail(self, training_id: int, training_label: int) \
             -> bool:
         result, _ = self.call_procedure('FindTrainingResultDetail',
-                                        [training_result_id, training_label])
+                                        [training_id, training_label])
 
         training_result_detail = result[0]
 
@@ -60,10 +60,10 @@ class TrainingResultDetailRepository(MySqlRepository):
                  if isinstance(training_result_detail, list)
                  else bool(training_result_detail)))
 
-    def find_all_training_result_details(self, train_result_id: int) -> list[TrainingResultDetailDTO]:
+    def find_all_training_result_details(self, train_id: int) -> list[TrainingResultDetailDTO]:
 
-        result, _ = self.call_procedure('FindAllTrainingResultDetails', [train_result_id])
+        result, _ = self.call_procedure('FindAllTrainingResultDetails', [train_id])
 
         training_result = result[0]
 
-        return training_result_mapper.map_training_result_details(training_result)
+        return training_mapper.map_training_result_details(training_result)

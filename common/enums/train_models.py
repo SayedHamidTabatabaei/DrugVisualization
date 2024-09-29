@@ -10,7 +10,10 @@ class TrainModel(Enum):
     KNN = (6, 'This network learns by KNN.')
     KNNWithAutoEncoder = (7, 'This network learns by KNN and reduce dimension by AutoEncoder.')
     SVM = (8, "This network learns by SVM.")
-    
+
+
+    Test = (1000, "This network is for test new algorithms.")
+
 
     def __init__(self, value, description):
         self._value_ = value

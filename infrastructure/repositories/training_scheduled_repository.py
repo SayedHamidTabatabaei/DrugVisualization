@@ -11,11 +11,12 @@ class TrainingScheduledRepository(MySqlRepository):
     def __init__(self):
         super().__init__('training_scheduled')
 
-    def insert(self, name: str, description: str, train_model: TrainModel, training_conditions: str,
-               schedule_date: datetime) -> int:
+    def insert(self, name: str, description: str, train_model: TrainModel, is_test_algorithm: bool, training_conditions: str, schedule_date: datetime) \
+            -> int:
         data = TrainingScheduled(name=name,
                                  description=description,
                                  train_model=train_model,
+                                 is_test_algorithm=bool(is_test_algorithm),
                                  training_conditions=training_conditions,
                                  schedule_date=schedule_date)
 
