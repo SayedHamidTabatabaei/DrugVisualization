@@ -53,8 +53,26 @@ function get_history()
                         orderable: false,
                         searchable: false
                     },
-                    { data: 'id' },
-                    { data: 'train_model' },
+                    {
+                        render: function(data, type, row) {
+                            return `<span title="${row.description}">${row.name}</span><br/><span>(${row.train_model})</span>`;
+                        }
+                    },
+                    {
+                        render: function(data, type, row) {
+                            let class_weight = ""
+                            if(row.class_weight) {
+                                class_weight = "<br/><span>(Class Weight)</span>"
+                            }
+
+                            let loss_function = "Default"
+                            if(row.loss_function) {
+                                loss_function = row.loss_function
+                            }
+
+                            return `<span>${loss_function}</span>${class_weight}`;
+                        }
+                    },
                     {
                         data: 'accuracy',
                         render: function(data, type, row) {
@@ -266,6 +284,12 @@ function get_history()
                 language: {
                     search: "_INPUT_",
                     searchPlaceholder: "Search ..."
+                },
+                initComplete: function() {
+                    let table = document.getElementById('selectableTrainTable');
+                    if (table) {
+                        table.removeAttribute('style');
+                    }
                 }
             });
         } else {

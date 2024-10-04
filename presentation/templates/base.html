@@ -7,6 +7,7 @@
     <title>{% block title %}{% endblock %}DDI App</title>
     <link rel="shortcut icon" href="#">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/sidebar.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/spinner.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/lib/bootstrap.min.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/lib/jquery.dataTables.css') }}">
@@ -28,17 +29,18 @@
     </header>
 
     <div class="container">
-        <aside class="sidebar">
+        <aside class="sidebar" id="sidebar">
             <div class="logo">
-                <h2></h2>
+                <button class="collapse-btn" id="collapseBtn" onclick="toggleSidebar()">➖</button>
+<!--                <h2>Menu</h2>-->
             </div>
             <nav>
                 <ul>
                     <li>
-                        <a href="#" class="menu-item">Home</a>
+                        <img src="../static/css/images/menu/home.png" height="24" width="24" alt="Home"/><a href="#" class="menu-item">Home</a>
                     </li>
                     <li>
-                        <a href="#" class="menu-item">Drug</a>
+                        <img src="../static/css/images/menu/drugs_small.png" height="25" width="16" alt="Drug"/><a href="#" class="menu-item">Drug</a>
                         <ul class="submenu">
                             <li><a href="/drug/drugs">Drug list</a></li>
                             <li><a href="/drug/information">Information</a></li>
@@ -48,7 +50,7 @@
                         </ul>
                     </li>
                     <li>
-                        <a href="#" class="menu-item">Enzymes</a>
+                        <img src="../static/css/images/menu/enzyme_small.png" height="21" width="24" alt="Enzymes"/><a href="#" class="menu-item">Enzymes</a>
                         <ul class="submenu">
                             <li><a href="/enzyme/drug_enzymes">Drug-Enzymes</a></li>
                             <li><a href="/enzyme/enzyme_similarity">Similarity</a></li>
@@ -56,7 +58,7 @@
                         </ul>
                     </li>
                     <li>
-                        <a href="#" class="menu-item">Targets</a>
+                        <img src="../static/css/images/menu/traget_small.png" height="24" width="24" alt="Targets"/><a href="#" class="menu-item">Targets</a>
                         <ul class="submenu">
                             <li><a href="/target/drug_targets">Drug-Targets</a></li>
                             <li><a href="/target/target_similarity">Similarity</a></li>
@@ -64,7 +66,7 @@
                         </ul>
                     </li>
                     <li>
-                        <a href="#" class="menu-item">Pathways</a>
+                        <img src="../static/css/images/menu/pathway_small.png" height="26" width="24" alt="Pathways"/><a href="#" class="menu-item">Pathways</a>
                         <ul class="submenu">
                             <li><a href="/pathway/drug_pathways">Drug-Pathways</a></li>
                             <li><a href="/pathway/pathway_similarity">Similarity</a></li>
@@ -72,27 +74,28 @@
                         </ul>
                     </li>
                     <li>
-                        <a href="#" class="menu-item">Text Properties</a>
+                        <img src="../static/css/images/menu/text_small.png" height="24" width="24" alt="Text Embedding"/><a href="#" class="menu-item">Text
+                            Properties</a>
                         <ul class="submenu">
                             <li><a href="/drug_embedding/text_embedding">Text Embedding</a></li>
                             <li><a href="/drug_embedding/reduction_embedding">Reduction Embedding</a></li>
                         </ul>
                     </li>
                     <li>
-                        <a href="#" class="menu-item">Training</a>
+                        <img src="../static/css/images/menu/train_small.png" height="20" width="24" alt="Training"/><a href="#" class="menu-item">Training</a>
                         <ul class="submenu">
                             <li><a href="/training/scheduled_training">Schedule Training</a></li>
                             <li><a href="/training/training_history">Training History</a></li>
                             <li><a href="/training/compare">Compare</a></li>
                         </ul>
                     </li>
-                    <li><a href="/about">About</a></li>
-                    <li><a href="/contact">Contact Us</a></li>
+                    <li><img src="../static/css/images/menu/about_small.png" height="24" width="22" alt="About"/><a href="/about">About</a></li>
+                    <li><img src="../static/css/images/menu/contact_small.png" height="23" width="24" alt="Contact Us"/><a href="/contact">Contact Us</a></li>
                 </ul>
             </nav>
         </aside>
 
-        <main class="content">
+        <main class="content" id="mainContent">
             {% block content %}
             {% endblock %}
         </main>
@@ -111,6 +114,30 @@
             <p>&copy; 2024 DDI App</p>
         </div>
     </footer>
+
+    <script>
+		let sidebar = document.getElementById("sidebar");
+		let mainContent = document.getElementById("mainContent");
+		let collapseBtn = document.getElementById("collapseBtn");
+
+		function toggleSidebar() {
+			sidebar.classList.toggle("small-sidebar");
+			mainContent.classList.toggle("small-sidebar");
+
+			// Toggle the button symbol between ➖ and ➕
+			if (collapseBtn.textContent === "➖") {
+				collapseBtn.textContent = "➕";  // Show plus when collapsed
+			} else {
+				collapseBtn.textContent = "➖";  // Show minus when expanded
+			}
+
+            let tables = document.querySelectorAll('.datagrid-table');
+
+            tables.forEach(function(table) {
+                table.style.width = '';
+            });
+		}
+    </script>
 
 </body>
 </html>

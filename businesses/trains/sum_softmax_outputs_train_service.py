@@ -1,16 +1,18 @@
 import tensorflow as tf
 from tensorflow.keras import layers, models
 
-from businesses.trains.train_plan_base import TrainPlanBase
+from businesses.trains.train_base_service import TrainBaseService
 from common.enums.train_models import TrainModel
+from core.models.data_params import DataParams
 from core.models.training_parameter_model import TrainingParameterModel
+from core.models.training_params import TrainingParams
 from core.repository_models.training_data_dto import TrainingDataDTO
 from core.repository_models.training_summary_dto import TrainingSummaryDTO
 
 train_model = TrainModel.SumSoftmaxOutputs
 
 
-class TrainPlan3(TrainPlanBase):
+class SumSoftmaxOutputsTrainService(TrainBaseService):
 
     def create_model(self, input_shape):
         model = models.Sequential()
@@ -32,25 +34,12 @@ class TrainPlan3(TrainPlanBase):
 
         summed_output = tf.keras.layers.Add()(softmax_outputs)
 
+        x_train, x_test = super().create_input_tensors_ragged(x_train, x_test)
+
         final_model = tf.keras.Model(inputs=inputs, outputs=summed_output)
-        final_model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
 
-        final_model.summary()
-
-        x_train_ragged, x_test_ragged = super().create_input_tensors(x_train, x_test)
-
-        print('Fit data!')
-        history = final_model.fit(x_train_ragged, y_train, epochs=50, batch_size=256,
-                                  validation_data=(x_test_ragged, y_test))
-
-        evaluations = super().calculate_evaluation_metrics(final_model, x_test_ragged, y_test)
-
-        super().plot_accuracy(history, parameters.train_id)
-        super().plot_loss(history, parameters.train_id)
-
-        # super().plot_accuracy_radial([item.accuracy for item in evaluations.training_result_details], parameters.train_id)
-        # super().plot_f1_score_radial([item.f1_score for item in evaluations.training_result_details], parameters.train_id)
-        # super().plot_auc_radial([item.auc for item in evaluations.training_result_details], parameters.train_id)
-
-        return evaluations
-
+        return super().fit_dnn_model(data_params=DataParams(x_train=x_train, y_train=y_train, x_test=x_test, y_test=y_test),
+                                     training_params=TrainingParams(train_id=parameters.train_id, optimizer='adam', loss=parameters.loss_function,
+                                                                    class_weight=parameters.class_weight),
+                                     model=final_model,
+                                     data=data)

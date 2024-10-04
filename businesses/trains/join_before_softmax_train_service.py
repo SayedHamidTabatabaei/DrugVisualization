@@ -1,16 +1,18 @@
 from tensorflow.keras import layers, models
 from tqdm import tqdm
 
-from businesses.trains.train_plan_base import TrainPlanBase
+from businesses.trains.train_base_service import TrainBaseService
 from common.enums.train_models import TrainModel
+from core.models.data_params import DataParams
+from core.models.training_params import TrainingParams
 from core.models.training_parameter_model import TrainingParameterModel
 from core.repository_models.training_data_dto import TrainingDataDTO
 from core.repository_models.training_summary_dto import TrainingSummaryDTO
 
-train_model = TrainModel.JoinSimplesBeforeSoftmax
+train_model = TrainModel.JoinBeforeSoftmax
 
 
-class TrainPlan2(TrainPlanBase):
+class JoinBeforeSoftmaxTrainService(TrainBaseService):
 
     @staticmethod
     def create_model(input_shape):
@@ -50,24 +52,12 @@ class TrainPlan2(TrainPlanBase):
         # Create the final model
         final_model = models.Model(inputs=input_layers, outputs=output)
 
-        # Compile the model
-        final_model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
-
         print('Ragged!')
-        x_train_ragged, x_test_ragged = super().create_input_tensors(x_train, x_test)
+        x_train, x_test = super().create_input_tensors_ragged(x_train, x_test)
 
-        # Pass RaggedTensors to the model
-        print('Fit data!')
-        history = final_model.fit(x_train_ragged, y_train, epochs=20, batch_size=32,
-                                  validation_data=(x_test_ragged, y_test))
+        return super().fit_dnn_model(data_params=DataParams(x_train=x_train, y_train=y_train, x_test=x_test, y_test=y_test),
+                                     training_params=TrainingParams(train_id=parameters.train_id, optimizer='adam', loss=parameters.loss_function,
+                                                                    class_weight=parameters.class_weight),
+                                     model=final_model,
+                                     data=data)
 
-        evaluations = super().calculate_evaluation_metrics(final_model, x_test_ragged, y_test)
-
-        super().plot_accuracy(history, parameters.train_id)
-        super().plot_loss(history, parameters.train_id)
-
-        # super().plot_accuracy_radial([item.accuracy for item in evaluations.training_result_details], parameters.train_id)
-        # super().plot_f1_score_radial([item.f1_score for item in evaluations.training_result_details], parameters.train_id)
-        # super().plot_auc_radial([item.auc for item in evaluations.training_result_details], parameters.train_id)
-
-        return evaluations

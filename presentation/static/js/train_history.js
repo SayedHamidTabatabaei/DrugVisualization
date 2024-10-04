@@ -288,6 +288,12 @@ function get_history()
                 language: {
                     search: "_INPUT_",
                     searchPlaceholder: "Search ..."
+                },
+                initComplete: function() {
+                    let table = document.getElementById('trainHistoryTable');
+                    if (table) {
+                        table.removeAttribute('style');
+                    }
                 }
             });
         } else {

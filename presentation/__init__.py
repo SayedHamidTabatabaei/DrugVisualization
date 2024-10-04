@@ -59,7 +59,9 @@ def map_actions(controller):
 
     app.register_blueprint(controller.blue_print, url_prefix=f'/{controller.blue_print.name}')
 
+
 jobs_started = False
+
 
 def create_app():
 

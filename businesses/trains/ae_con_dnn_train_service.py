@@ -1,19 +1,19 @@
-import json
-
-from tensorflow.keras.models import Model
 from tensorflow.keras.layers import Input, Dense, Concatenate
+from tensorflow.keras.models import Model
 from tqdm import tqdm
 
-from businesses.trains.train_plan_base import TrainPlanBase
+from businesses.trains.train_base_service import TrainBaseService
 from common.enums.train_models import TrainModel
+from core.models.data_params import DataParams
+from core.models.training_params import TrainingParams
 from core.models.training_parameter_model import TrainingParameterModel
 from core.repository_models.training_data_dto import TrainingDataDTO
 from core.repository_models.training_summary_dto import TrainingSummaryDTO
 
-train_model = TrainModel.AutoEncoderWithDNN
+train_model = TrainModel.AE_Con_DNN
 
 
-class TrainPlan4(TrainPlanBase):
+class AeConDnnTrainService(TrainBaseService):
 
     def __init__(self, category: TrainModel):
         super().__init__(category)
@@ -49,26 +49,14 @@ class TrainPlan4(TrainPlanBase):
         x = Dense(128, activation='relu')(x)
         output = Dense(self.num_classes, activation='softmax')(x)  # Softmax for multi-class classification
 
+        print('Fix data')
+        x_train, x_test = super().create_input_tensors_ragged(x_train, x_test)
+
         # Create the full model
         full_model = Model(inputs=[input_layer for input_layer in input_layers], outputs=output)
-        full_model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
 
-        print('Fix data')
-
-        x_train, x_test = super().create_input_tensors(x_train, x_test)
-
-        print('Fit data!')
-        history = full_model.fit(x_train, y_train, epochs=50, batch_size=256, validation_data=(x_test, y_test))
-
-        result = super().calculate_evaluation_metrics(full_model, x_test, y_test)
-
-        super().plot_accuracy(history, parameters.train_id)
-        super().plot_loss(history, parameters.train_id)
-
-        # super().plot_accuracy_radial([item.accuracy for item in evaluations.training_result_details], parameters.train_id)
-        # super().plot_f1_score_radial([item.f1_score for item in evaluations.training_result_details], parameters.train_id)
-        # super().plot_auc_radial([item.auc for item in evaluations.training_result_details], parameters.train_id)
-
-        result.data_report = super().get_data_report_split(data[0], y_train, y_test)
-
-        return result
+        return super().fit_dnn_model(data_params=DataParams(x_train=x_train, y_train=y_train, x_test=x_test, y_test=y_test),
+                                     training_params=TrainingParams(train_id=parameters.train_id, optimizer='adam', loss=parameters.loss_function,
+                                                                    class_weight=parameters.class_weight),
+                                     model=full_model,
+                                     data=data)

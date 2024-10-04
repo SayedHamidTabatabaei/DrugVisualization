@@ -33,8 +33,15 @@ document.addEventListener('DOMContentLoaded', function() {
                 columns: data.columns.map(col => ({ data: col })),
                 paging: true,
                 ordering: true,
-                lengthMenu: [[10, 25, 50, 100000], [10, 25, 50, "All"]]
+                lengthMenu: [[10, 25, 50, 100000], [10, 25, 50, "All"]],
+                initComplete: function() {
+                    let table = document.getElementById('drug_pathway_table');
+                    if (table) {
+                        table.removeAttribute('style');
+                    }
+                }
             });
+
         })
         .catch(error => console.log('Error fetching data:', error));
 });

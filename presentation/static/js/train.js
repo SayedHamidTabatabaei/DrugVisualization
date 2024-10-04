@@ -49,9 +49,20 @@ function find_body(){
         return false;
     }
 
+    try {
+        body.loss_function = document.getElementById('lossFunctionSelect').value
+
+        if (body.loss_function === '') {
+            body.loss_function = null;
+        }
+    } catch (ex){
+        return false;
+    }
+
     body.model_name = document.getElementById('modelName').value
     body.model_description = document.getElementById('modelDescription').value
     body.is_test_algorithm = document.getElementById('test-algorithm-check').checked;
+    body.class_weight = document.getElementById('class-weight-check').checked;
 
     if(document.getElementById('substructure-check').checked)
     {
@@ -182,7 +193,7 @@ function updateDescription() {
 
     const descriptionElement = document.getElementById("trainModelDescription");
 
-    fetch(`/training/get_training_model_description?start=0&length=10&trainModel=${selectedModel}`, {
+    fetch(`/training/get_training_model_description?trainModel=${selectedModel}`, {
         method: 'GET',
         headers: {
             'Content-Type': 'application/json'
@@ -195,11 +206,35 @@ function updateDescription() {
         } else {
             console.log('Error: No data found.');
         }
-        hideSpinner(true);
     })
     .catch(error => {
         console.log('Error:', error)
-        hideSpinner(false);
+    });
+
+}
+
+function updateLossFormula() {
+
+    const selectedLoss = document.getElementById("lossFunctionSelect").value;
+
+    const lossFormulaElement = document.getElementById("lossFormula");
+
+    fetch(`/training/get_loss_formula?selected_loss=${selectedLoss}`, {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status) {
+            lossFormulaElement.textContent = data.data;
+        } else {
+            console.log('Error: No data found.');
+        }
+    })
+    .catch(error => {
+        console.log('Error:', error)
     });
 
 }

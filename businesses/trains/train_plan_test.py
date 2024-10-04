@@ -4,7 +4,7 @@ import tensorflow as tf
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense, Input
 
-from businesses.trains.train_plan_base import TrainPlanBase
+from businesses.trains.train_base_service import TrainBaseService
 from common.enums.train_models import TrainModel
 from core.models.training_parameter_model import TrainingParameterModel
 from core.repository_models.training_data_dto import TrainingDataDTO
@@ -13,7 +13,7 @@ from core.repository_models.training_summary_dto import TrainingSummaryDTO
 train_model = TrainModel.Test
 
 
-class TrainPlanTest(TrainPlanBase):
+class TrainPlanTest(TrainBaseService):
     def train(self, parameters: TrainingParameterModel, data: list[list[TrainingDataDTO]]) -> TrainingSummaryDTO:
         y = [y.interaction_type for y in data[0]]
         x_concat_values = [[dto.concat_values for dto in set_data] for set_data in data]

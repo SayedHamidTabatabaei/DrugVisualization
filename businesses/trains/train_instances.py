@@ -1,27 +1,39 @@
-from businesses.trains.train_plan1 import TrainPlan1
-from businesses.trains.train_plan2 import TrainPlan2
-from businesses.trains.train_plan3 import TrainPlan3
-from businesses.trains.train_plan4 import TrainPlan4
-from businesses.trains.train_plan5 import TrainPlan5
-from businesses.trains.train_plan6 import TrainPlan6
-from businesses.trains.train_plan_base import TrainPlanBase
+from businesses.trains.con_ae_dnn_train_service import ConAeDnnTrainService
+from businesses.trains.lr_train_service import LrTrainService
+from businesses.trains.rf_train_service import RfTrainService
+from businesses.trains.simple_one_input_train_service import SimpleOneInputTrainService
+from businesses.trains.join_before_softmax_train_service import JoinBeforeSoftmaxTrainService
+from businesses.trains.sum_softmax_outputs_train_service import SumSoftmaxOutputsTrainService
+from businesses.trains.ae_con_dnn_train_service import AeConDnnTrainService
+from businesses.trains.concat_dnn_train_service import ConcatDnnTrainService
+from businesses.trains.knn_train_service import KnnTrainService
+from businesses.trains.svm_train_service import SvmTrainService
+from businesses.trains.train_base_service import TrainBaseService
 from businesses.trains.train_plan_test import TrainPlanTest
 from common.enums.train_models import TrainModel
 
 
-def get_instance(category: TrainModel) -> TrainPlanBase:
+def get_instance(category: TrainModel) -> TrainBaseService:
     if category == TrainModel.SimpleOneInput:
-        return TrainPlan1(category)
-    elif category == TrainModel.JoinSimplesBeforeSoftmax:
-        return TrainPlan2(category)
+        return SimpleOneInputTrainService(category)
+    elif category == TrainModel.JoinBeforeSoftmax:
+        return JoinBeforeSoftmaxTrainService(category)
     elif category == TrainModel.SumSoftmaxOutputs:
-        return TrainPlan3(category)
-    elif category == TrainModel.AutoEncoderWithDNN:
-        return TrainPlan4(category)
-    elif category == TrainModel.ContactDataWithOneDNN:
-        return TrainPlan5(category)
+        return SumSoftmaxOutputsTrainService(category)
+    elif category == TrainModel.AE_Con_DNN:
+        return AeConDnnTrainService(category)
+    elif category == TrainModel.Contact_DNN:
+        return ConcatDnnTrainService(category)
     elif category == TrainModel.KNN:
-        return TrainPlan6(category)
+        return KnnTrainService(category)
+    elif category == TrainModel.SVM:
+        return SvmTrainService(category)
+    elif category == TrainModel.Con_AE_DNN:
+        return ConAeDnnTrainService(category)
+    elif category == TrainModel.LR:
+        return LrTrainService(category)
+    elif category == TrainModel.RF:
+        return RfTrainService(category)
     elif category == TrainModel.Test:
         return TrainPlanTest(category)
     else:

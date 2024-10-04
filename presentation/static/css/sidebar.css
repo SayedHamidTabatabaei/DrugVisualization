@@ -1,0 +1,212 @@
+
+
+/* Sidebar (left-side menu) styles */
+.sidebar {
+    flex: 0 0 250px; /* Fixed width for sidebar */
+    background-color: #343a40;
+    color: white;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+}
+
+.sidebar .logo {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.sidebar .logo h2 {
+    display: inline-block;
+}
+
+.sidebar nav ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+.sidebar nav ul li {
+    margin-bottom: 10px;
+}
+
+.sidebar nav ul li a img {
+    margin-right: 10px;
+}
+
+.sidebar nav ul li a {
+    display: inline-block;
+    color: white;
+    text-decoration: none;
+    padding: 10px;
+    opacity: 1;
+    transition: opacity 0.3s ease;
+}
+
+.sidebar nav ul li a:hover {
+    background-color: #495057;
+}
+
+.sidebar nav ul .submenu {
+    display: none; /* Hide submenus by default */
+    list-style-type: none;
+    padding-left: 20px;
+    margin-top: 10px;
+}
+
+.sidebar nav ul .submenu li {
+    margin-bottom: 5px;
+}
+
+.sidebar nav ul .submenu li a {
+    background-color: #495057;
+    padding: 8px;
+}
+
+.sidebar .logo button {
+    background-color: transparent;
+}
+
+
+
+
+/* Small (icon-only) sidebar */
+.small-sidebar {
+    flex: none;
+    width: 60px;
+}
+
+.small-sidebar .logo h2 {
+    display: none;
+}
+
+.small-sidebar .logo button {
+    background: transparent;
+    padding: 0;
+}
+
+.small-sidebar nav ul li a {
+    display: none;
+}
+
+.small-sidebar nav ul li img {
+    margin-bottom: 10px;
+    margin-top: 10px;
+}
+
+/* Main content styling */
+.content {
+    margin-left: 10px;
+    width: calc(100% - 10px);
+    transition: all 0.3s ease;
+}
+
+.small-sidebar + .content {
+    width: calc(100% - 10px);
+}
+
+/* Toggle button */
+.toggle-btn {
+    position: fixed;
+    top: 10px;
+    left: 10px;
+    background-color: #3498db;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+}
+
+
+/*.sidebar {*/
+/*    width: 200px;*/
+/*    background-color: #2c2c2c;*/
+/*    height: 100vh;*/
+/*    position: fixed;*/
+/*    top: 0;*/
+/*    left: 0;*/
+/*    overflow-y: auto;*/
+/*    color: white;*/
+/*    transition: all 0.3s ease;*/
+/*}*/
+
+/*.sidebar ul {*/
+/*    list-style-type: none;*/
+/*    padding: 0;*/
+/*    margin: 0;*/
+/*}*/
+
+/*.sidebar ul li {*/
+/*    padding: 15px;*/
+/*    display: flex;*/
+/*    align-items: center;*/
+/*}*/
+
+/*.sidebar ul li a {*/
+/*    color: white;*/
+/*    text-decoration: none;*/
+/*    margin-left: 10px;*/
+/*}*/
+
+/*.sidebar ul li img {*/
+/*    width: 24px;*/
+/*    height: 24px;*/
+/*}*/
+
+/*!* Collapse button styling *!*/
+/*.sidebar-header {*/
+/*    display: flex;*/
+/*    justify-content: flex-end;*/
+/*    padding: 15px;*/
+/*    background-color: #1a1a1a;*/
+/*}*/
+
+/*.sidebar-header .collapse-btn {*/
+/*    background: none;*/
+/*    border: none;*/
+/*    color: white;*/
+/*    cursor: pointer;*/
+/*}*/
+
+/*!* Small (icon-only) sidebar *!*/
+/*.small-sidebar {*/
+/*    width: 60px;*/
+/*}*/
+
+/*.sidebar ul li a {*/
+/*    display: inline-block;*/
+/*    opacity: 1;*/
+/*    transition: opacity 0.3s ease;*/
+/*}*/
+
+/*.small-sidebar ul li a {*/
+/*    opacity: 0;*/
+/*    pointer-events: none;*/
+/*}*/
+
+/*.small-sidebar ul li img {*/
+/*    margin-left: 0;*/
+/*}*/
+
+/*!* Main content styling *!*/
+/*.main-content {*/
+/*    margin-left: 210px;*/
+/*    padding: 20px;*/
+/*    width: calc(100% - 210px);*/
+/*    transition: all 0.3s ease;*/
+/*}*/
+
+/*.small-sidebar + .main-content {*/
+/*    margin-left: 70px;*/
+/*    width: calc(100% - 70px);*/
+/*}*/
+
+/*!* Toggle button *!*/
+/*.toggle-btn {*/
+/*    position: fixed;*/
+/*    top: 10px;*/
+/*    left: 10px;*/
+/*    background-color: #3498db;*/
+/*    color: white;*/
+/*    border: none;*/
+/*    padding: 10px 20px;*/
+/*    cursor: pointer;*/
+/*}*/

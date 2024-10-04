@@ -46,8 +46,15 @@ function get_schedules()
                 language: {
                     search: "_INPUT_",
                     searchPlaceholder: "Search ..."
+                },
+                initComplete: function() {
+                    let table = document.getElementById('trainHistoryTable');
+                    if (table) {
+                        table.removeAttribute('style');
+                    }
                 }
             });
+
         } else {
             console.log('Error: No data found.');
         }

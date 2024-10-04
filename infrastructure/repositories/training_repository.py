@@ -1,5 +1,6 @@
 from datetime import datetime, timezone
 
+from common.enums.loss_functions import LossFunctions
 from common.enums.train_models import TrainModel
 from core.domain.training import Training
 from core.mappers import training_mapper
@@ -11,12 +12,16 @@ class TrainingRepository(MySqlRepository):
     def __init__(self):
         super().__init__('trainings')
 
-    def insert(self, name: str, description: str, train_model: TrainModel, is_test_algorithm: bool, training_conditions: str) -> int:
+    def insert(self, name: str, description: str, train_model: TrainModel, loss_function: LossFunctions, class_weight: bool, is_test_algorithm: bool,
+               training_conditions: str) -> int:
         data = Training(name=name,
                         description=description,
                         train_model=train_model,
                         is_test_algorithm=bool(is_test_algorithm),
+                        loss_function=loss_function,
+                        class_weight=class_weight,
                         training_conditions=training_conditions,
+                        model_parameters="",
                         data_report="",
                         execute_time=datetime.now(timezone.utc))
 

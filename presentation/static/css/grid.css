@@ -3,7 +3,7 @@
     margin: 20px 0;
 }
 .datagrid-table {
-    width: 100%;
+    width: auto !important;
     border-collapse: collapse;
     padding-right: 0 !important;
 }

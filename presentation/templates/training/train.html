@@ -19,6 +19,7 @@
 <script src="{{ url_for('static', filename='js/fill_similarity_type_dropdown.js') }}"></script>
 <script src="{{ url_for('static', filename='js/fill_embedding_category_dropdown.js') }}"></script>
 <script src="{{ url_for('static', filename='js/fill_train_model_dropdown.js') }}"></script>
+<script src="{{ url_for('static', filename='js/fill_loss_dropdown.js') }}"></script>
 <script src="{{ url_for('static', filename='js/show_hide_checkbox_container.js') }}"></script>
 {% endblock %}
 
@@ -31,15 +32,33 @@
     <div class="property-container">
         <label for="trainModelSelect" class="label-for">Choose a Model:</label>
 
-        <select id="trainModelSelect" onchange="updateDescription()">
+        <select id="trainModelSelect" onchange="updateDescription();fill_loss_dropdown();">
             <option value="">--Select a Model--</option>
         </select>
         <button id="submitBtn" onclick="train()">Schedule</button>
         <p id="trainModelDescription"></p>
         <label id="test-algorithm-label" class="checkbox-label">
-            <input type="checkbox" id="test-algorithm-check" value="Substructure">
+            <input type="checkbox" id="test-algorithm-check">
             <span class="checkbox-custom"></span>
             Test Algorithm
+        </label>
+    </div>
+
+    <div id="loss-container" style="display: none;" class="property-container">
+        <label for="lossFunctionSelect" class="label-for">Choose loss:</label>
+
+        <select id="lossFunctionSelect" onchange="updateLossFormula()">
+            <option value="">--Select a loss--</option>
+        </select>
+        <p id="lossFormula"></p>
+    </div>
+
+    <div class="property-container">
+        <span>Use Class Weight</span>
+
+        <label id="class-weight-label" class="checkbox-label" style="margin-left: 20px; margin-bottom: 20px;">
+            <input type="checkbox" id="class-weight-check">
+            <span class="checkbox-custom"></span>
         </label>
     </div>
 

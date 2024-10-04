@@ -3,8 +3,10 @@ from sklearn.model_selection import StratifiedShuffleSplit
 from tensorflow.keras.layers import Dense, Dropout
 from tensorflow.keras.models import Sequential
 
-from businesses.trains.train_plan_base import TrainPlanBase
+from businesses.trains.train_base_service import TrainBaseService
 from common.enums.train_models import TrainModel
+from core.models.data_params import DataParams
+from core.models.training_params import TrainingParams
 from core.models.training_parameter_model import TrainingParameterModel
 from core.repository_models.training_data_dto import TrainingDataDTO
 from core.repository_models.training_summary_dto import TrainingSummaryDTO
@@ -12,7 +14,7 @@ from core.repository_models.training_summary_dto import TrainingSummaryDTO
 train_model = TrainModel.SimpleOneInput
 
 
-class TrainPlan1(TrainPlanBase):
+class SimpleOneInputTrainService(TrainBaseService):
 
     def train(self, parameters: TrainingParameterModel, data: list[list[TrainingDataDTO]]) -> TrainingSummaryDTO:
 
@@ -50,13 +52,9 @@ class TrainPlan1(TrainPlanBase):
         # Output layer with softmax
         model.add(Dense(65, activation='softmax'))
 
-        # Compile the model
-        model.compile(optimizer='adam', loss='sparse_categorical_crossentropy', metrics=['accuracy'])
+        return super().fit_dnn_model(data_params=DataParams(x_train=x_train, y_train=y_train, x_test=x_test, y_test=y_test),
+                                     training_params=TrainingParams(train_id=parameters.train_id, optimizer='adam', loss=parameters.loss_function,
+                                                                    class_weight=parameters.class_weight),
+                                     model=model,
+                                     data=data)
 
-        # Train the model
-        history = model.fit(x_train, y_train, epochs=20, batch_size=32, validation_data=(x_test, y_test))
-
-        super().plot_accuracy(history, parameters.train_id)
-        super().plot_loss(history, parameters.train_id)
-
-        return super().calculate_evaluation_metrics(model, x_test, y_test)

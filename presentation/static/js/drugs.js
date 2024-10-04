@@ -29,6 +29,12 @@ document.addEventListener('DOMContentLoaded', function() {
                 language: {
                     search: "_INPUT_",
                     searchPlaceholder: "Search drugs..."
+                },
+                initComplete: function() {
+                    let table = document.getElementById('drugsTable');
+                    if (table) {
+                        table.removeAttribute('style');
+                    }
                 }
             });
         } else {

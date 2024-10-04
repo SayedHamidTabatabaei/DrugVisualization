@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 
+from common.enums.loss_functions import LossFunctions
 from common.enums.train_models import TrainModel
 
 
@@ -9,8 +10,11 @@ class TrainingResultDTO:
     name: str
     description: str
     train_model: TrainModel
+    loss_function: LossFunctions
     is_test_algorithm: bool
+    class_weight: bool
     training_conditions: str
+    model_parameters: str
     accuracy: float
     loss: float
     f1_score_weighted: float

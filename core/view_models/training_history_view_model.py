@@ -7,6 +7,8 @@ class TrainingHistoryViewModel:
     name: str
     description: str
     train_model: str
+    loss_function: str
+    class_weight: bool
     training_conditions: str
     accuracy: float
     loss: float

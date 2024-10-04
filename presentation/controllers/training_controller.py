@@ -6,6 +6,7 @@ from businesses.job_business import JobBusiness
 from businesses.training_business import TrainingBusiness
 from common.attributes.route import route
 from common.enums.compare_plot_type import ComparePlotType
+from common.enums.loss_functions import LossFunctions
 from common.enums.train_models import TrainModel
 from core.view_models.train_request_view_model import TrainRequestViewModel
 from infrastructure.repositories.training_scheduled_repository import TrainingScheduledRepository
@@ -26,6 +27,19 @@ class TrainingController(MethodView):
         types = [{"name": train_model.name, "value": train_model.value} for train_model in TrainModel]
         return jsonify(types)
 
+    @route('fillLossFunctions', methods=['GET'])
+    def fill_loss_functions(self):
+
+        train_model_str = request.args.get('trainModel')
+
+        if not train_model_str:
+            return jsonify({'status': False, 'data': ''})
+
+        train_model = TrainModel[train_model_str]
+
+        types = [{"name": loss_function.display_name, "value": loss_function.value} for loss_function in LossFunctions.valid(train_model)]
+        return jsonify(types)
+
     @route('get_training_model_description', methods=['GET'])
     def get_training_model_description(self):
 
@@ -37,6 +51,18 @@ class TrainingController(MethodView):
         train_model = TrainModel[train_model_str]
 
         return jsonify({'status': True, 'data': train_model.description})
+
+    @route('get_loss_formula', methods=['GET'])
+    def get_loss_formula(self):
+
+        loss_function_value = int(request.args.get('selected_loss'))
+
+        if not loss_function_value:
+            return jsonify({'status': False, 'data': ''})
+
+        loss_function = LossFunctions.from_value(loss_function_value)
+
+        return jsonify({'status': True, 'data': loss_function.formula})
 
     @route('train', methods=['POST'])
     def train(self):

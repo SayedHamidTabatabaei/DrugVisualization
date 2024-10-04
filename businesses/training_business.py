@@ -72,6 +72,8 @@ def map_training_history_view_model(results: list[TrainingResultDTO]) -> list[Tr
         name=item.name,
         description=item.description,
         train_model=item.train_model.name,
+        loss_function=item.loss_function.display_name if item.loss_function else '',
+        class_weight=item.class_weight,
         training_conditions=item.training_conditions,
         accuracy=item.accuracy,
         loss=item.loss,
@@ -138,8 +140,9 @@ class TrainingBusiness(BaseBusiness):
 
     def schedule_train(self, train_request: TrainRequestViewModel):
 
-        self.training_scheduled_repository.insert(train_request.name, train_request.description, train_request.train_model, train_request.is_test_algorithm,
-                                                  train_request.to_json(), datetime.now(timezone.utc))
+        self.training_scheduled_repository.insert(train_request.name, train_request.description, train_request.train_model, train_request.loss_function,
+                                                  train_request.class_weight, train_request.is_test_algorithm, train_request.to_json(),
+                                                  datetime.now(timezone.utc))
 
     def run_trainings(self, training_id: int = None):
 
@@ -147,7 +150,11 @@ class TrainingBusiness(BaseBusiness):
             training_schedules = self.training_scheduled_repository.find_overdue_training_scheduled()
 
             for training_schedule in training_schedules:
-                self.train(training_schedule)
+                try:
+                    self.train(training_schedule)
+                except Exception as ex:
+                    print(f"An error occurred during training: {ex} for id: {training_schedule.id}")
+
         else:
             training_schedule = self.training_scheduled_repository.get_training_scheduled_by_id(training_id)
 
@@ -156,14 +163,17 @@ class TrainingBusiness(BaseBusiness):
     def train(self, train_schedule: TrainingScheduledDTO):
 
         train_id = self.training_repository.insert(train_schedule.name, train_schedule.description,
-                                                   train_schedule.train_model, train_schedule.is_test_algorithm,
-                                                   train_schedule.training_conditions)
+                                                   train_schedule.train_model, train_schedule.loss_function, train_schedule.class_weight,
+                                                   train_schedule.is_test_algorithm, train_schedule.training_conditions)
 
         data = self.prepare_data(TrainRequestViewModel.from_json(train_schedule.training_conditions), train_schedule.is_test_algorithm)
 
         print('Start training...')
         instance = train_instances.get_instance(train_schedule.train_model)
-        training_result = instance.train(TrainingParameterModel(train_id, train_schedule.is_test_algorithm), data)
+        training_result = instance.train(TrainingParameterModel(train_id=train_id,
+                                                                loss_function=train_schedule.loss_function,
+                                                                class_weight=train_schedule.class_weight,
+                                                                is_test_algorithm=train_schedule.is_test_algorithm), data)
 
         print('Update...')
         self.training_repository.update(train_id, json.dumps(training_result.data_report, default=json_helper.convert_numpy_types))
@@ -173,9 +183,12 @@ class TrainingBusiness(BaseBusiness):
                             for item in training_result.training_results]
         self.training_result_repository.insert_batch_check_duplicate(training_results)
 
-        model_binary = pickle.dumps(training_result.model)
-        model = pickle.loads(model_binary)
-        model.save(f'training_models/{train_id}.h5')
+        # model_binary = pickle.dumps(training_result.model)
+        # model = pickle.loads(model_binary)
+        # model.save(f'training_models/{train_id}.h5')
+
+        with open(f'training_models/{train_id}.pkl', 'wb') as file:
+            pickle.dump(training_result.model, file)
 
         train_result_details = [TrainingResultDetail(training_id=train_id,
                                                      training_label=item.training_label,

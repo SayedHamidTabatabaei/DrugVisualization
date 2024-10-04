@@ -65,8 +65,15 @@ function filterPathwaySimilarity() {
                 columns: data.columns ? data.columns.map(col => ({data: col})) : [],
                 paging: true,
                 ordering: true,
-                lengthMenu: [[10, 25, 50, 100000], [10, 25, 50, "All"]]
+                lengthMenu: [[10, 25, 50, 100000], [10, 25, 50, "All"]],
+                initComplete: function() {
+                    let table = document.getElementById('pathway_similarity_table');
+                    if (table) {
+                        table.removeAttribute('style');
+                    }
+                }
             });
+
             hideSpinner(true);
         })
         .catch(error => {

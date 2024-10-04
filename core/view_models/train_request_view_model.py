@@ -4,6 +4,7 @@ from enum import Enum
 from typing import Optional
 
 from common.enums.embedding_type import EmbeddingType
+from common.enums.loss_functions import LossFunctions
 from common.enums.reduction_category import ReductionCategory
 from common.enums.similarity_type import SimilarityType
 from common.enums.train_models import TrainModel
@@ -12,6 +13,8 @@ from common.enums.train_models import TrainModel
 @dataclass
 class TrainRequestViewModel:
     train_model: TrainModel
+    loss_function: LossFunctions
+    class_weight: bool
     name: str
     description: str
     is_test_algorithm: bool
@@ -52,10 +55,20 @@ class TrainRequestViewModel:
 
     @classmethod
     def from_dict(cls, data: dict):
+
+        loss_function = None
+        if data.get('loss_function'):
+            if str(data.get('loss_function')).isdigit():
+                loss_function = LossFunctions.from_value(int(data.get('loss_function')))
+            else:
+                loss_function = LossFunctions[data.get('loss_function')]
+
         return cls(
             train_model=TrainModel[data.get('train_model')],
+            loss_function=loss_function,
             name=data.get('model_name'),
             description=data.get('model_description'),
+            class_weight=data.get('class_weight'),
             is_test_algorithm=data.get('is_test_algorithm'),
             substructure_similarity=SimilarityType[data['substructure_similarity']] if 'substructure_similarity' in data and data['substructure_similarity'] else None,
             substructure_reduction=ReductionCategory[data['substructure_reduction']] if 'substructure_reduction' in data and data['substructure_reduction'] else None,

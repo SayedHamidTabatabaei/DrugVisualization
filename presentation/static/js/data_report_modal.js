@@ -8,7 +8,6 @@ function showdatareport(id) {
     })
         .then(response => response.json())
         .then(data => {
-            debugger;
             if (data.status) {
                 let formattedJson = '';
                 const parsedData = typeof data.data === 'string' ? JSON.parse(data.data) : data.data;  // Parse only if it's a string

@@ -175,8 +175,15 @@ function fillEnzyme() {
                 language: {
                     search: "_INPUT_",
                     searchPlaceholder: "Search enzymes..."
+                },
+                initComplete: function() {
+                    let table = document.getElementById('enzymeTable');
+                    if (table) {
+                        table.removeAttribute('style');
+                    }
                 }
             });
+
         } else {
             $('#enzymeTable').hide();
             console.log('Error: No data found.');
@@ -216,8 +223,15 @@ function fillTarget() {
                 language: {
                     search: "_INPUT_",
                     searchPlaceholder: "Search targets..."
+                },
+                initComplete: function() {
+                    let table = document.getElementById('targetTable');
+                    if (table) {
+                        table.removeAttribute('style');
+                    }
                 }
             });
+
         } else {
             $('#targetTable').hide();
             console.log('Error: No data found.');
@@ -255,8 +269,15 @@ function fillPathway() {
                 language: {
                     search: "_INPUT_",
                     searchPlaceholder: "Search pathways..."
+                },
+                initComplete: function() {
+                    let table = document.getElementById('pathwayTable');
+                    if (table) {
+                        table.removeAttribute('style');
+                    }
                 }
             });
+
         } else {
             $('#pathwayTable').hide();
             console.log('Error: No data found.');
@@ -295,8 +316,15 @@ function fillInteraction() {
                 language: {
                     search: "_INPUT_",
                     searchPlaceholder: "Search Interactions..."
+                },
+                initComplete: function() {
+                    let table = document.getElementById('interactionTable');
+                    if (table) {
+                        table.removeAttribute('style');
+                    }
                 }
             });
+
         } else {
             $('#interactionTable').hide();
             console.log('Error: No data found.');
