@@ -7,6 +7,6 @@
   },
   "management": {
     "batch_size": "1000",
-    "enable_bert_embedding": false
+    "enable_bert_embedding": true
   }
 }

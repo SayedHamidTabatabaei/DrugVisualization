@@ -1,7 +1,10 @@
-document.addEventListener('DOMContentLoaded', function() {
+function fill_train_model_dropdown(default_text="--Select a Model--") {
+
+    const selectedScenario = document.getElementById("scenarioSelect").value;
     const similaritySelect = document.getElementById('trainModelSelect');
 
-    fetch('/training/fillTrainingModels')
+    similaritySelect.innerHTML = `<option value="">${default_text}</option>`;
+    fetch(`/training/fillTrainingModels?scenario=${selectedScenario}`)
         .then(response => response.json())
         .then(data => {
             // Loop through the data and create option elements
@@ -13,4 +16,4 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         })
         .catch(error => console.log('Error fetching types data:', error));
-});
+}

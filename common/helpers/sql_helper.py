@@ -49,8 +49,7 @@ def generate_delete_command(table_name, id: int):
 
 
 def generate_batch_insert_command(entities):
-    if not entities:
-        raise ValueError("The entities list cannot be empty")
+    assert entities, ValueError("The entities list cannot be empty")
 
     entity = entities[0]
     entity_vars = vars(entity)
@@ -69,8 +68,7 @@ def generate_batch_insert_command(entities):
 
 
 def generate_batch_insert_check_duplicate_command(entities, update_properties):
-    if not entities:
-        raise ValueError("The entities list cannot be empty")
+    assert entities, ValueError("The entities list cannot be empty")
 
     entity = entities[0]
     entity_vars = vars(entity)

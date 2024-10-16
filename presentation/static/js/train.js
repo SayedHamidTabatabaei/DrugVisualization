@@ -187,13 +187,49 @@ function find_select_value(dropdown){
     return value
 }
 
-function updateDescription() {
+function updateTrainModelDescription() {
 
     const selectedModel = document.getElementById("trainModelSelect").value;
 
     const descriptionElement = document.getElementById("trainModelDescription");
 
     fetch(`/training/get_training_model_description?trainModel=${selectedModel}`, {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status) {
+            descriptionElement.textContent = data.data;
+        } else {
+            console.log('Error: No data found.');
+        }
+    })
+    .catch(error => {
+        console.log('Error:', error)
+    });
+
+}
+
+function updateTrainModelImage() {
+
+    const selectedModel = document.getElementById("trainModelSelect").value;
+
+    const imageElement = document.getElementById("trainModelImg");
+
+    imageElement.src = `../training/training_models/training_model_images/${selectedModel}.png`
+
+}
+
+function updateScenarioDescription() {
+
+    const selectedModel = document.getElementById("scenarioSelect").value;
+
+    const descriptionElement = document.getElementById("scenarioDescription");
+
+    fetch(`/training/get_scenario_description?scenario=${selectedModel}`, {
         method: 'GET',
         headers: {
             'Content-Type': 'application/json'

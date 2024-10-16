@@ -3,6 +3,7 @@ function fill_loss_dropdown() {
     const lossContainer = document.getElementById('loss-container');
     const selectedModel = document.getElementById("trainModelSelect").value;
 
+    lossSelect.innerHTML = '';
     fetch(`/training/fillLossFunctions?trainModel=${selectedModel}`)
         .then(response => response.json())
         .then(data => {

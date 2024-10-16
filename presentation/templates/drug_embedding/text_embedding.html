@@ -37,12 +37,31 @@
 
 </div>
 
-<div class="grid-container">
+<div class="grid-container" id="embeddingGrid">
     <table id="embeddingsTable" class="datagrid-table; display">
         <thead>
             <tr>
                 <th>Id</th>
-                <th>DrugBankId</th>
+                <th id="drugbank-id">DrugBankId</th>
+                <th id="drug-name">Drug name</th>
+                <th>Embedding</th>
+                <th>Text</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Data will be populated by DataTables -->
+        </tbody>
+    </table>
+</div>
+<div class="grid-container" id="interactionEmbeddingGrid">
+    <table id="interactionEmbeddingsTable" class="datagrid-table; display">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th id="drugbank1-id">DrugBankId</th>
+                <th id="drug1-name">Drug name</th>
+                <th id="drugbank2-id">DrugBankId</th>
+                <th id="drug2-name">Drug name</th>
                 <th>Embedding</th>
                 <th>Text</th>
             </tr>

@@ -4,6 +4,7 @@ from common.enums.training_result_type import TrainingResultType
 from core.domain.training_result import TrainingResult
 from core.mappers import training_mapper
 from core.repository_models.training_result_detail_dto import TrainingResultDetailDTO
+from core.repository_models.training_result_report_dto import TrainingResultReportDTO
 from infrastructure.mysqldb.mysql_repository import MySqlRepository
 
 
@@ -53,9 +54,9 @@ class TrainingResultRepository(MySqlRepository):
 
         return training_mapper.map_training_results(training_result)
 
-    def get_training_result(self, train_id: int, training_result_type: TrainingResultType) -> TrainingResult:
+    def get_training_result(self, train_id: int, training_result_type: TrainingResultType) -> TrainingResultReportDTO:
         result, _ = self.call_procedure('FindTrainingResult', [train_id, training_result_type.value])
 
         training_result = result[0][0]
 
-        return training_mapper.map_training_result(training_result)
+        return training_mapper.map_training_result_report_dto(training_result)

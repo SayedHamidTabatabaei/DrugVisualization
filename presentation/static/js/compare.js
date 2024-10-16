@@ -5,11 +5,12 @@ document.addEventListener('DOMContentLoaded', function() {
 
 function get_history()
 {
+    const scenario = document.getElementById('scenarioSelect').value;
     const train_model = document.getElementById('trainModelSelect').value;
 
     showSpinner();
 
-    fetch(`/training/get_history?start=0&length=10000&trainModel=${train_model}`, {
+    fetch(`/training/get_history?start=0&length=10000&scenario=${scenario}&trainModel=${train_model}`, {
         method: 'GET',
         headers: {
             'Content-Type': 'application/json'
@@ -45,8 +46,10 @@ function get_history()
                     {
                         data: null,
                         render: function(data, type, row) {
+                            const checkboxValue = `${row.id}|${row.name}`;
+
                             return '<label class="checkbox-label" style="width: 30px;">\n' +
-                                '    <input type="checkbox" id="target-check" onclick="compare_trainings()" value="' + row.id + '">\n' +
+                                '    <input type="checkbox" id="row-check" class="row-checkbox" onclick="compare_trainings()" value="' + checkboxValue + '">\n' +
                                 '    <span class="checkbox-custom" style="margin-top: 0;"></span>' +
                                 '</label>'
                         },
@@ -278,6 +281,19 @@ function get_history()
                             }
                         }
                     },
+                    {
+                        data: null,
+                        orderable: false,
+                        render: function (data, type, row) {
+                            return `
+                                <div style="min-width: 100px;">
+                                    <button style="margin:1px;" class="btn btn-info" onclick="showconditions(${row.id})" data-bs-toggle="tooltip" title="Show Conditions"><i class="bi bi-file-earmark-code"></i></button>
+                                    <button style="margin:1px;" class="btn btn-success" onclick="showdatareport(${row.id})" data-bs-toggle="tooltip" title="Show Data Report"><i class="bi bi-file-earmark-check"></i></button>
+                                    <button style="margin:1px;" class="btn btn-success" onclick="showImage('${row.train_model}')" data-bs-toggle="tooltip" title="Show Model Image"><i class="bi bi-image"></i></button>
+                                </div>
+                            `;
+                        }
+                    }
                 ],
                 searching: true,
                 ordering: true,
@@ -309,6 +325,36 @@ function compare_trainings()
     activeTab.click();
 }
 
+function select_all()
+{
+    let isChecked = document.getElementById('select-all').checked;
+    let checkboxes = document.querySelectorAll('.row-checkbox');
+    checkboxes.forEach(function(checkbox) {
+        checkbox.checked = isChecked;
+    });
+}
+
+function filter_checked(){
+
+    let isChecked = document.getElementById('filter-check').checked;
+
+    let rows = document.querySelectorAll('#selectableTrainTable tbody tr'); // Select all rows once
+
+    rows.forEach(function(row) {
+        let checkbox = row.querySelector('.row-checkbox');
+
+        if (isChecked) {
+            if (checkbox && checkbox.checked) {
+                row.style.display = '';
+            } else {
+                row.style.display = 'none';
+            }
+        } else {
+            row.style.display = '';
+        }
+    });
+}
+
 function openTab(evt, tabName) {
     // Get all elements with class="tab-content" and hide them
     const tabContents = document.getElementsByClassName("tab-content");
@@ -334,8 +380,11 @@ function fill_comparing_plot(comparing_plot_type, radio_group){
     }
 
     let selectedIds = [];
-    $('input[type="checkbox"]:checked').each(function() {
-        selectedIds.push($(this).val()); // Get the value of the checked checkbox
+    $('input.row-checkbox:checked').each(function() {
+
+        const [id, name] = $(this).val().split('|'); // Get the value of the checked checkbox
+
+        selectedIds.push(id);
     });
 
     fetch(`/training/get_comparing_plot?trainHistoryIds=${selectedIds}&ComparePlotType=${comparing_plot_type}`, {
@@ -362,4 +411,145 @@ function fill_comparing_plot(comparing_plot_type, radio_group){
         console.log('Error:', error)
         hideSpinner(false);
     });
+}
+
+function fill_accuracy_plots(){
+
+    let selectedItems = new Map();
+    $('input.row-checkbox:checked').each(function() {
+
+        const [id, name] = $(this).val().split('|'); // Get the value of the checked checkbox
+
+        selectedItems.set(id, name);
+    });
+
+    const plotsGridContainer = document.getElementById('accuracyPlotsGridContainer');
+    plotsGridContainer.innerHTML = '';
+
+    selectedItems.forEach((value, key) => {
+
+        const plotBox = document.createElement('div');
+        plotBox.classList.add('plot-box');
+
+        const plotImage = document.createElement('img');
+        plotImage.src = `/training/training_history_plots/training_plots/${key}/accuracy_plot.png`;
+        plotImage.alt = `Line Plot ${value}`;
+        plotImage.onclick = () => openImageModal(plotImage);
+
+        const caption = document.createElement('p');
+        caption.classList.add('plot-caption');
+        caption.textContent =value;
+
+        // Append image to the plot box
+        plotBox.appendChild(plotImage);
+        plotBox.appendChild(caption);
+
+        // Append plot box to the grid container
+        plotsGridContainer.appendChild(plotBox);
+    });
+}
+
+function fill_loss_plots(){
+
+    let selectedItems = new Map();
+    $('input.row-checkbox:checked').each(function() {
+
+        const [id, name] = $(this).val().split('|'); // Get the value of the checked checkbox
+
+        selectedItems.set(id, name);
+    });
+
+    const plotsGridContainer = document.getElementById('lossPlotsGridContainer');
+    plotsGridContainer.innerHTML = '';
+
+    selectedItems.forEach((value, key) => {
+
+        const plotBox = document.createElement('div');
+        plotBox.classList.add('plot-box');
+
+        const plotImage = document.createElement('img');
+        plotImage.src = `/training/training_history_plots/training_plots/${key}/loss_plot.png`;
+        plotImage.alt = `Line Plot ${value}`;
+        plotImage.onclick = () => openImageModal(plotImage);
+
+        const caption = document.createElement('p');
+        caption.classList.add('plot-caption');
+        caption.textContent =value;
+
+        // Append image to the plot box
+        plotBox.appendChild(plotImage);
+        plotBox.appendChild(caption);
+
+        // Append plot box to the grid container
+        plotsGridContainer.appendChild(plotBox);
+    });
+}
+
+function fill_grid(grid_type){
+
+    let selectedIds = [];
+    $('input.row-checkbox:checked').each(function() {
+
+        const [id, name] = $(this).val().split('|'); // Get the value of the checked checkbox
+
+        selectedIds.push(id);
+    });
+
+    setTimeout(() => {
+        fetch(`/training/get_per_category_result_details?trainHistoryIds=${selectedIds}&ComparePlotType=${grid_type}`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            let grid = document.getElementById(`${grid_type}_grid`);
+
+            let headersHtml = data.columns.map(col => `<th>${col}</th>`).join('\n');
+
+            grid.innerHTML = `<table id='${grid_type}-table' class="display">
+                                <thead>
+                                    <tr id='${grid_type}-tableHeaders'>
+                                        ${headersHtml}
+                                    </tr>
+                                </thead>
+                                <tbody id='${grid_type}-tableBody'></tbody>
+                            </table>`;
+
+
+            // Initialize the DataTable with new data
+            $(`#${grid_type}-table`).DataTable({
+                destroy: true,
+                data: data.data,
+                scrollX: true,
+                scrollY: 400,
+                fixedColumns: {
+                    leftColumns: 1,
+                },
+                columns: data.columns.map(col => ({ data: col })), // Map column names to data keys
+                paging: false,
+                ordering: true,
+                searching: false,
+                createdRow: function (row, data, dataIndex) {
+                    let rowData = data; // Original row data as an object
+                    let keys = Object.keys(rowData).filter(key => key !== 'level'); // Exclude 'level' column
+                    let rowValues = keys.map(key => rowData[key]); // Get values for columns other than 'level'
+                    let maxVal = Math.max(...rowValues);
+
+                    // Iterate through each cell to find the max value and make it bold
+                    $('td', row).each(function () {
+                        if (parseFloat($(this).text()) === maxVal) {
+                            $(this).css('font-weight', 'bold');
+                        }
+                    });
+                }
+            });
+        })
+        .catch(error => console.log('Error fetching data:', error));
+    }, 1000); // Delay of 1000 milliseconds (1 second)
+}
+
+function showImage(image_name) {
+    openImageModalBySrc(`../training/training_models/training_model_images/${image_name}.png`);
 }

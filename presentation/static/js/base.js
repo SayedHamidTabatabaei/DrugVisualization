@@ -38,3 +38,29 @@ function remove_incorrect_jobs(){
         hideSpinner(false);
     });
 }
+
+function start_job(){
+
+    showSpinner();
+
+    fetch(`/job/start_job`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status) {
+            hideSpinner(true);
+
+        } else {
+            console.log('Error: No data found.');
+            hideSpinner(false);
+        }
+    })
+    .catch(error => {
+        console.log('Error:', error)
+        hideSpinner(false);
+    });
+}

@@ -4,7 +4,7 @@ from common.enums.loss_functions import LossFunctions
 
 
 @dataclass
-class TrainingParameterModel:
+class TrainingParameterBaseModel:
     train_id: int
     loss_function: LossFunctions
     class_weight: bool

@@ -3,8 +3,7 @@ from sklearn import svm
 from businesses.trains.train_base_service import TrainBaseService
 from common.enums.train_models import TrainModel
 from common.helpers import loss_helper
-from core.models.training_parameter_model import TrainingParameterModel
-from core.repository_models.training_data_dto import TrainingDataDTO
+from core.models.training_parameter_models.split_interaction_similarities_training_parameter_model import SplitInteractionSimilaritiesTrainingParameterModel
 from core.repository_models.training_summary_dto import TrainingSummaryDTO
 
 train_model = TrainModel.SVM
@@ -12,9 +11,9 @@ train_model = TrainModel.SVM
 
 class SvmTrainService(TrainBaseService):
 
-    def train(self, parameters: TrainingParameterModel, data: list[list[TrainingDataDTO]]) -> TrainingSummaryDTO:
+    def train(self, parameters: SplitInteractionSimilaritiesTrainingParameterModel) -> TrainingSummaryDTO:
 
-        x_train, x_test, y_train, y_test = super().split_train_test(data, False)
+        x_train, x_test, y_train, y_test = super().split_train_test(parameters.data, False)
 
         x_train_flat, x_test_flat = super().create_input_tensors_flat(x_train, x_test)
 
@@ -32,7 +31,7 @@ class SvmTrainService(TrainBaseService):
         print('Start Evaluate')
         evaluations = super().calculate_evaluation_metrics(clf, x_test_flat, y_test, True)
 
-        if data is not None:
-            evaluations.data_report = self.get_data_report_split(data[0], y_train, y_test, True)
+        if parameters.data is not None:
+            evaluations.data_report = self.get_data_report_split(parameters.data[0], y_train, y_test, True)
 
         return evaluations

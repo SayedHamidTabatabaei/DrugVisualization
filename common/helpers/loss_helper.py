@@ -74,5 +74,6 @@ def focal_tversky_loss(alpha=0.7, beta=0.3, gamma=0.75, smooth=1, class_weights=
 
 
 def get_class_weights(y_train):
+    y_train = np.ravel(y_train)
     class_weights = compute_class_weight('balanced', classes=np.unique(y_train), y=y_train)
     return dict(zip(np.unique(y_train), class_weights))

@@ -1,13 +1,13 @@
 from tensorflow.keras.layers import Input, Dense, Concatenate
+# noinspection PyUnresolvedReferences
 from tensorflow.keras.models import Model
 from tqdm import tqdm
 
 from businesses.trains.train_base_service import TrainBaseService
 from common.enums.train_models import TrainModel
 from core.models.data_params import DataParams
+from core.models.training_parameter_models.split_interaction_similarities_training_parameter_model import SplitInteractionSimilaritiesTrainingParameterModel
 from core.models.training_params import TrainingParams
-from core.models.training_parameter_model import TrainingParameterModel
-from core.repository_models.training_data_dto import TrainingDataDTO
 from core.repository_models.training_summary_dto import TrainingSummaryDTO
 
 train_model = TrainModel.AE_Con_DNN
@@ -24,9 +24,9 @@ class AeConDnnTrainService(TrainBaseService):
         encoded = Dense(self.encoding_dim, activation='relu')(input_layer)
         return input_layer, encoded
 
-    def train(self, parameters: TrainingParameterModel, data: list[list[TrainingDataDTO]]) -> (TrainingSummaryDTO, object):
+    def train(self, parameters: SplitInteractionSimilaritiesTrainingParameterModel) -> (TrainingSummaryDTO, object):
 
-        x_train, x_test, y_train, y_test = super().split_train_test(data)
+        x_train, x_test, y_train, y_test = super().split_train_test(parameters.drug_data, parameters.interaction_data, padding=True)
 
         input_layers = []
         encoded_models = []
@@ -49,9 +49,6 @@ class AeConDnnTrainService(TrainBaseService):
         x = Dense(128, activation='relu')(x)
         output = Dense(self.num_classes, activation='softmax')(x)  # Softmax for multi-class classification
 
-        print('Fix data')
-        x_train, x_test = super().create_input_tensors_ragged(x_train, x_test)
-
         # Create the full model
         full_model = Model(inputs=[input_layer for input_layer in input_layers], outputs=output)
 
@@ -59,4 +56,4 @@ class AeConDnnTrainService(TrainBaseService):
                                      training_params=TrainingParams(train_id=parameters.train_id, optimizer='adam', loss=parameters.loss_function,
                                                                     class_weight=parameters.class_weight),
                                      model=full_model,
-                                     data=data)
+                                     interactions=parameters.interaction_data)

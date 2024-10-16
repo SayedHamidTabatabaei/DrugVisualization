@@ -4,9 +4,8 @@ from tqdm import tqdm
 from businesses.trains.train_base_service import TrainBaseService
 from common.enums.train_models import TrainModel
 from core.models.data_params import DataParams
+from core.models.training_parameter_models.split_interaction_similarities_training_parameter_model import SplitInteractionSimilaritiesTrainingParameterModel
 from core.models.training_params import TrainingParams
-from core.models.training_parameter_model import TrainingParameterModel
-from core.repository_models.training_data_dto import TrainingDataDTO
 from core.repository_models.training_summary_dto import TrainingSummaryDTO
 
 train_model = TrainModel.JoinBeforeSoftmax
@@ -21,10 +20,11 @@ class JoinBeforeSoftmaxTrainService(TrainBaseService):
         x_data = layers.Dense(32, activation='relu')(x_data)
         return models.Model(inputs=input_data, outputs=x_data)
 
-    def train(self, parameters: TrainingParameterModel, data: list[list[TrainingDataDTO]]) -> TrainingSummaryDTO:
+    def train(self, parameters: SplitInteractionSimilaritiesTrainingParameterModel) -> TrainingSummaryDTO:
 
-        print('split data!')
-        x_train, x_test, y_train, y_test = super().split_train_test(data)
+        x_train, x_test, y_train, y_test = super().split_train_test(parameters.data)
+
+        x_train, x_test = super().create_input_tensors_pad(x_train, x_test)
 
         input_models = []
         input_layers = []
@@ -32,13 +32,11 @@ class JoinBeforeSoftmaxTrainService(TrainBaseService):
         for d in tqdm(x_train, "Creating Models..."):
             shapes = {tuple(s.shape) for s in d}
 
-            if len(shapes) != 1:
-                raise ValueError(f"Error: Multiple shapes found: {shapes}")
+            assert len(shapes) == 1, ValueError(f"Error: Multiple shapes found: {shapes}")
 
-            # Create a model for the shape of the 'concat_values'
-            model = self.create_model(shapes.pop())  # Use the correct input shape for 'concat_values'
+            model = self.create_model(shapes.pop())
             input_models.append(model)
-            input_layers.append(model.input)  # Store input layers for later use
+            input_layers.append(model.input)
 
         # Concatenate both models' outputs
         concatenated = layers.Concatenate()([model.output for model in input_models])
@@ -52,12 +50,8 @@ class JoinBeforeSoftmaxTrainService(TrainBaseService):
         # Create the final model
         final_model = models.Model(inputs=input_layers, outputs=output)
 
-        print('Ragged!')
-        x_train, x_test = super().create_input_tensors_ragged(x_train, x_test)
-
-        return super().fit_dnn_model(data_params=DataParams(x_train=x_train, y_train=y_train, x_test=x_test, y_test=y_test),
+        return super().fit_dnn_model(data_params=DataParams(x_train=[x for x in x_train], y_train=y_train, x_test=[x for x in x_test], y_test=y_test),
                                      training_params=TrainingParams(train_id=parameters.train_id, optimizer='adam', loss=parameters.loss_function,
                                                                     class_weight=parameters.class_weight),
                                      model=final_model,
-                                     data=data)
-
+                                     data=parameters.data)

@@ -6,9 +6,8 @@ from tensorflow.keras.models import Sequential
 from businesses.trains.train_base_service import TrainBaseService
 from common.enums.train_models import TrainModel
 from core.models.data_params import DataParams
+from core.models.training_parameter_models.split_interaction_similarities_training_parameter_model import SplitInteractionSimilaritiesTrainingParameterModel
 from core.models.training_params import TrainingParams
-from core.models.training_parameter_model import TrainingParameterModel
-from core.repository_models.training_data_dto import TrainingDataDTO
 from core.repository_models.training_summary_dto import TrainingSummaryDTO
 
 train_model = TrainModel.SimpleOneInput
@@ -16,9 +15,9 @@ train_model = TrainModel.SimpleOneInput
 
 class SimpleOneInputTrainService(TrainBaseService):
 
-    def train(self, parameters: TrainingParameterModel, data: list[list[TrainingDataDTO]]) -> TrainingSummaryDTO:
+    def train(self, parameters: SplitInteractionSimilaritiesTrainingParameterModel) -> TrainingSummaryDTO:
 
-        data = data[0]
+        data = parameters.data[0]
 
         # Prepare input for the model
         x_pairs = np.array([item.concat_values for item in data])
@@ -57,4 +56,3 @@ class SimpleOneInputTrainService(TrainBaseService):
                                                                     class_weight=parameters.class_weight),
                                      model=model,
                                      data=data)
-

@@ -1,6 +1,7 @@
-from core.mappers.drug_mapper import map_drug_smiles, map_drug_text
+from core.mappers.drug_mapper import map_drug_smiles, map_drug_text, map_training_drug_data_dto
 from core.repository_models.drug_smiles_dto import DrugSmilesDTO
 from core.repository_models.drug_text_property_dto import DrugTextPropertyDTO
+from core.repository_models.training_drug_data_dto import TrainingDrugDataDTO
 from infrastructure.mysqldb.mysql_repository import MySqlRepository
 
 
@@ -15,6 +16,10 @@ class DrugRepository(MySqlRepository):
     def get_list(self):
         result, _ = self.call_procedure('FindAllDrugs')
         return result
+
+    def find_all_active_drugs(self, has_enzyme: bool, has_pathway: bool, has_smiles: bool, has_target: bool) -> list[TrainingDrugDataDTO]:
+        result, _ = self.call_procedure('FindAllActiveDrugs', [has_enzyme, has_pathway, has_smiles, has_target])
+        return map_training_drug_data_dto(result[0])
 
     def get_id_by_drugbank_id(self, drugbank_id):
         result, _ = self.call_procedure('FindIdByDrugBankId', [drugbank_id])

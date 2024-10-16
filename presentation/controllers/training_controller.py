@@ -7,6 +7,7 @@ from businesses.training_business import TrainingBusiness
 from common.attributes.route import route
 from common.enums.compare_plot_type import ComparePlotType
 from common.enums.loss_functions import LossFunctions
+from common.enums.scenarios import Scenarios
 from common.enums.train_models import TrainModel
 from core.view_models.train_request_view_model import TrainRequestViewModel
 from infrastructure.repositories.training_scheduled_repository import TrainingScheduledRepository
@@ -22,9 +23,21 @@ class TrainingController(MethodView):
 
     blue_print = Blueprint('training', __name__)
 
+    @route('fillScenarios', methods=['GET'])
+    def get_scenarios(self):
+        types = [{"name": scenario.name, "value": scenario.value} for scenario in Scenarios]
+        return jsonify(types)
+
     @route('fillTrainingModels', methods=['GET'])
     def get_training_models(self):
-        types = [{"name": train_model.name, "value": train_model.value} for train_model in TrainModel]
+        scenario_str = request.args.get('scenario')
+
+        if not scenario_str:
+            return jsonify({'status': False, 'data': ''})
+
+        scenario = Scenarios[scenario_str]
+
+        types = [{"name": train_model.name, "value": train_model.value} for train_model in TrainModel if train_model.scenario == scenario]
         return jsonify(types)
 
     @route('fillLossFunctions', methods=['GET'])
@@ -51,6 +64,18 @@ class TrainingController(MethodView):
         train_model = TrainModel[train_model_str]
 
         return jsonify({'status': True, 'data': train_model.description})
+
+    @route('get_scenario_description', methods=['GET'])
+    def get_scenario_description(self):
+
+        scenario_str = request.args.get('scenario')
+
+        if not scenario_str:
+            return jsonify({'status': False, 'data': ''})
+
+        scenario = Scenarios[scenario_str]
+
+        return jsonify({'status': True, 'data': scenario.description})
 
     @route('get_loss_formula', methods=['GET'])
     def get_loss_formula(self):
@@ -86,15 +111,22 @@ class TrainingController(MethodView):
         if train_model_str:
             train_model = TrainModel[train_model_str]
 
-        train_history, total_number = self.training_business.get_history(train_model, start, length)
+        scenario_str = request.args.get('scenario')
 
-        if train_history:
-            return jsonify({'draw': draw, 'recordsTotal': total_number,
+        scenario = None
+
+        if scenario_str:
+            scenario = Scenarios[scenario_str]
+
+        train_history, total_number = self.training_business.get_history(scenario, train_model, start, length)
+
+        # if train_history:
+        return jsonify({'draw': draw, 'recordsTotal': total_number,
                             'recordsFiltered': total_number, 'data': train_history, 'status': True})
-        else:
-            return jsonify({'draw': draw, 'recordsTotal': total_number,
-                            'recordsFiltered': total_number, 'data': train_history,
-                            'message': "No enzyme found!", 'status': False})
+        # else:
+        #     return jsonify({'draw': draw, 'recordsTotal': total_number,
+        #                     'recordsFiltered': total_number, 'data': train_history,
+        #                     'message': "No enzyme found!", 'status': False})
 
     @route('get_schedules', methods=['GET'])
     def get_schedules(self):
@@ -170,6 +202,23 @@ class TrainingController(MethodView):
             return jsonify({'image': image, 'status': True})
         else:
             return jsonify({'image': image, 'message': "No images found!", 'status': False})
+
+    @route('get_per_category_result_details', methods=['GET'])
+    def get_per_category_result_details(self):
+
+        train_ids = request.args.get('trainHistoryIds')
+        compare_plot_type = ComparePlotType.get_enum_from_string(request.args.get('ComparePlotType'))
+
+        if not train_ids:
+            return jsonify({'message': "No images found!", 'status': False})
+
+        columns, result_details = self.training_business.get_per_category_result_details([int(train_id) for train_id in train_ids.split(',')],
+                                                                                         compare_plot_type)
+
+        if result_details:
+            return jsonify({'columns': columns, 'data': result_details, 'status': True})
+        else:
+            return jsonify({'message': "No enzyme found!", 'status': False})
 
     @route('training_schedule_delete', methods=['DELETE'])
     def training_schedule_delete(self):

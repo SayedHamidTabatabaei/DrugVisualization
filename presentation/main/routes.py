@@ -144,3 +144,14 @@ def serve_training_plots(filename):
             return Response(f.read(), mimetype='image/png')
     else:
         abort(404)
+
+
+@main.route('/training/training_models/<path:filename>')
+def serve_training_model_image(filename):
+    file_path = os.path.join('', filename)
+
+    if os.path.exists(file_path):
+        with open(file_path, 'rb') as f:
+            return Response(f.read(), mimetype='image/png')
+    else:
+        abort(404)

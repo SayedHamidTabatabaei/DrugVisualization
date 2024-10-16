@@ -1,23 +1,29 @@
 from enum import Enum
 
+from common.enums.scenarios import Scenarios
+
 
 class TrainModel(Enum):
-    SimpleOneInput = (1, 'Just learn one input by DNN.')
-    JoinBeforeSoftmax = (2, 'Having n separate network, but before softmax layer, join the last layer.')
-    SumSoftmaxOutputs = (3, 'Have n separate network, and finally sum them.')
-    AE_Con_DNN = (4, 'Reduce data dimension, join them and send to DNN')
-    Contact_DNN = (5, 'Just join all data and send to DNN.')
-    KNN = (6, 'This network learns by KNN.')
-    KNNWithAutoEncoder = (7, 'This network learns by KNN and reduce dimension by AutoEncoder.')
-    SVM = (8, "This network learns by SVM.")
-    Con_AE_DNN = (9, 'This network learns by Concat input data AutoEncoder and then DNN.')
-    LR = (10, "Logistic Regression.")
-    RF = (11, "Random Forest.")
+    SimpleOneInput = (1, Scenarios.SplitInteractionSimilarities, 'Just learn one input by DNN.')
+    JoinBeforeSoftmax = (2, Scenarios.SplitInteractionSimilarities, 'Having n separate network, but before softmax layer, join the last layer.')
+    SumSoftmaxOutputs = (3, Scenarios.SplitInteractionSimilarities, 'Have n separate network, and finally sum them.')
+    AE_Con_DNN = (4, Scenarios.SplitInteractionSimilarities, 'Reduce data dimension, join them and send to DNN')
+    Contact_DNN = (5, Scenarios.SplitInteractionSimilarities, 'Just join all data and send to DNN.')
+    KNN = (6, Scenarios.SplitInteractionSimilarities, 'This network learns by KNN.')
+    KNNWithAutoEncoder = (7, Scenarios.SplitInteractionSimilarities, 'This network learns by KNN and reduce dimension by AutoEncoder.')
+    SVM = (8, Scenarios.SplitInteractionSimilarities, 'This network learns by SVM.')
+    Con_AE_DNN = (9, Scenarios.SplitInteractionSimilarities, 'This network learns by Concat input data AutoEncoder and then DNN.')
+    LR = (10, Scenarios.SplitInteractionSimilarities, 'Logistic Regression.')
+    RF = (11, Scenarios.SplitInteractionSimilarities, 'Random Forest.')
+    GAT_AE_Con_DNN = (12, Scenarios.SplitInteractionSimilarities, 'GAT On SMILES, AutoEncoder, Concat AutoEncoders and then DNN')
+    GAT_Con_AE_DNN = (9, Scenarios.SplitInteractionSimilarities, 'GAT On SMILES, Concat input data, AutoEncoder and then DNN.')
+    MHA = (20, Scenarios.SplitInteractionSimilarities, 'Multi-Head Attention.')
 
-    Test = (1000, "This network is for test new algorithms.")
+    Test = (1000, Scenarios.SplitDrugsTestWithTrain, "This network is for test new algorithms.")
 
-    def __init__(self, value, description):
+    def __init__(self, value, scenario: Scenarios, description):
         self._value_ = value
+        self.scenario = scenario
         self.description = description
 
     @classmethod

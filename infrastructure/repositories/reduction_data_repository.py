@@ -8,7 +8,8 @@ from core.domain.reduction_data import ReductionData
 from core.mappers import reduction_data_mapper
 from core.repository_models.interaction_dto import InteractionDTO
 from core.repository_models.reduction_data_dto import ReductionDataDTO
-from core.repository_models.training_data_dto import TrainingDataDTO
+from core.repository_models.training_data_dto import TrainingInteractionDataDTO
+from core.repository_models.training_drug_interaction_dto import TrainingDrugInteractionDTO
 from infrastructure.mysqldb.mysql_repository import MySqlRepository
 
 
@@ -76,7 +77,7 @@ class ReductionDataRepository(MySqlRepository):
                            category: Category,
                            reduction_category: ReductionCategory,
                            has_enzyme: bool, has_pathway: bool, has_target: bool, has_smiles: bool) \
-            -> list[TrainingDataDTO]:
+            -> list[TrainingInteractionDataDTO]:
         result, _ = self.call_procedure('FindTrainingData',
                                         [similarity_type.value, category.value, reduction_category.value,
                                          has_enzyme, has_pathway, has_target, has_smiles])
@@ -93,8 +94,7 @@ class ReductionDataRepository(MySqlRepository):
 
         return map_result
 
-    def find_interactions(self, has_enzyme: bool, has_pathway: bool, has_target: bool, has_smiles: bool) \
-            -> list[InteractionDTO]:
+    def find_interactions(self, has_enzyme: bool, has_pathway: bool, has_target: bool, has_smiles: bool) -> list[InteractionDTO]:
         result, _ = self.call_procedure('FindInteractions',
                                         [has_enzyme, has_pathway, has_target, has_smiles])
 

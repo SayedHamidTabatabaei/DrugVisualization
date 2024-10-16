@@ -1,3 +1,4 @@
+import json
 from datetime import datetime, timezone
 
 from common.enums.loss_functions import LossFunctions
@@ -29,13 +30,14 @@ class TrainingRepository(MySqlRepository):
 
         return id
 
-    def update(self, id: int, data_report: str) -> None:
+    def update(self, id: int, data_report: str, model_parameters: str) -> None:
 
         training = self.get_training_by_id(id)
 
         training.data_report = data_report
+        training.model_parameters = model_parameters
 
-        update_columns = ['data_report']
+        update_columns = ['data_report', 'model_parameters']
 
         super().update(training, update_columns)
 
@@ -43,18 +45,16 @@ class TrainingRepository(MySqlRepository):
         result, _ = self.call_procedure('GetTrainingById', [id])
         return training_mapper.map_training(result)
 
-    def get_training_count(self, train_model: TrainModel):
-        model_value = train_model.value if train_model is not None else None
+    def get_training_count(self, train_models: list[TrainModel]):
+        model_values = json.dumps([train_model.value for train_model in train_models]) if train_models is not None else None
 
-        result, _ = self.call_procedure('GetTrainingCount', [model_value])
+        result, _ = self.call_procedure('GetTrainingCount', [model_values])
 
         return result[0][0]
 
-    def find_all_training(self, train_model: TrainModel, start: int, length: int) \
-            -> list[TrainingResultDTO]:
-        model_value = train_model.value if train_model is not None else None
+    def find_all_training(self, train_models: list[TrainModel], start: int, length: int) -> list[TrainingResultDTO]:
+        model_values = json.dumps([train_model.value for train_model in train_models]) if train_models is not None else None
 
-        result, _ = self.call_procedure('FindAllTrainings',
-                                        [model_value, start, length])
+        result, _ = self.call_procedure('FindAllTrainings', [model_values, start, length])
 
         return training_mapper.map_trainings(result[0])

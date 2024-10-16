@@ -13,6 +13,7 @@ from core.repository_models.drug_smiles_dto import DrugSmilesDTO
 from core.repository_models.drug_text_property_dto import DrugTextPropertyDTO
 from core.repository_models.drug_toxicity_dto import DrugToxicityDTO
 from core.repository_models.drug_volume_of_distribution_dto import DrugVolumeOfDistributionDTO
+from core.repository_models.training_drug_data_dto import TrainingDrugDataDTO
 
 
 def map_drug_smiles(query_results) -> list[DrugSmilesDTO]:
@@ -166,6 +167,16 @@ def map_drug_classification_description(query_results) -> list[DrugClassificatio
     for result in query_results:
         drug_id, classification_description = result
         drug = DrugClassificationDescriptionDTO(id=drug_id, classification_description=classification_description)
+        drugs.append(drug)
+
+    return drugs
+
+
+def map_training_drug_data_dto(query_results) -> list[TrainingDrugDataDTO]:
+    drugs = []
+    for result in query_results:
+        id, drug_name, drugbank_id = result
+        drug = TrainingDrugDataDTO(drug_id=id, drug_name=drug_name, drugbank_id=drugbank_id)
         drugs.append(drug)
 
     return drugs

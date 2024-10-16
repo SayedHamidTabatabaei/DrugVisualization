@@ -4,6 +4,7 @@ from core.domain.training import Training
 from core.domain.training_result import TrainingResult
 from core.repository_models.training_result_detail_dto import TrainingResultDetailDTO
 from core.repository_models.training_result_dto import TrainingResultDTO
+from core.repository_models.training_result_report_dto import TrainingResultReportDTO
 
 
 def map_training(query_results) -> Training:
@@ -74,18 +75,25 @@ def map_training_results(query_results):
 
 
 def map_training_result(query_results):
-    id, training_id, training_result_type, result_value = query_results
+    id, training_id, name, training_result_type, result_value = query_results
 
     return TrainingResult(id=id, training_result_type=training_result_type, result_value=result_value)
+
+
+def map_training_result_report_dto(query_results):
+    id, training_id, name, training_result_type, result_value = query_results
+
+    return TrainingResultReportDTO(id=id, training_id=training_id, training_name=name, training_result_type=training_result_type, result_value=result_value)
 
 
 def map_training_result_details(query_results) -> list[TrainingResultDetailDTO]:
     training_result_details = []
     for result in query_results:
-        id, training_result_id, training_label, f1_score, accuracy, auc, aupr, recall, precision = result
+        id, training_id, training_name, training_label, f1_score, accuracy, auc, aupr, recall, precision = result
 
         training_result_details.append(TrainingResultDetailDTO(id=id,
-                                                               training_result_id=training_result_id,
+                                                               training_id=training_id,
+                                                               training_name=training_name,
                                                                training_label=training_label,
                                                                f1_score=f1_score,
                                                                accuracy=accuracy,

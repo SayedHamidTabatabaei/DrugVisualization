@@ -1,5 +1,7 @@
 from businesses.trains.con_ae_dnn_train_service import ConAeDnnTrainService
+from businesses.trains.gat_ae_con_dnn_train_service import GatAeConDnnTrainService
 from businesses.trains.lr_train_service import LrTrainService
+from businesses.trains.mha_train_service import MhaTrainService
 from businesses.trains.rf_train_service import RfTrainService
 from businesses.trains.simple_one_input_train_service import SimpleOneInputTrainService
 from businesses.trains.join_before_softmax_train_service import JoinBeforeSoftmaxTrainService
@@ -34,6 +36,10 @@ def get_instance(category: TrainModel) -> TrainBaseService:
         return LrTrainService(category)
     elif category == TrainModel.RF:
         return RfTrainService(category)
+    elif category == TrainModel.GAT_AE_Con_DNN:
+        return GatAeConDnnTrainService(category)
+    elif category == TrainModel.MHA:
+        return MhaTrainService(category)
     elif category == TrainModel.Test:
         return TrainPlanTest(category)
     else:

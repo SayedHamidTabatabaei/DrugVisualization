@@ -13,7 +13,10 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/lib/jquery.dataTables.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/lib/dataTables.bootstrap4.min.css') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    {% block style %}{% endblock %}
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
+    {% block style %}
+
+    {% endblock %}
     <script src="{{ url_for('static', filename='js/base.js') }}" defer></script>
     <script src="{{ url_for('static', filename='js/lib/jquery-3.5.1.min.js') }}" defer></script>
     <script src="{{ url_for('static', filename='js/lib/jquery.dataTables.js') }}" defer></script>
@@ -32,7 +35,6 @@
         <aside class="sidebar" id="sidebar">
             <div class="logo">
                 <button class="collapse-btn" id="collapseBtn" onclick="toggleSidebar()">➖</button>
-<!--                <h2>Menu</h2>-->
             </div>
             <nav>
                 <ul>
@@ -109,6 +111,9 @@
                 </button>
                 <button class="footer-icon-btn" title="Remove Job" onclick="remove_incorrect_jobs()">
                     <i class="fas fa-trash-alt"></i>
+                </button>
+                <button class="footer-icon-btn" title="Remove Job" onclick="start_job()">
+                    <i class="fas bi-play-fill"></i>
                 </button>
             </div>
             <p>&copy; 2024 DDI App</p>

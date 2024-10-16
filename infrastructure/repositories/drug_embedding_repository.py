@@ -25,7 +25,7 @@ class DrugEmbeddingRepository(MySqlRepository):
 
         return drug_embedding
 
-    def insert_if_not_exits(self, drug_id: int, embedding_type: EmbeddingType, text_type: TextType, embedding: str) \
+    def insert_if_not_exits(self, drug_id: int, embedding_type: EmbeddingType, text_type: TextType, embedding: str, issue_on_max_length: bool) \
             -> Union[DrugEmbedding, None]:
 
         is_exists = self.is_exists_drug_embedding(drug_id, embedding_type, text_type)
@@ -34,7 +34,7 @@ class DrugEmbeddingRepository(MySqlRepository):
             return None
 
         drug_embedding = self.insert(drug_id=drug_id, embedding_type=embedding_type, text_type=text_type,
-                                     embedding=embedding)
+                                     embedding=embedding, issue_on_max_length=issue_on_max_length)
 
         return drug_embedding
 

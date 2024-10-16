@@ -44,7 +44,8 @@ class JobBusiness:
 
         threading.Thread(target=self._delay_first_run).start()
 
-    def _run_scheduler(self):
+    @staticmethod
+    def _run_scheduler():
         while True:
             schedule.run_pending()
             time.sleep(1)

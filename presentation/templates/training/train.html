@@ -11,6 +11,7 @@
 <link rel="stylesheet" href="{{ url_for('static', filename='css/checkbox.css') }}">
 <link rel="stylesheet" href="{{ url_for('static', filename='css/section.css') }}">
 <link rel="stylesheet" href="{{ url_for('static', filename='css/train.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/imagemodal.css') }}">
 {% endblock %}
 
 {% block script %}
@@ -20,23 +21,24 @@
 <script src="{{ url_for('static', filename='js/fill_embedding_category_dropdown.js') }}"></script>
 <script src="{{ url_for('static', filename='js/fill_train_model_dropdown.js') }}"></script>
 <script src="{{ url_for('static', filename='js/fill_loss_dropdown.js') }}"></script>
+<script src="{{ url_for('static', filename='js/fill_scenario_dropdown.js') }}"></script>
 <script src="{{ url_for('static', filename='js/show_hide_checkbox_container.js') }}"></script>
+<script src="{{ url_for('static', filename='js/image_modal.js') }}"></script>
 {% endblock %}
 
 
 {% block content %}
 <h2>Schedule Train</h2>
 
-<div>
+<div class="train-container">
 
-    <div class="property-container">
-        <label for="trainModelSelect" class="label-for">Choose a Model:</label>
+    <div class="property-container column-container" style="grid-column: span 2;">
+        <label for="scenarioSelect" class="label-for">Choose Scenario:</label>
 
-        <select id="trainModelSelect" onchange="updateDescription();fill_loss_dropdown();">
-            <option value="">--Select a Model--</option>
+        <select id="scenarioSelect" onchange="updateScenarioDescription();fill_train_model_dropdown();">
+            <option value="">--Select a Scenario--</option>
         </select>
-        <button id="submitBtn" onclick="train()">Schedule</button>
-        <p id="trainModelDescription"></p>
+        <p id="scenarioDescription"></p>
         <label id="test-algorithm-label" class="checkbox-label">
             <input type="checkbox" id="test-algorithm-check">
             <span class="checkbox-custom"></span>
@@ -44,35 +46,55 @@
         </label>
     </div>
 
-    <div id="loss-container" style="display: none;" class="property-container">
-        <label for="lossFunctionSelect" class="label-for">Choose loss:</label>
+    <div class="property-container column-container" style="grid-column: span 2;">
+        <label for="trainModelSelect" class="label-for">Choose a Model:</label>
 
-        <select id="lossFunctionSelect" onchange="updateLossFormula()">
-            <option value="">--Select a loss--</option>
+        <select id="trainModelSelect" onchange="updateTrainModelImage();updateTrainModelDescription();fill_loss_dropdown();">
+            <option value="">--Select a Model--</option>
         </select>
-        <p id="lossFormula"></p>
+        <button id="submitBtn" onclick="train()">Schedule</button>
+        <p id="trainModelDescription"></p>
     </div>
 
-    <div class="property-container">
-        <span>Use Class Weight</span>
+    <div class="column-container">
+        <div id="loss-container" style="display: none;" class="property-container">
+            <label for="lossFunctionSelect" class="label-for">Choose loss:</label>
 
-        <label id="class-weight-label" class="checkbox-label" style="margin-left: 20px; margin-bottom: 20px;">
-            <input type="checkbox" id="class-weight-check">
-            <span class="checkbox-custom"></span>
-        </label>
-    </div>
+            <select id="lossFunctionSelect" onchange="updateLossFormula()">
+                <option value="">--Select a loss--</option>
+            </select>
+            <p id="lossFormula"></p>
+        </div>
 
-    <div class="property-container">
-        <label for="modelName" class="label-for">Name:</label>
-        <input type="text" id="modelName" placeholder="Enter model name" />
-    </div>
+        <div class="property-container">
+            <span>Use Class Weight</span>
 
-    <div class="property-container">
+            <label id="class-weight-label" class="checkbox-label" style="margin-left: 20px; margin-bottom: 20px;">
+                <input type="checkbox" id="class-weight-check">
+                <span class="checkbox-custom"></span>
+            </label>
+        </div>
+
+        <div class="property-container">
+            <label for="modelName" class="label-for">Name:</label>
+            <input type="text" id="modelName" placeholder="Enter model name" />
+        </div>
+
+        <div class="property-container">
         <label for="modelDescription" class="label-for">Description:</label>
         <textarea id="modelDescription" placeholder="Enter model description"></textarea>
     </div>
+    </div>
+    <div class="column-container image-container">
+        <img id="trainModelImg" class="train-model-image" onclick="openImageModal(this)">
+    </div>
 
-    <div class="section">
+	<div id="imageModal" class="img-modal" onclick="closeImageModal()">
+		<span class="close">&times;</span>
+		<img class="img-modal-content" id="enlargedImage">
+	</div>
+
+    <div class="section column-container">
         <h3>Similarities</h3>
 
         <div class="checkbox-container">
@@ -145,7 +167,7 @@
     </div>
 
     <!-- Second Section with Checkboxes -->
-    <div class="section">
+    <div class="section column-container" style="grid-row: span 2;">
         <h3>Texts</h3>
 
         <div class="checkbox-container">
@@ -351,6 +373,26 @@
                     <option value="">--Select an embedding</option>
                 </select>
                 <select id="classification-description-reduction-select">
+                    <option value="">--Select a reduction--</option>
+                </select>
+            </div>
+        </div>
+    </div>
+    <div class="section column-container">
+        <h3>Interaction Texts</h3>
+
+        <div class="checkbox-container">
+            <label class="checkbox-label">
+                <input type="checkbox" id="interaction-description-check"
+                       onclick="toggleDropdowns(this, 'interaction-description-details');fillEmbeddingSelect('interaction-description-embedding-select');fillReductionSelect('interaction-description-reduction-select');">
+                <span class="checkbox-custom"></span>
+                Description
+            </label>
+            <div id="interaction-description-details" class="dropdowns" style="display: none;">
+                <select id="interaction-description-embedding-select">
+                    <option value="">--Select an embedding</option>
+                </select>
+                <select id="interaction-description-reduction-select">
                     <option value="">--Select a reduction--</option>
                 </select>
             </div>

@@ -10,4 +10,5 @@ class TrainingSummaryDTO:
     training_results: list[TrainingResultSummaryDTO]
     model: bytes
     data_report: object
+    model_info: object
     training_result_details: list[TrainingResultDetailSummaryDTO]

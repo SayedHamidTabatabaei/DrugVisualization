@@ -6,3 +6,25 @@
 #test-algorithm-label {
     margin-left: auto;
 }
+
+.train-model-image{
+    margin-left: auto;
+    width: 100%;
+}
+
+.train-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr; /* Two columns */
+    gap: 20px;
+    margin: 0 auto;
+}
+
+.column-container {
+    grid-column: span 1; /* Each item takes one column */
+}
+
+@media (max-width: 768px) {
+    .train-container {
+        grid-template-columns: 1fr; /* Stack all items on small screens */
+    }
+}

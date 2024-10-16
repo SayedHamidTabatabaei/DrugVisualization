@@ -1,3 +1,4 @@
+import json
 from typing import Union
 
 from core.domain.training_result_detail import TrainingResultDetail
@@ -63,6 +64,15 @@ class TrainingResultDetailRepository(MySqlRepository):
     def find_all_training_result_details(self, train_id: int) -> list[TrainingResultDetailDTO]:
 
         result, _ = self.call_procedure('FindAllTrainingResultDetails', [train_id])
+
+        training_result = result[0]
+
+        return training_mapper.map_training_result_details(training_result)
+
+    def find_training_result_details_by_training_ids(self, train_ids: list[int]) -> list[TrainingResultDetailDTO]:
+        ids_json = json.dumps(train_ids)
+
+        result, _ = self.call_procedure('FindTrainingResultDetailsByTrainingIds', [ids_json])
 
         training_result = result[0]
 

@@ -1,5 +1,6 @@
 from decimal import Decimal
 from typing import Union
+import json
 
 from common.enums.category import Category
 from common.enums.similarity_type import SimilarityType
@@ -54,12 +55,29 @@ class SimilarityRepository(MySqlRepository):
         return similarity is not None and (similarity != [] if isinstance(similarity, list) else bool(similarity))
 
     def find_all_similarity(self, similarity_type: SimilarityType, category: Category,
-                            check_target: bool, check_pathway: bool, check_enzyme: bool, check_smiles: bool,
-                            start: int, length: int) \
+                            check_target: bool = True, check_pathway: bool = True, check_enzyme: bool = True, check_smiles: bool = True,
+                            start: int = 0, length: int = 100000) \
             -> list[DrugSimilarityDTO]:
         result, _ = self.call_procedure('FindAllSimilarities',
                                         [start, length, similarity_type.value, category.value,
                                          check_target, check_pathway, check_enzyme, check_smiles])
+
+        similarity = result[0]
+
+        return map_drug_similarity(similarity)
+
+    def find_all_active_similarity(self, similarity_type: SimilarityType, category: Category) \
+            -> list[DrugSimilarityDTO]:
+        result, _ = self.call_procedure('FindAllActiveSimilarities', [similarity_type.value, category.value])
+
+        similarity = result[0]
+
+        return map_drug_similarity(similarity)
+
+    def find_similarities_by_drugs(self, drug_ids: list[int], similarity_type: SimilarityType, category: Category) -> list[DrugSimilarityDTO]:
+        ids_json = json.dumps(drug_ids)
+
+        result, _ = self.call_procedure('FindSimilaritiesByDrugs', [ids_json, similarity_type.value, category.value])
 
         similarity = result[0]
 

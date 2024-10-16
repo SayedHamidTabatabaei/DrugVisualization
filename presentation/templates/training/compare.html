@@ -10,6 +10,8 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
 <link rel="stylesheet" href="{{ url_for('static', filename='css/tab.css') }}">
 <link rel="stylesheet" href="{{ url_for('static', filename='css/radiobutton.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/imagemodal.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/modal.css') }}">
 
 {% endblock %}
 
@@ -17,7 +19,11 @@
 <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
 <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 <script src="{{ url_for('static', filename='js/fill_train_model_dropdown.js') }}"></script>
+<script src="{{ url_for('static', filename='js/fill_scenario_dropdown.js') }}"></script>
 <script src="{{ url_for('static', filename='js/compare.js') }}"></script>
+<script src="{{ url_for('static', filename='js/image_modal.js') }}"></script>
+<script src="{{ url_for('static', filename='js/condition_modal.js') }}"></script>
+<script src="{{ url_for('static', filename='js/data_report_modal.js') }}"></script>
 {% endblock %}
 
 
@@ -27,21 +33,37 @@
 <!-- Dropdown and button -->
 <div>
     <div class="property-container">
-        <label for="trainModelSelect" class="label-for">Choose a property:</label>
+        <label for="scenarioSelect" class="label-for">Choose a Scenario:</label>
+
+        <select id="scenarioSelect" style="margin-right: 50px;" onchange="fill_train_model_dropdown('All');">
+            <option value="">All</option>
+            <!-- Add more options as needed -->
+        </select>
+        <label for="trainModelSelect" class="label-for">Choose a Model:</label>
 
         <select id="trainModelSelect">
-            <option value="">--Select an property--</option>
+            <option value="">All</option>
             <!-- Add more options as needed -->
         </select>
         <button id="submitBtn" onclick="get_history()">Submit</button>
+
+        <label class="checkbox-label" style="position: absolute;right: 20px;line-height:0"><strong><i>Filter Checked</i></strong>
+            <input type="checkbox" id="filter-check" onclick="filter_checked()">
+            <span class="checkbox-custom" style="margin-top: 0;"></span>
+        </label>
     </div>
 
 </div>
-<div class="grid-container">
-    <table id="selectableTrainTable" class="datagrid-table; display">
-        <thead>
+<div class="grid-container" style="max-height: 400px;overflow-y: auto;overflow-x: auto;">
+    <table id="selectableTrainTable" class="datagrid-table; display" style="border-collapse: collapse;">
+        <thead style="position: sticky;top: 0;z-index: 10;background-color: white;">
             <tr>
-                <th rowspan="2"></th>
+                <th rowspan="2">
+                    <label class="checkbox-label" style="width: 30px;">
+                        <input type="checkbox" id="select-all" onclick="select_all();compare_trainings();">
+                        <span class="checkbox-custom" style="margin-top: 0;"></span>
+                    </label>
+                </th>
                 <th rowspan="2">Name</th>
                 <th rowspan="2">Loss</th>
                 <th rowspan="2">Accuracy</th>
@@ -61,6 +83,8 @@
 
                 <!-- Precision Group -->
                 <th colspan="3">Precision</th>
+
+                <th rowspan="2">Actions</th>
             </tr>
             <tr>
                 <!-- F1 Score sub-columns -->
@@ -102,51 +126,47 @@
     </div>
 
     <div class="tab-row">
-        <div id="accuracy" class="tab active" onclick="openTab(event, 'accuracy-tab');fill_comparing_plot('accuracy');">Accuracy</div>
-        <div id="loss" class="tab" onclick="openTab(event, 'loss-tab');fill_comparing_plot('loss');">Loss</div>
+        <div id="accuracy" class="tab active" onclick="openTab(event, 'accuracy-tab');fill_comparing_plot('accuracy');fill_accuracy_plots();">Accuracy</div>
+        <div id="loss" class="tab" onclick="openTab(event, 'loss-tab');fill_comparing_plot('loss');fill_loss_plots();">Loss</div>
         <div id="f1_score" class="tab" onclick="openTab(event, 'f1_score-tab');fill_comparing_plot('f1_score', 'f1_score_radio_group');">F1 Score</div>
         <div id="auc" class="tab" onclick="openTab(event, 'auc-tab');fill_comparing_plot('auc', 'auc_radio_group');">AUC</div>
         <div id="aupr" class="tab" onclick="openTab(event, 'aupr-tab');fill_comparing_plot('aupr', 'aupr_radio_group');">AUPR</div>
         <div id="recall" class="tab" onclick="openTab(event, 'recall-tab');fill_comparing_plot('recall', 'recall_radio_group');">Recall</div>
         <div id="precision" class="tab" onclick="openTab(event, 'precision-tab');fill_comparing_plot('precision', 'precision_radio_group');">Precision</div>
 
-        <div id="details_accuracy" class="tab" onclick="openTab(event, 'details_accuracy-tab');fill_comparing_plot('details_accuracy');">Accuracy</div>
-        <div id="details_f1_score" class="tab" onclick="openTab(event, 'details_f1_score-tab');fill_comparing_plot('details_f1_score');">F1 Score</div>
-        <div id="details_auc" class="tab" onclick="openTab(event, 'details_auc-tab');fill_comparing_plot('details_auc');">AUC</div>
-        <div id="details_aupr" class="tab" onclick="openTab(event, 'details_aupr-tab');fill_comparing_plot('details_aupr');">AUPR</div>
-        <div id="details_recall" class="tab" onclick="openTab(event, 'details_recall-tab');fill_comparing_plot('details_recall');">Recall</div>
-        <div id="details_precision" class="tab" onclick="openTab(event, 'details_precision-tab');fill_comparing_plot('details_precision');">Precision</div>
+        <div id="details_accuracy" class="tab"
+             onclick="openTab(event, 'details_accuracy-tab');fill_comparing_plot('details_accuracy');fill_grid('details_accuracy');">Accuracy</div>
+        <div id="details_f1_score" class="tab"
+             onclick="openTab(event, 'details_f1_score-tab');fill_comparing_plot('details_f1_score');fill_grid('details_f1_score');">F1 Score</div>
+        <div id="details_auc" class="tab" onclick="openTab(event, 'details_auc-tab');fill_comparing_plot('details_auc');fill_grid('details_auc');">AUC</div>
+        <div id="details_aupr" class="tab" onclick="openTab(event, 'details_aupr-tab');fill_comparing_plot('details_aupr');fill_grid('details_aupr');">AUPR
+        </div>
+        <div id="details_recall" class="tab" onclick="openTab(event, 'details_recall-tab');fill_comparing_plot('details_recall');fill_grid('details_recall');">
+            Recall</div>
+        <div id="details_precision" class="tab"
+             onclick="openTab(event, 'details_precision-tab');fill_comparing_plot('details_precision');fill_grid('details_precision');">Precision</div>
     </div>
     <div id="accuracy-tab" class="tab-content active">
-        <div id="accuracy-container">
-            <p>
-                <span style="font-size: 1.2em;">
-                    \(\text{Accuracy} = \frac{\text{True Positives} + \text{True Negatives}}{\text{Total Number of Samples}}\)
-                </span>
-            </p>
-            <img width="500px;" id="accuracy-plot"/>
-            <table id="accuracy-table" class="display">
-                <thead>
-                    <tr id="accuracy-tableHeaders"></tr>
-                </thead>
-                <tbody id="accuracy-tableBody"></tbody>
-            </table>
+        <div id="accuracy-container" style="display: flex;">
+
+            <div class="bar-chart-container">
+                <p>
+                    <span style="font-size: 1.2em;">
+                        \(\text{Accuracy} = \frac{\text{True Positives} + \text{True Negatives}}{\text{Total Number of Samples}}\)
+                    </span>
+                </p>
+                <img id="accuracy-plot"/>
+            </div>
+            <div class="plots-grid-container" id="accuracyPlotsGridContainer"></div>
         </div>
     </div>
     <div id="loss-tab" class="tab-content">
-        <div id="loss-container">
+        <div id="loss-container" style="display: flex;">
             <p>
-                <span style="font-size: 1.2em;">
-
-                </span>
+                <span style="font-size: 1.2em;"></span>
             </p>
-            <img width="500px;" id="loss-plot"/>
-            <table id="loss-table" class="display">
-                <thead>
-                    <tr id="loss-tableHeaders"></tr>
-                </thead>
-                <tbody id="loss-tableBody"></tbody>
-            </table>
+            <img id="loss-plot"/>
+            <div class="plots-grid-container" id="lossPlotsGridContainer"></div>
         </div>
     </div>
     <div id="f1_score-tab" class="tab-content">
@@ -165,13 +185,7 @@
                     \(F1 = 2 \times \frac{\text{Precision} \times \text{Recall}}{\text{Precision} + \text{Recall}}\)
                 </span>
             </p>
-            <img width="500px;" id="f1_score-plot"/>
-            <table id="f1_score-table" class="display">
-                <thead>
-                    <tr id="f1_score-tableHeaders"></tr>
-                </thead>
-                <tbody id="f1_score-tableBody"></tbody>
-            </table>
+            <img id="f1_score-plot"/>
         </div>
     </div>
     <div id="auc-tab" class="tab-content">
@@ -193,13 +207,7 @@
                     \(\text{AUC} = \int_{0}^{1} \text{TPR}(FPR) \, d(\text{FPR})\)
                 </span>
             </p>
-            <img width="500px;" id="auc-plot"/>
-            <table id="auc-table" class="display">
-                <thead>
-                    <tr id="auc-tableHeaders"></tr>
-                </thead>
-                <tbody id="auc-tableBody"></tbody>
-            </table>
+            <img id="auc-plot"/>
         </div>
     </div>
     <div id="aupr-tab" class="tab-content">
@@ -221,13 +229,7 @@
                     \(\text{AUPR} = \int_{0}^{1} \text{Precision}(\text{Recall}) \, d(\text{Recall})\)
                 </span>
             </p>
-            <img width="500px;" id="aupr-plot"/>
-            <table id="aupr-table" class="display">
-                <thead>
-                    <tr id="aupr-tableHeaders"></tr>
-                </thead>
-                <tbody id="aupr-tableBody"></tbody>
-            </table>
+            <img id="aupr-plot"/>
         </div>
     </div>
     <div id="recall-tab" class="tab-content">
@@ -249,13 +251,7 @@
                     \(\text{Recall} = \frac{\text{True Positives}}{\text{True Positives} + \text{False Negatives}}\)
                 </span>
             </p>
-            <img width="500px;" id="recall-plot"/>
-            <table id="recall-table" class="display">
-                <thead>
-                    <tr id="recall-tableHeaders"></tr>
-                </thead>
-                <tbody id="recall-tableBody"></tbody>
-            </table>
+            <img id="recall-plot"/>
         </div>
     </div>
     <div id="precision-tab" class="tab-content">
@@ -278,113 +274,108 @@
                     \(\text{Precision} = \frac{\text{True Positives}}{\text{True Positives} + \text{False Positives}}\)
                 </span>
             </p>
-            <img width="500px;" id="precision-plot"/>
-            <table id="precision-table" class="display">
-                <thead>
-                    <tr id="precision-tableHeaders"></tr>
-                </thead>
-                <tbody id="precision-tableBody"></tbody>
-            </table>
+            <img id="precision-plot"/>
         </div>
     </div>
     <div id="details_accuracy-tab" class="tab-content">
-        <div id="details_accuracy-container">
-            <p>
-                <span style="font-size: 1.2em;">
-                    \(\text{Accuracy}_c = \frac{\text{TP}_c}{\text{TP}_c + \text{FN}_c}\)
-                </span>
-            </p>
-            <img width="500px;" id="details_accuracy-plot"/>
-            <table id="details_accuracy-table" class="display">
-                <thead>
-                    <tr id="details_accuracy-tableHeaders"></tr>
-                </thead>
-                <tbody id="details_accuracy-tableBody"></tbody>
-            </table>
+        <div id="details_accuracy-container" style="display: flex;">
+
+            <div class="bar-chart-container">
+                <p>
+                    <span style="font-size: 1.2em;">
+                        \(\text{Accuracy}_c = \frac{\text{TP}_c}{\text{TP}_c + \text{FN}_c}\)
+                    </span>
+                </p>
+                <img id="details_accuracy-plot"/>
+            </div>
+            <div id="details_accuracy_grid"></div>
         </div>
     </div>
     <div id="details_f1_score-tab" class="tab-content">
-        <div id="details_f1_score-container">
-            <p>
-                <span style="font-size: 1.2em;">
-                    \(F1 = 2 \times \frac{\text{Precision} \times \text{Recall}}{\text{Precision} + \text{Recall}}\)
-                </span>
-            </p>
-            <img width="500px;" id="details_f1_score-plot"/>
-            <table id="details_f1_score-table" class="display">
-                <thead>
-                    <tr id="details_f1_score-tableHeaders"></tr>
-                </thead>
-                <tbody id="details_f1_score-tableBody"></tbody>
-            </table>
+        <div id="details_f1_score-container" style="display: flex;">
+
+            <div class="bar-chart-container">
+                <p>
+                    <span style="font-size: 1.2em;">
+                        \(F1 = 2 \times \frac{\text{Precision} \times \text{Recall}}{\text{Precision} + \text{Recall}}\)
+                    </span>
+                </p>
+                <img id="details_f1_score-plot"/>
+            </div>
+            <div id="details_f1_score_grid"></div>
         </div>
     </div>
     <div id="details_auc-tab" class="tab-content">
-        <div id="details_auc-container">
-            <p>
-                <span style="font-size: 1.2em;">
-                    \(\text{AUC} = \int_{0}^{1} \text{TPR}(FPR) \, d(\text{FPR})\)
-                </span>
-            </p>
-            <img width="500px;" id="details_auc-plot"/>
-            <table id="details_auc-table" class="display">
-                <thead>
-                    <tr id="details_auc-tableHeaders"></tr>
-                </thead>
-                <tbody id="details_auc-tableBody"></tbody>
-            </table>
+        <div id="details_auc-container" style="display: flex;">
+
+            <div class="bar-chart-container">
+                <p>
+                    <span style="font-size: 1.2em;">
+                        \(\text{AUC} = \int_{0}^{1} \text{TPR}(FPR) \, d(\text{FPR})\)
+                    </span>
+                </p>
+                <img id="details_auc-plot"/>
+            </div>
+            <div id="details_auc_grid"></div>
         </div>
     </div>
     <div id="details_aupr-tab" class="tab-content">
-        <div id="details_aupr-container">
-            <p>
-                <span style="font-size: 1.2em;">
-                    \(\text{AUPR} = \int_{0}^{1} \text{Precision}(\text{Recall}) \, d(\text{Recall})\)
-                </span>
-            </p>
-            <img width="500px;" id="details_aupr-plot"/>
-            <table id="details_aupr-table" class="display">
-                <thead>
-                    <tr id="details_aupr-tableHeaders"></tr>
-                </thead>
-                <tbody id="details_aupr-tableBody"></tbody>
-            </table>
+        <div id="details_aupr-container" style="display: flex;">
+
+            <div class="bar-chart-container">
+                <p>
+                    <span style="font-size: 1.2em;">
+                        \(\text{AUPR} = \int_{0}^{1} \text{Precision}(\text{Recall}) \, d(\text{Recall})\)
+                    </span>
+                </p>
+                <img id="details_aupr-plot"/>
+            </div>
+            <div id="details_aupr_grid"></div>
         </div>
     </div>
     <div id="details_recall-tab" class="tab-content">
-        <div id="details_recall-container">
-            <p>
-                <span style="font-size: 1.2em;">
-                    \(\text{Recall}_c = \frac{\text{True Positives}_c}{\text{True Positives}_c + \text{False Negatives}_c}\)
-                </span>
-            </p>
-            <img width="500px;" id="details_recall-plot"/>
-            <table id="details_recall-table" class="display">
-                <thead>
-                    <tr id="details_recall-tableHeaders"></tr>
-                </thead>
-                <tbody id="details_recall-tableBody"></tbody>
-            </table>
+        <div id="details_recall-container" style="display: flex;">
+
+            <div class="bar-chart-container">
+                <p>
+                    <span style="font-size: 1.2em;">
+                        \(\text{Recall}_c = \frac{\text{True Positives}_c}{\text{True Positives}_c + \text{False Negatives}_c}\)
+                    </span>
+                </p>
+                <img id="details_recall-plot"/>
+            </div>
+            <div id="details_recall_grid"></div>
         </div>
     </div>
     <div id="details_precision-tab" class="tab-content">
-        <div id="details_precision-container">
-            <p>
-                <span style="font-size: 1.2em;">
-                    \(\text{Precision}_c = \frac{\text{True Positives}_c}{\text{True Positives}_c + \text{False Positives}_c}\)
-                </span>
-            </p>
-            <img width="500px;" id="details_precision-plot"/>
-            <table id="details_precision-table" class="display">
-                <thead>
-                    <tr id="details_precision-tableHeaders"></tr>
-                </thead>
-                <tbody id="details_precision-tableBody"></tbody>
-            </table>
+        <div id="details_precision-container" style="display: flex;">
+
+            <div class="bar-chart-container">
+                <p>
+                    <span style="font-size: 1.2em;">
+                        \(\text{Precision}_c = \frac{\text{True Positives}_c}{\text{True Positives}_c + \text{False Positives}_c}\)
+                    </span>
+                </p>
+                <img id="details_precision-plot"/>
+            </div>
+            <div id="details_precision_grid"></div>
         </div>
     </div>
 </div>
 
+<div id="imageModal" class="img-modal" onclick="closeImageModal()">
+    <span class="close">&times;</span>
+    <img class="img-modal-content" id="enlargedImage">
+</div>
+
 <div id="plots"></div>
+
+<div id="jsonModal" class="modal" style="display:none;">
+    <div class="modal-content" style="max-height: 400px; overflow-y: auto;">
+        <h4>JSON Data</h4>
+        <div id="jsonData"></div>
+    </div>
+    <span onclick="closeModal()" class="close">&times;</span>
+</div>
 
 {% endblock %}
