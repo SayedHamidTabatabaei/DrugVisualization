@@ -35,10 +35,10 @@ class TrainingResultDetailRepository(MySqlRepository):
         if is_exists:
             return None
 
-        reduction_data = self.insert(training_id, training_label, f1_score, accuracy, auc, aupr, recall,
-                                     precision)
+        details = self.insert(training_id, training_label, f1_score, accuracy, auc, aupr, recall,
+                              precision)
 
-        return reduction_data
+        return details
 
     def insert_batch_check_duplicate(self, training_result_details: list[TrainingResultDetail]):
         super().insert_batch_check_duplicate(training_result_details,
@@ -62,7 +62,6 @@ class TrainingResultDetailRepository(MySqlRepository):
                  else bool(training_result_detail)))
 
     def find_all_training_result_details(self, train_id: int) -> list[TrainingResultDetailDTO]:
-
         result, _ = self.call_procedure('FindAllTrainingResultDetails', [train_id])
 
         training_result = result[0]

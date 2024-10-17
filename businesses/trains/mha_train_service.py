@@ -1,4 +1,5 @@
 from tensorflow.keras.layers import Input, Dense, MultiHeadAttention, LayerNormalization, Concatenate, Flatten
+# noinspection PyUnresolvedReferences
 from tensorflow.keras.models import Model
 from tqdm import tqdm
 
@@ -31,9 +32,7 @@ class MhaTrainService(TrainBaseService):
 
     def train(self, parameters: SplitInteractionSimilaritiesTrainingParameterModel) -> TrainingSummaryDTO:
 
-        x_train, x_test, y_train, y_test = super().split_train_test(parameters.data)
-
-        x_train, x_test = super().create_input_tensors_pad(x_train, x_test)
+        x_train, x_test, y_train, y_test = super().split_train_test(parameters.drug_data, parameters.interaction_data, padding=True)
 
         input_layers = []
         encoded_models = []
@@ -45,7 +44,7 @@ class MhaTrainService(TrainBaseService):
             if len(shapes) != 1:
                 raise ValueError(f"Error: Multiple shapes found: {shapes}")
 
-            if parameters.data[idx][0].category in (Category.Substructure, Category.Pathway, Category.Target, Category.Enzyme):
+            if parameters.drug_data[0].train_values[idx].category in (Category.Substructure, Category.Pathway, Category.Target, Category.Enzyme):
                 input_layer, encoded_model = self.create_autoencoder(input_shape=shapes.pop())
                 input_layers.append(input_layer)
                 encoded_models.append(encoded_model)
@@ -73,4 +72,4 @@ class MhaTrainService(TrainBaseService):
                                      training_params=TrainingParams(train_id=parameters.train_id, optimizer='adam', loss=parameters.loss_function,
                                                                     class_weight=parameters.class_weight),
                                      model=full_model,
-                                     data=parameters.data)
+                                     interactions=parameters.interaction_data)

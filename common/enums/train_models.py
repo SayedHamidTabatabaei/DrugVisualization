@@ -4,7 +4,6 @@ from common.enums.scenarios import Scenarios
 
 
 class TrainModel(Enum):
-    SimpleOneInput = (1, Scenarios.SplitInteractionSimilarities, 'Just learn one input by DNN.')
     JoinBeforeSoftmax = (2, Scenarios.SplitInteractionSimilarities, 'Having n separate network, but before softmax layer, join the last layer.')
     SumSoftmaxOutputs = (3, Scenarios.SplitInteractionSimilarities, 'Have n separate network, and finally sum them.')
     AE_Con_DNN = (4, Scenarios.SplitInteractionSimilarities, 'Reduce data dimension, join them and send to DNN')

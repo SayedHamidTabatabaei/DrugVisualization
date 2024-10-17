@@ -1,4 +1,5 @@
 from tensorflow.keras.layers import Input, Dense
+# noinspection PyUnresolvedReferences
 from tensorflow.keras.models import Model
 
 from businesses.trains.train_base_service import TrainBaseService
@@ -24,9 +25,7 @@ class ConAeDnnTrainService(TrainBaseService):
 
     def train(self, parameters: SplitInteractionSimilaritiesTrainingParameterModel) -> TrainingSummaryDTO:
 
-        x_train, x_test, y_train, y_test = super().split_train_test(parameters.data)
-
-        x_train, x_test = super().create_input_tensors_flat(x_train, x_test)
+        x_train, x_test, y_train, y_test = super().split_train_test(parameters.drug_data, parameters.interaction_data, padding=True, flat=True)
 
         input_dim = x_train.shape[1]  # Number of features per sample
         input_layer, encoded_model = self.create_autoencoder(input_shape=(input_dim,))
@@ -42,4 +41,4 @@ class ConAeDnnTrainService(TrainBaseService):
                                      training_params=TrainingParams(train_id=parameters.train_id, optimizer='adam', loss=parameters.loss_function,
                                                                     class_weight=parameters.class_weight),
                                      model=full_model,
-                                     data=parameters.data)
+                                     interactions=parameters.interaction_data)

@@ -16,7 +16,6 @@
 
 {% block script %}
 <script src="{{ url_for('static', filename='js/train.js') }}"></script>
-<script src="{{ url_for('static', filename='js/fill_reduction_category_dropdown.js') }}"></script>
 <script src="{{ url_for('static', filename='js/fill_similarity_type_dropdown.js') }}"></script>
 <script src="{{ url_for('static', filename='js/fill_embedding_category_dropdown.js') }}"></script>
 <script src="{{ url_for('static', filename='js/fill_train_model_dropdown.js') }}"></script>
@@ -100,7 +99,7 @@
         <div class="checkbox-container">
             <label class="checkbox-label">
                 <input type="checkbox" id="substructure-check" value="Substructure"
-                       onclick="toggleDropdowns(this, 'substructure-details');filterSimilaritySelect('substructure-similarity-select', 'substructure-check');fillReductionSelect('substructure-reduction-select');">
+                       onclick="toggleDropdowns(this, 'substructure-details');filterSimilaritySelect('substructure-similarity-select', 'substructure-check');">
                 <span class="checkbox-custom"></span>
                 Substructure
             </label>
@@ -108,16 +107,13 @@
                 <select id="substructure-similarity-select">
                     <option value="">--Select an similarity--</option>
                 </select>
-                <select id="substructure-reduction-select">
-                    <option value="">--Select a reduction--</option>
-                </select>
             </div>
         </div>
 
         <div class="checkbox-container">
             <label class="checkbox-label">
                 <input type="checkbox" id="target-check" value="Target"
-                       onclick="toggleDropdowns(this, 'target-details');filterSimilaritySelect('target-similarity-select', 'target-check');fillReductionSelect('target-reduction-select');">
+                       onclick="toggleDropdowns(this, 'target-details');filterSimilaritySelect('target-similarity-select', 'target-check');">
                 <span class="checkbox-custom"></span>
                 Target
             </label>
@@ -125,16 +121,13 @@
                 <select id="target-similarity-select">
                     <option value="">--Select an similarity--</option>
                 </select>
-                <select id="target-reduction-select">
-                    <option value="">--Select a reduction--</option>
-                </select>
             </div>
         </div>
 
         <div class="checkbox-container">
             <label class="checkbox-label">
                 <input type="checkbox" id="enzyme-check" value="Enzyme"
-                       onclick="toggleDropdowns(this, 'enzyme-details');filterSimilaritySelect('enzyme-similarity-select', 'enzyme-check');fillReductionSelect('enzyme-reduction-select');">
+                       onclick="toggleDropdowns(this, 'enzyme-details');filterSimilaritySelect('enzyme-similarity-select', 'enzyme-check');">
                 <span class="checkbox-custom"></span>
                 Enzyme
             </label>
@@ -142,25 +135,19 @@
                 <select id="enzyme-similarity-select">
                     <option value="">--Select an similarity--</option>
                 </select>
-                <select id="enzyme-reduction-select">
-                    <option value="">--Select a reduction--</option>
-                </select>
             </div>
         </div>
 
         <div class="checkbox-container">
             <label class="checkbox-label">
                 <input type="checkbox" id="pathway-check" value="Pathway"
-                       onclick="toggleDropdowns(this, 'pathway-details');filterSimilaritySelect('pathway-similarity-select', 'pathway-check');fillReductionSelect('pathway-reduction-select');">
+                       onclick="toggleDropdowns(this, 'pathway-details');filterSimilaritySelect('pathway-similarity-select', 'pathway-check');">
                 <span class="checkbox-custom"></span>
                 Pathway
             </label>
             <div id="pathway-details" class="dropdowns" style="display: none;">
                 <select id="pathway-similarity-select">
                     <option value="">--Select an similarity--</option>
-                </select>
-                <select id="pathway-reduction-select">
-                    <option value="">--Select a reduction--</option>
                 </select>
             </div>
         </div>
@@ -172,7 +159,7 @@
 
         <div class="checkbox-container">
             <label class="checkbox-label">
-                <input type="checkbox" id="description-check" onclick="toggleDropdowns(this, 'description-details');fillEmbeddingSelect('description-embedding-select');fillReductionSelect('description-reduction-select');">
+                <input type="checkbox" id="description-check" onclick="toggleDropdowns(this, 'description-details');fillEmbeddingSelect('description-embedding-select');">
                 <span class="checkbox-custom"></span>
                 Description
             </label>
@@ -180,15 +167,12 @@
                 <select id="description-embedding-select">
                     <option value="">--Select an embedding</option>
                 </select>
-                <select id="description-reduction-select">
-                    <option value="">--Select a reduction--</option>
-                </select>
             </div>
         </div>
 
         <div class="checkbox-container">
             <label class="checkbox-label">
-                <input type="checkbox" id="indication-check" onclick="toggleDropdowns(this, 'indication-details');fillEmbeddingSelect('indication-embedding-select');fillReductionSelect('indication-reduction-select');">
+                <input type="checkbox" id="indication-check" onclick="toggleDropdowns(this, 'indication-details');fillEmbeddingSelect('indication-embedding-select');">
                 <span class="checkbox-custom"></span>
                 Indication
             </label>
@@ -196,15 +180,12 @@
                 <select id="indication-embedding-select">
                     <option value="">--Select an embedding</option>
                 </select>
-                <select id="indication-reduction-select">
-                    <option value="">--Select a reduction--</option>
-                </select>
             </div>
         </div>
 
         <div class="checkbox-container">
             <label class="checkbox-label">
-                <input type="checkbox" id="pharmacodynamics-check" onclick="toggleDropdowns(this, 'pharmacodynamics-details');fillEmbeddingSelect('pharmacodynamics-embedding-select');fillReductionSelect('pharmacodynamics-reduction-select');">
+                <input type="checkbox" id="pharmacodynamics-check" onclick="toggleDropdowns(this, 'pharmacodynamics-details');fillEmbeddingSelect('pharmacodynamics-embedding-select');">
                 <span class="checkbox-custom"></span>
                 Pharmacodynamics
             </label>
@@ -212,15 +193,12 @@
                 <select id="pharmacodynamics-embedding-select">
                     <option value="">--Select an embedding</option>
                 </select>
-                <select id="pharmacodynamics-reduction-select">
-                    <option value="">--Select a reduction--</option>
-                </select>
             </div>
         </div>
 
         <div class="checkbox-container">
             <label class="checkbox-label">
-                <input type="checkbox" id="mechanism-of-action-check" onclick="toggleDropdowns(this, 'mechanism-of-action-details');fillEmbeddingSelect('mechanism-of-action-embedding-select');fillReductionSelect('mechanism-of-action-reduction-select');">
+                <input type="checkbox" id="mechanism-of-action-check" onclick="toggleDropdowns(this, 'mechanism-of-action-details');fillEmbeddingSelect('mechanism-of-action-embedding-select');">
                 <span class="checkbox-custom"></span>
                 Mechanism Of Action
             </label>
@@ -228,15 +206,12 @@
                 <select id="mechanism-of-action-embedding-select">
                     <option value="">--Select an embedding</option>
                 </select>
-                <select id="mechanism-of-action-reduction-select">
-                    <option value="">--Select a reduction--</option>
-                </select>
             </div>
         </div>
 
         <div class="checkbox-container">
             <label class="checkbox-label">
-                <input type="checkbox" id="toxicity-check" onclick="toggleDropdowns(this, 'toxicity-details');fillEmbeddingSelect('toxicity-embedding-select');fillReductionSelect('toxicity-reduction-select');">
+                <input type="checkbox" id="toxicity-check" onclick="toggleDropdowns(this, 'toxicity-details');fillEmbeddingSelect('toxicity-embedding-select');">
                 <span class="checkbox-custom"></span>
                 Toxicity
             </label>
@@ -244,15 +219,12 @@
                 <select id="toxicity-embedding-select">
                     <option value="">--Select an embedding</option>
                 </select>
-                <select id="toxicity-reduction-select">
-                    <option value="">--Select a reduction--</option>
-                </select>
             </div>
         </div>
 
         <div class="checkbox-container">
             <label class="checkbox-label">
-                <input type="checkbox" id="metabolism-check" onclick="toggleDropdowns(this, 'metabolism-details');fillEmbeddingSelect('metabolism-embedding-select');fillReductionSelect('metabolism-reduction-select');">
+                <input type="checkbox" id="metabolism-check" onclick="toggleDropdowns(this, 'metabolism-details');fillEmbeddingSelect('metabolism-embedding-select');">
                 <span class="checkbox-custom"></span>
                 Metabolism
             </label>
@@ -260,15 +232,12 @@
                 <select id="metabolism-embedding-select">
                     <option value="">--Select an embedding</option>
                 </select>
-                <select id="metabolism-reduction-select">
-                    <option value="">--Select a reduction--</option>
-                </select>
             </div>
         </div>
 
         <div class="checkbox-container">
             <label class="checkbox-label">
-                <input type="checkbox" id="absorption-check" onclick="toggleDropdowns(this, 'absorption-details');fillEmbeddingSelect('absorption-embedding-select');fillReductionSelect('absorption-reduction-select');">
+                <input type="checkbox" id="absorption-check" onclick="toggleDropdowns(this, 'absorption-details');fillEmbeddingSelect('absorption-embedding-select');">
                 <span class="checkbox-custom"></span>
                 Absorption
             </label>
@@ -276,15 +245,12 @@
                 <select id="absorption-embedding-select">
                     <option value="">--Select an embedding</option>
                 </select>
-                <select id="absorption-reduction-select">
-                    <option value="">--Select a reduction--</option>
-                </select>
             </div>
         </div>
 
         <div class="checkbox-container">
             <label class="checkbox-label">
-                <input type="checkbox" id="half-life-check" onclick="toggleDropdowns(this, 'half-life-details');fillEmbeddingSelect('half-life-embedding-select');fillReductionSelect('half-life-reduction-select');">
+                <input type="checkbox" id="half-life-check" onclick="toggleDropdowns(this, 'half-life-details');fillEmbeddingSelect('half-life-embedding-select');">
                 <span class="checkbox-custom"></span>
                 Half Life
             </label>
@@ -292,15 +258,12 @@
                 <select id="half-life-embedding-select">
                     <option value="">--Select an embedding</option>
                 </select>
-                <select id="half-life-reduction-select">
-                    <option value="">--Select a reduction--</option>
-                </select>
             </div>
         </div>
 
         <div class="checkbox-container">
             <label class="checkbox-label">
-                <input type="checkbox" id="protein-binding-check" onclick="toggleDropdowns(this, 'protein-binding-details');fillEmbeddingSelect('protein-binding-embedding-select');fillReductionSelect('protein-binding-reduction-select');">
+                <input type="checkbox" id="protein-binding-check" onclick="toggleDropdowns(this, 'protein-binding-details');fillEmbeddingSelect('protein-binding-embedding-select');">
                 <span class="checkbox-custom"></span>
                 Protein Binding
             </label>
@@ -308,15 +271,12 @@
                 <select id="protein-binding-embedding-select">
                     <option value="">--Select an embedding</option>
                 </select>
-                <select id="protein-binding-reduction-select">
-                    <option value="">--Select a reduction--</option>
-                </select>
             </div>
         </div>
 
         <div class="checkbox-container">
             <label class="checkbox-label">
-                <input type="checkbox" id="route-of-elimination-check" onclick="toggleDropdowns(this, 'route-of-elimination-details');fillEmbeddingSelect('route-of-elimination-embedding-select');fillReductionSelect('route-of-elimination-reduction-select');">
+                <input type="checkbox" id="route-of-elimination-check" onclick="toggleDropdowns(this, 'route-of-elimination-details');fillEmbeddingSelect('route-of-elimination-embedding-select');">
                 <span class="checkbox-custom"></span>
                 Route Of Elimination
             </label>
@@ -324,15 +284,12 @@
                 <select id="route-of-elimination-embedding-select">
                     <option value="">--Select an embedding</option>
                 </select>
-                <select id="route-of-elimination-reduction-select">
-                    <option value="">--Select a reduction--</option>
-                </select>
             </div>
         </div>
 
         <div class="checkbox-container">
             <label class="checkbox-label">
-                <input type="checkbox" id="volume-of-distribution-check" onclick="toggleDropdowns(this, 'volume-of-distribution-details');fillEmbeddingSelect('volume-of-distribution-embedding-select');fillReductionSelect('volume-of-distribution-reduction-select');">
+                <input type="checkbox" id="volume-of-distribution-check" onclick="toggleDropdowns(this, 'volume-of-distribution-details');fillEmbeddingSelect('volume-of-distribution-embedding-select');">
                 <span class="checkbox-custom"></span>
                 Volume Of Distribution
             </label>
@@ -340,15 +297,12 @@
                 <select id="volume-of-distribution-embedding-select">
                     <option value="">--Select an embedding</option>
                 </select>
-                <select id="volume-of-distribution-reduction-select">
-                    <option value="">--Select a reduction--</option>
-                </select>
             </div>
         </div>
 
         <div class="checkbox-container">
             <label class="checkbox-label">
-                <input type="checkbox" id="clearance-check" onclick="toggleDropdowns(this, 'clearance-details');fillEmbeddingSelect('clearance-embedding-select');fillReductionSelect('clearance-reduction-select');">
+                <input type="checkbox" id="clearance-check" onclick="toggleDropdowns(this, 'clearance-details');fillEmbeddingSelect('clearance-embedding-select');">
                 <span class="checkbox-custom"></span>
                 Clearance
             </label>
@@ -356,24 +310,18 @@
                 <select id="clearance-embedding-select">
                     <option value="">--Select an embedding</option>
                 </select>
-                <select id="clearance-reduction-select">
-                    <option value="">--Select a reduction--</option>
-                </select>
             </div>
         </div>
 
         <div class="checkbox-container">
             <label class="checkbox-label">
-                <input type="checkbox" id="classification-description-check" onclick="toggleDropdowns(this, 'classification-description-details');fillEmbeddingSelect('classification-description-embedding-select');fillReductionSelect('classification-description-reduction-select');">
+                <input type="checkbox" id="classification-description-check" onclick="toggleDropdowns(this, 'classification-description-details');fillEmbeddingSelect('classification-description-embedding-select');">
                 <span class="checkbox-custom"></span>
                 Classification Description
             </label>
             <div id="classification-description-details" class="dropdowns" style="display: none;">
                 <select id="classification-description-embedding-select">
                     <option value="">--Select an embedding</option>
-                </select>
-                <select id="classification-description-reduction-select">
-                    <option value="">--Select a reduction--</option>
                 </select>
             </div>
         </div>
@@ -384,16 +332,13 @@
         <div class="checkbox-container">
             <label class="checkbox-label">
                 <input type="checkbox" id="interaction-description-check"
-                       onclick="toggleDropdowns(this, 'interaction-description-details');fillEmbeddingSelect('interaction-description-embedding-select');fillReductionSelect('interaction-description-reduction-select');">
+                       onclick="toggleDropdowns(this, 'interaction-description-details');fillEmbeddingSelect('interaction-description-embedding-select');">
                 <span class="checkbox-custom"></span>
                 Description
             </label>
             <div id="interaction-description-details" class="dropdowns" style="display: none;">
                 <select id="interaction-description-embedding-select">
                     <option value="">--Select an embedding</option>
-                </select>
-                <select id="interaction-description-reduction-select">
-                    <option value="">--Select a reduction--</option>
                 </select>
             </div>
         </div>

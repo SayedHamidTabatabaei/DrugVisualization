@@ -13,7 +13,6 @@ from common.enums.train_models import TrainModel
 from core.models.data_params import DataParams
 from core.models.training_parameter_models.split_interaction_similarities_training_parameter_model import SplitInteractionSimilaritiesTrainingParameterModel
 from core.models.training_params import TrainingParams
-from core.repository_models.training_data_dto import TrainingInteractionDataDTO
 from core.repository_models.training_summary_dto import TrainingSummaryDTO
 
 train_model = TrainModel.GAT_AE_Con_DNN
@@ -31,7 +30,7 @@ class GatAeConDnnTrainService(TrainBaseService):
         return input_layer, encoded
 
     @staticmethod
-    def prepare_smiles_data(data_entry: list[TrainingInteractionDataDTO]):
+    def prepare_smiles_data(data_entry):
         """
         Prepares SMILES data into graph format suitable for a GAT model.
 
@@ -41,7 +40,7 @@ class GatAeConDnnTrainService(TrainBaseService):
         Returns:
         - A dictionary containing 'node_features' and 'adjacency_matrix'.
         """
-        smiles_string = data_entry[0].reduction_values_1  # Access SMILES string from data entry
+        smiles_string = data_entry[0].values_1  # Access SMILES string from data entry
         mol = Chem.MolFromSmiles(smiles_string[0])
 
         if mol is None:
@@ -94,9 +93,7 @@ class GatAeConDnnTrainService(TrainBaseService):
 
     def train(self, parameters: SplitInteractionSimilaritiesTrainingParameterModel) -> (TrainingSummaryDTO, object):
 
-        x_train, x_test, y_train, y_test = super().split_train_test(parameters.data)
-
-        x_train, x_test = super().create_input_tensors_pad(x_train, x_test)
+        x_train, x_test, y_train, y_test = super().split_train_test(parameters.drug_data, parameters.interaction_data, padding=True)
 
         input_layers = []
         encoded_models = []
@@ -108,7 +105,7 @@ class GatAeConDnnTrainService(TrainBaseService):
             if len(shapes) != 1:
                 raise ValueError(f"Error: Multiple shapes found: {shapes}")
 
-            if parameters.data[idx][0].category != Category.Substructure:
+            if parameters.drug_data[0].train_values[idx].category != Category.Substructure:
                 input_layer, encoded_model = self.create_autoencoder(input_shape=shapes.pop())
                 input_layers.append(input_layer)
                 encoded_models.append(encoded_model)
@@ -136,4 +133,4 @@ class GatAeConDnnTrainService(TrainBaseService):
                                      training_params=TrainingParams(train_id=parameters.train_id, optimizer='adam', loss=parameters.loss_function,
                                                                     class_weight=parameters.class_weight),
                                      model=full_model,
-                                     data=parameters.data)
+                                     interactions=parameters.interaction_data)

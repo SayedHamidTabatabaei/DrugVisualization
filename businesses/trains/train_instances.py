@@ -3,7 +3,6 @@ from businesses.trains.gat_ae_con_dnn_train_service import GatAeConDnnTrainServi
 from businesses.trains.lr_train_service import LrTrainService
 from businesses.trains.mha_train_service import MhaTrainService
 from businesses.trains.rf_train_service import RfTrainService
-from businesses.trains.simple_one_input_train_service import SimpleOneInputTrainService
 from businesses.trains.join_before_softmax_train_service import JoinBeforeSoftmaxTrainService
 from businesses.trains.sum_softmax_outputs_train_service import SumSoftmaxOutputsTrainService
 from businesses.trains.ae_con_dnn_train_service import AeConDnnTrainService
@@ -16,9 +15,7 @@ from common.enums.train_models import TrainModel
 
 
 def get_instance(category: TrainModel) -> TrainBaseService:
-    if category == TrainModel.SimpleOneInput:
-        return SimpleOneInputTrainService(category)
-    elif category == TrainModel.JoinBeforeSoftmax:
+    if category == TrainModel.JoinBeforeSoftmax:
         return JoinBeforeSoftmaxTrainService(category)
     elif category == TrainModel.SumSoftmaxOutputs:
         return SumSoftmaxOutputsTrainService(category)

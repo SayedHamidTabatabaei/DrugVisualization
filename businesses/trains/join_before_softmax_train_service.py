@@ -22,9 +22,7 @@ class JoinBeforeSoftmaxTrainService(TrainBaseService):
 
     def train(self, parameters: SplitInteractionSimilaritiesTrainingParameterModel) -> TrainingSummaryDTO:
 
-        x_train, x_test, y_train, y_test = super().split_train_test(parameters.data)
-
-        x_train, x_test = super().create_input_tensors_pad(x_train, x_test)
+        x_train, x_test, y_train, y_test = super().split_train_test(parameters.drug_data, parameters.interaction_data, padding=True)
 
         input_models = []
         input_layers = []
@@ -54,4 +52,4 @@ class JoinBeforeSoftmaxTrainService(TrainBaseService):
                                      training_params=TrainingParams(train_id=parameters.train_id, optimizer='adam', loss=parameters.loss_function,
                                                                     class_weight=parameters.class_weight),
                                      model=final_model,
-                                     data=parameters.data)
+                                     interactions=parameters.interaction_data)

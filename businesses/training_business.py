@@ -47,7 +47,6 @@ from core.view_models.training_scheduled_view_model import TrainingScheduledView
 from infrastructure.repositories.drug_embedding_repository import DrugEmbeddingRepository
 from infrastructure.repositories.drug_interaction_repository import DrugInteractionRepository
 from infrastructure.repositories.drug_repository import DrugRepository
-from infrastructure.repositories.reduction_data_repository import ReductionDataRepository
 from infrastructure.repositories.similarity_repository import SimilarityRepository
 from infrastructure.repositories.training_repository import TrainingRepository
 from infrastructure.repositories.training_result_detail_repository import TrainingResultDetailRepository
@@ -113,8 +112,7 @@ colors = list(mcolors.TABLEAU_COLORS.values())
 
 class TrainingBusiness(BaseBusiness):
     @inject
-    def __init__(self, reduction_repository: ReductionDataRepository,
-                 drug_repository: DrugRepository,
+    def __init__(self, drug_repository: DrugRepository,
                  training_repository: TrainingRepository,
                  training_result_repository: TrainingResultRepository,
                  training_result_detail_repository: TrainingResultDetailRepository,
@@ -123,7 +121,6 @@ class TrainingBusiness(BaseBusiness):
                  drug_embedding_repository: DrugEmbeddingRepository,
                  drug_interaction_repository: DrugInteractionRepository):
         BaseBusiness.__init__(self)
-        self.reduction_repository = reduction_repository
         self.drug_repository = drug_repository
         self.training_repository = training_repository
         self.training_result_repository = training_result_repository

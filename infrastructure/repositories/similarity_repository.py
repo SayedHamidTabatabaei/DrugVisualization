@@ -92,8 +92,8 @@ class SimilarityRepository(MySqlRepository):
 
         return result[0]
 
-    def find_similarity_from_reduction_by_category(self, category: Category):
+    def find_exists_similarity_types_by_category(self, category: Category):
 
-        result, _ = self.call_procedure('FindSimilarityFromReductionByCategory', [category.value])
+        result, _ = self.call_procedure('FindExistsSimilarityTypesByCategory', [category.value])
 
         return [SimilarityType(r[0]) for r in result[0]]

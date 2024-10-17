@@ -11,16 +11,13 @@ from infrastructure.repositories.drug_embedding_repository import DrugEmbeddingR
 from infrastructure.repositories.drug_interaction_repository import DrugInteractionRepository
 from infrastructure.repositories.drug_repository import DrugRepository
 from infrastructure.repositories.interaction_embedding_repository import InteractionEmbeddingRepository
-from infrastructure.repositories.reduction_data_repository import ReductionDataRepository
 
 
 class DrugEmbeddingBusiness(BaseBusiness):
     @inject
     def __init__(self, drug_embedding_repository: DrugEmbeddingRepository, drug_repository: DrugRepository,
-                 interaction_embedding_repository: InteractionEmbeddingRepository, drug_interaction_repository: DrugInteractionRepository,
-                 final_data_repository: ReductionDataRepository):
+                 interaction_embedding_repository: InteractionEmbeddingRepository, drug_interaction_repository: DrugInteractionRepository):
         BaseBusiness.__init__(self)
-        self.final_data_repository = final_data_repository
         self.drug_embedding_repository = drug_embedding_repository
         self.drug_repository = drug_repository
         self.interaction_embedding_repository = interaction_embedding_repository

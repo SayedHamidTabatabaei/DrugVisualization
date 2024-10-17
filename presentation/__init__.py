@@ -6,7 +6,6 @@ from businesses.drug_embedding_business import DrugEmbeddingBusiness
 from businesses.enzyme_business import EnzymeBusiness
 from businesses.job_business import JobBusiness
 from businesses.pathway_business import PathwayBusiness
-from businesses.reduction_business import ReductionBusiness
 from businesses.similarity_business import SimilarityBusiness
 from businesses.target_business import TargetBusiness
 from presentation.controllers.drug_controller import DrugController
@@ -14,7 +13,6 @@ from presentation.controllers.drug_embedding_controller import DrugEmbeddingCont
 from presentation.controllers.enzyme_controller import EnzymeController
 from presentation.controllers.job_controller import JobController
 from presentation.controllers.pathway_controller import PathwayController
-from presentation.controllers.reduction_controller import ReductionController
 from presentation.controllers.similarity_controller import SimilarityController
 from presentation.controllers.target_controller import TargetController
 from presentation.controllers.training_controller import TrainingController
@@ -30,7 +28,6 @@ def configure(binder: Binder) -> None:
     binder.bind(TargetBusiness, to=TargetBusiness)
     binder.bind(SimilarityBusiness, to=SimilarityBusiness)
     binder.bind(DrugEmbeddingBusiness, to=DrugEmbeddingBusiness)
-    binder.bind(ReductionBusiness, to=ReductionBusiness)
     binder.bind(JobBusiness, to=JobBusiness)
 
 
@@ -74,7 +71,6 @@ def create_app():
     map_actions(TargetController)
     map_actions(SimilarityController)
     map_actions(DrugEmbeddingController)
-    map_actions(ReductionController)
     map_actions(TrainingController)
     map_actions(JobController)
 

@@ -40,11 +40,6 @@ def smiles_similarity():
     return render_template('drug/smiles_similarity.html')
 
 
-@main.route('/drug/reduction')
-def reduction_smiles_similarity():
-    return render_template('drug/reduction_smiles_similarity.html')
-
-
 @main.route('/drug/details/<drugbank_id>')
 def drug_details(drugbank_id: str):
     return render_template('drug/drug_details.html', drugbank_id=drugbank_id)
@@ -70,19 +65,9 @@ def enzyme_similarity():
     return render_template('enzyme/enzyme_similarity.html')
 
 
-@main.route('/enzyme/reduction_enzyme_similarity')
-def enzyme_reduction():
-    return render_template('enzyme/reduction_enzyme_similarity.html')
-
-
 @main.route('/target/target_similarity')
 def target_similarity():
     return render_template('target/target_similarity.html')
-
-
-@main.route('/target/reduction_target_similarity')
-def target_reduction():
-    return render_template('target/reduction_target_similarity.html')
 
 
 @main.route('/pathway/pathway_similarity')
@@ -90,19 +75,9 @@ def pathway_similarity():
     return render_template('pathway/pathway_similarity.html')
 
 
-@main.route('/pathway/reduction_pathway_similarity')
-def pathway_reduction():
-    return render_template('pathway/reduction_pathway_similarity.html')
-
-
 @main.route('/drug_embedding/text_embedding')
 def text_embedding():
     return render_template('drug_embedding/text_embedding.html')
-
-
-@main.route('/drug_embedding/reduction_embedding')
-def reduction_embedding():
-    return render_template('drug_embedding/reduction_embedding.html')
 
 
 @main.route('/training/train')

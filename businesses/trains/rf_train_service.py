@@ -13,9 +13,8 @@ class RfTrainService(TrainBaseService):
 
     def train(self, parameters: SplitInteractionSimilaritiesTrainingParameterModel) -> TrainingSummaryDTO:
 
-        x_train, x_test, y_train, y_test = super().split_train_test(parameters.data, False)
-
-        x_train, x_test = super().create_input_tensors_flat(x_train, x_test)
+        x_train, x_test, y_train, y_test = super().split_train_test(parameters.drug_data, parameters.interaction_data, categorical_labels=False, padding=True,
+                                                                    flat=True)
 
         if parameters.class_weight:
             print('Class weight!')
@@ -31,7 +30,6 @@ class RfTrainService(TrainBaseService):
         print('Evaluate!')
         result = self.calculate_evaluation_metrics(rf_clf, x_test, y_test, True)
 
-        if parameters.data is not None:
-            result.data_report = self.get_data_report_split(parameters.data[0], y_train, y_test, True)
+        result.data_report = self.get_data_report_split(parameters.interaction_data, y_train, y_test, True)
 
         return result

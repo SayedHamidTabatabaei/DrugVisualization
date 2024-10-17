@@ -9,16 +9,14 @@ from common.enums.category import Category
 from common.enums.similarity_type import SimilarityType
 from core.domain.similarity import Similarity
 from core.repository_models.drug_smiles_dto import DrugSmilesDTO
-from infrastructure.repositories.reduction_data_repository import ReductionDataRepository
 from infrastructure.repositories.similarity_repository import SimilarityRepository
 
 
 class SimilarityBusiness(BaseBusiness):
     @inject
-    def __init__(self, similarity_repository: SimilarityRepository, final_data_repository: ReductionDataRepository):
+    def __init__(self, similarity_repository: SimilarityRepository):
         BaseBusiness.__init__(self)
         self.similarity_repository = similarity_repository
-        self.final_data_repository = final_data_repository
 
     def get_similarity_grid_data(self, similarity_type: SimilarityType, category: Category,
                                  check_target: bool, check_pathway: bool, check_enzyme: bool, check_smiles: bool,
@@ -122,6 +120,6 @@ class SimilarityBusiness(BaseBusiness):
         self.similarity_repository.insert_batch_check_duplicate(similarities)
 
     def get_similarities_by_category(self, category: Category):
-        similarities = self.similarity_repository.find_similarity_from_reduction_by_category(category)
+        similarities = self.similarity_repository.find_exists_similarity_types_by_category(category)
 
-        return similarities
+        return [SimilarityType.Original] + similarities
