@@ -352,6 +352,8 @@ class TrainBaseService:
 
         result.model_info = self.get_model_info(model)
 
+        model.summary()
+
         if interactions is not None:
             result.data_report = self.get_data_report_split(interactions, data_params.y_train, data_params.y_test)
 
@@ -365,15 +367,9 @@ class TrainBaseService:
             model.summary()
         model_summary = summary_str.getvalue()
 
-        # Calculate parameters
-        total_trainable_params = int(np.sum([np.prod(v.shape.as_list()) for v in model.trainable_weights]))
-        total_params = model.count_params()
-
         # Create dictionary to save as JSON
         model_info = {
-            "model_summary": model_summary,
-            "total_trainable_params": total_trainable_params,
-            "total_params": total_params
+            "model_summary": model_summary
         }
 
         return model_info

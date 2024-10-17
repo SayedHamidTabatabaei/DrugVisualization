@@ -1,10 +1,11 @@
 .modal-content {
-    max-height: 400px; /* Set the maximum height for the modal content */
+    height: 100%;
     overflow-y: auto;  /* Enable vertical scrolling when the content overflows */
     padding: 20px;
 }
 
 .modal {
+    height: 80%;
     position: fixed;
     top: 50%;
     left: 50%;

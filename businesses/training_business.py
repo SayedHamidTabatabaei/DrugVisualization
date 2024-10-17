@@ -19,7 +19,6 @@ from businesses.trains import train_instances
 from common.enums.category import Category
 from common.enums.compare_plot_type import ComparePlotType
 from common.enums.embedding_type import EmbeddingType
-from common.enums.reduction_category import ReductionCategory
 from common.enums.scenarios import Scenarios
 from common.enums.similarity_type import SimilarityType
 from common.enums.text_type import TextType
@@ -28,22 +27,20 @@ from common.enums.training_result_type import TrainingResultType
 from common.helpers import math_helper, embedding_helper, json_helper
 from core.domain.training_result import TrainingResult
 from core.domain.training_result_detail import TrainingResultDetail
-from core.mappers import training_data_mapper
 from core.models.training_parameter_base_model import TrainingParameterBaseModel
 from core.models.training_parameter_models.split_drugs_test_with_test_training_parameter_model import SplitDrugsTestWithTestTrainingParameterModel
 from core.models.training_parameter_models.split_drugs_test_with_train_training_parameter_model import SplitDrugsTestWithTrainTrainingParameterModel
 from core.models.training_parameter_models.split_interaction_originals_training_parameter_model import SplitInteractionOriginalsTrainingParameterModel
 from core.models.training_parameter_models.split_interaction_similarities_training_parameter_model import SplitInteractionSimilaritiesTrainingParameterModel
-from core.repository_models.training_drug_data_dto import TrainingDrugDataDTO
-from core.repository_models.training_drug_train_values_dto import TrainingDrugTrainValuesDTO
-from core.view_models.train_request_view_model import TrainRequestViewModel
 from core.repository_models.compare_plot_dto import ComparePlotDTO
 from core.repository_models.interaction_dto import InteractionDTO
-from core.repository_models.training_data_dto import TrainingInteractionDataDTO
+from core.repository_models.training_drug_data_dto import TrainingDrugDataDTO
+from core.repository_models.training_drug_train_values_dto import TrainingDrugTrainValuesDTO
 from core.repository_models.training_result_detail_dto import TrainingResultDetailDTO
 from core.repository_models.training_result_dto import TrainingResultDTO
 from core.repository_models.training_scheduled_dto import TrainingScheduledDTO
 from core.view_models.image_info_view_model import ImageInfoViewModel
+from core.view_models.train_request_view_model import TrainRequestViewModel
 from core.view_models.training_history_details_view_model import TrainingHistoryDetailsViewModel
 from core.view_models.training_history_view_model import TrainingHistoryViewModel
 from core.view_models.training_scheduled_view_model import TrainingScheduledViewModel
@@ -254,20 +251,6 @@ class TrainingBusiness(BaseBusiness):
                                                                     drug_data=drug_data,
                                                                     interaction_data=interaction_data)
 
-    def get_interaction_similarities_training_data(self, similarity_type: SimilarityType, category: Category,
-                                                   reduction_category: ReductionCategory, interactions: list[InteractionDTO]) \
-            -> list[TrainingInteractionDataDTO]:
-
-        reductions = self.reduction_repository.find_reductions(reduction_category, similarity_type, category,
-                                                               True, True, True, True,
-                                                               0, 100000)
-
-        results = training_data_mapper.map_interaction_similarities_training_data(interactions, reductions, category)
-
-        assert results, f"No training data found for {similarity_type} {category} {reduction_category}"
-
-        return results
-
     def get_training_scheduled(self, train_model: TrainModel):
 
         results = self.training_scheduled_repository.find_all_training_scheduled(train_model, 0, 100000)
@@ -299,6 +282,12 @@ class TrainingBusiness(BaseBusiness):
         result = self.training_repository.get_training_by_id(train_id)
 
         return result.training_conditions
+
+    def get_history_model_information(self, train_id: int):
+
+        result = self.training_repository.get_training_by_id(train_id)
+
+        return result.model_parameters
 
     def get_history_data_reports(self, train_id: int):
 
@@ -663,114 +652,6 @@ class TrainingBusiness(BaseBusiness):
         return test_data
 
     # region Prepare data
-    def prepare_interaction_similarities_data(self, train_request: TrainRequestViewModel, is_test_algorithm: bool):
-
-        data = []
-
-        interactions = self.reduction_repository.find_interactions(True, True, True, True)
-
-        if is_test_algorithm:
-            interactions = self.stratified_sample(interactions, test_size=0.1, min_samples_per_category=5)
-
-        if train_request.substructure_similarity and train_request.substructure_reduction:
-            print('Fetching Substructure data!')
-            data.append(self.get_interaction_similarities_training_data(train_request.substructure_similarity, Category.Substructure,
-                                                                        train_request.substructure_reduction, interactions))
-
-        if train_request.target_similarity and train_request.target_reduction:
-            print('Fetching Target data!')
-            data.append(self.get_interaction_similarities_training_data(train_request.target_similarity, Category.Target,
-                                                                        train_request.target_reduction, interactions))
-
-        if train_request.enzyme_similarity and train_request.enzyme_reduction:
-            print('Fetching Enzyme data!')
-            data.append(self.get_interaction_similarities_training_data(train_request.enzyme_similarity, Category.Enzyme,
-                                                                        train_request.enzyme_reduction, interactions))
-
-        if train_request.pathway_similarity and train_request.pathway_reduction:
-            print('Fetching Pathway data!')
-            data.append(self.get_interaction_similarities_training_data(train_request.pathway_similarity, Category.Pathway,
-                                                                        train_request.pathway_reduction, interactions))
-
-        if train_request.description_embedding and train_request.description_reduction:
-            print('Fetching Description data!')
-            category = embedding_helper.find_category(train_request.description_embedding, TextType.Description)
-            data.append(self.get_interaction_similarities_training_data(SimilarityType.Original, category, train_request.description_reduction, interactions))
-
-        if train_request.indication_embedding and train_request.indication_reduction:
-            print('Fetching Indication data!')
-            category = embedding_helper.find_category(train_request.indication_embedding, TextType.Indication)
-            data.append(self.get_interaction_similarities_training_data(SimilarityType.Original, category, train_request.indication_reduction, interactions))
-
-        if train_request.pharmacodynamics_embedding and train_request.pharmacodynamics_reduction:
-            print('Fetching Pharmacodynamics data!')
-            category = embedding_helper.find_category(train_request.pharmacodynamics_embedding,
-                                                      TextType.Pharmacodynamics)
-            data.append(self.get_interaction_similarities_training_data(SimilarityType.Original, category,
-                                                                        train_request.pharmacodynamics_reduction, interactions))
-
-        if train_request.mechanism_of_action_embedding and train_request.mechanism_of_action_reduction:
-            print('Fetching Mechanism of action data!')
-            category = embedding_helper.find_category(train_request.mechanism_of_action_embedding,
-                                                      TextType.MechanismOfAction)
-            data.append(self.get_interaction_similarities_training_data(SimilarityType.Original, category,
-                                                                        train_request.mechanism_of_action_reduction, interactions))
-
-        if train_request.toxicity_embedding and train_request.toxicity_reduction:
-            print('Fetching Toxicity data!')
-            category = embedding_helper.find_category(train_request.toxicity_embedding, TextType.Toxicity)
-            data.append(self.get_interaction_similarities_training_data(SimilarityType.Original, category, train_request.toxicity_reduction, interactions))
-
-        if train_request.metabolism_embedding and train_request.metabolism_reduction:
-            print('Fetching Metabolism data!')
-            category = embedding_helper.find_category(train_request.metabolism_embedding, TextType.Metabolism)
-            data.append(self.get_interaction_similarities_training_data(SimilarityType.Original, category, train_request.metabolism_reduction, interactions))
-
-        if train_request.absorption_embedding and train_request.absorption_reduction:
-            print('Fetching Absorption data!')
-            category = embedding_helper.find_category(train_request.absorption_embedding, TextType.Absorption)
-            data.append(self.get_interaction_similarities_training_data(SimilarityType.Original, category, train_request.absorption_reduction, interactions))
-
-        if train_request.half_life_embedding and train_request.half_life_reduction:
-            print('Fetching Half life data!')
-            category = embedding_helper.find_category(train_request.half_life_embedding, TextType.HalfLife)
-            data.append(self.get_interaction_similarities_training_data(SimilarityType.Original, category, train_request.half_life_reduction, interactions))
-
-        if train_request.protein_binding_embedding and train_request.protein_binding_reduction:
-            print('Fetching Protein binding data!')
-            category = embedding_helper.find_category(train_request.protein_binding_embedding,
-                                                      TextType.ProteinBinding)
-            data.append(self.get_interaction_similarities_training_data(SimilarityType.Original, category,
-                                                                        train_request.protein_binding_reduction, interactions))
-
-        if train_request.route_of_elimination_embedding and train_request.route_of_elimination_reduction:
-            print('Fetching Route of elimination data!')
-            category = embedding_helper.find_category(train_request.route_of_elimination_embedding,
-                                                      TextType.RouteOfElimination)
-            data.append(self.get_interaction_similarities_training_data(SimilarityType.Original, category,
-                                                                        train_request.route_of_elimination_reduction, interactions))
-
-        if train_request.volume_of_distribution_embedding and train_request.volume_of_distribution_reduction:
-            print('Fetching Volume of distribution data!')
-            category = embedding_helper.find_category(train_request.volume_of_distribution_embedding,
-                                                      TextType.VolumeOfDistribution)
-            data.append(self.get_interaction_similarities_training_data(SimilarityType.Original, category,
-                                                                        train_request.volume_of_distribution_reduction, interactions))
-
-        if train_request.clearance_embedding and train_request.clearance_reduction:
-            print('Fetching Clearance data!')
-            category = embedding_helper.find_category(train_request.clearance_embedding, TextType.Clearance)
-            data.append(self.get_interaction_similarities_training_data(SimilarityType.Original, category, train_request.clearance_reduction, interactions))
-
-        if train_request.classification_description_embedding and train_request.classification_description_reduction:
-            print('Fetching Classification Description data!')
-            category = embedding_helper.find_category(train_request.classification_description_embedding,
-                                                      TextType.ClassificationDescription)
-            data.append(self.get_interaction_similarities_training_data(SimilarityType.Original, category,
-                                                                        train_request.classification_description_reduction, interactions))
-
-        return data
-
     def prepare_drug_data(self, train_request: TrainRequestViewModel, is_test_algorithm: bool) -> list[TrainingDrugDataDTO]:
 
         drugs = self.drug_repository.find_all_active_drugs(True, True, True, True)

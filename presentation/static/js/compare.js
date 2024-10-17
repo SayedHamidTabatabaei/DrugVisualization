@@ -289,6 +289,7 @@ function get_history()
                                 <div style="min-width: 100px;">
                                     <button style="margin:1px;" class="btn btn-info" onclick="showconditions(${row.id})" data-bs-toggle="tooltip" title="Show Conditions"><i class="bi bi-file-earmark-code"></i></button>
                                     <button style="margin:1px;" class="btn btn-success" onclick="showdatareport(${row.id})" data-bs-toggle="tooltip" title="Show Data Report"><i class="bi bi-file-earmark-check"></i></button>
+                                    <button style="margin:1px;" class="btn btn-success" onclick="showmodelinfo(${row.id})" data-bs-toggle="tooltip" title="Show Model Information"><i class="bi bi-file-earmark-text"></i></button>
                                     <button style="margin:1px;" class="btn btn-success" onclick="showImage('${row.train_model}')" data-bs-toggle="tooltip" title="Show Model Image"><i class="bi bi-image"></i></button>
                                 </div>
                             `;

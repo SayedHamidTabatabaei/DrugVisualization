@@ -9,7 +9,6 @@ from core.mappers import reduction_data_mapper
 from core.repository_models.interaction_dto import InteractionDTO
 from core.repository_models.reduction_data_dto import ReductionDataDTO
 from core.repository_models.training_data_dto import TrainingInteractionDataDTO
-from core.repository_models.training_drug_interaction_dto import TrainingDrugInteractionDTO
 from infrastructure.mysqldb.mysql_repository import MySqlRepository
 
 

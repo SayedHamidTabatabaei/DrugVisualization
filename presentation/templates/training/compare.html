@@ -23,6 +23,7 @@
 <script src="{{ url_for('static', filename='js/compare.js') }}"></script>
 <script src="{{ url_for('static', filename='js/image_modal.js') }}"></script>
 <script src="{{ url_for('static', filename='js/condition_modal.js') }}"></script>
+<script src="{{ url_for('static', filename='js/model_information.js') }}"></script>
 <script src="{{ url_for('static', filename='js/data_report_modal.js') }}"></script>
 {% endblock %}
 
@@ -371,7 +372,7 @@
 <div id="plots"></div>
 
 <div id="jsonModal" class="modal" style="display:none;">
-    <div class="modal-content" style="max-height: 400px; overflow-y: auto;">
+    <div class="modal-content" style="overflow-y: auto;">
         <h4>JSON Data</h4>
         <div id="jsonData"></div>
     </div>
