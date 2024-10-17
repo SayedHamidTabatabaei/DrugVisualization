@@ -166,6 +166,14 @@
       <excludeFolder url="file://$MODULE_DIR$/tf-env/Lib/site-packages/zipp" />
       <excludeFolder url="file://$MODULE_DIR$/tf-env/Lib/site-packages/zipp-3.20.1.dist-info" />
       <excludeFolder url="file://$MODULE_DIR$/tf-env/share" />
+      <excludeFolder url="file://$MODULE_DIR$/addons/tensorflow_addons.egg-info" />
+      <excludeFolder url="file://$MODULE_DIR$/tf-env/Lib" />
+      <excludeFolder url="file://$MODULE_DIR$/tf-env/Scripts" />
+      <excludeFolder url="file://$MODULE_DIR$/training_plots" />
+      <excludeFolder url="file://$MODULE_DIR$/training_plots/23" />
+      <excludeFolder url="file://$MODULE_DIR$/training_plots/33" />
+      <excludeFolder url="file://$MODULE_DIR$/training_plots/4" />
+      <excludeFolder url="file://$MODULE_DIR$/training_plots/5" />
     </content>
     <orderEntry type="jdk" jdkName="Python 3.12 (DrugVisualization)" jdkType="Python SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
