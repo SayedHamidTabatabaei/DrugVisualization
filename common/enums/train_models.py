@@ -18,6 +18,10 @@ class TrainModel(Enum):
     GAT_Con_AE_DNN = (9, Scenarios.SplitInteractionSimilarities, 'GAT On SMILES, Concat input data, AutoEncoder and then DNN.')
     MHA = (20, Scenarios.SplitInteractionSimilarities, 'Multi-Head Attention.')
 
+    Drug_AE_Con_DNN = (204, Scenarios.SplitDrugsTestWithTrain, 'Reduce data dimension, join them and send to DNN')
+
+    Deep_DDI = (501, Scenarios.SplitInteractionSimilarities, 'The Old Base Algorithm, just use SMILES code.')
+
     Test = (1000, Scenarios.SplitDrugsTestWithTrain, "This network is for test new algorithms.")
 
     def __init__(self, value, scenario: Scenarios, description):

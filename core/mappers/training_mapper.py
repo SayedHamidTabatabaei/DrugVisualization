@@ -8,8 +8,8 @@ from core.repository_models.training_result_report_dto import TrainingResultRepo
 
 
 def map_training(query_results) -> Training:
-    (id, name, description, train_model, loss_function, class_weight, is_test_algorithm, training_conditions, model_parameters, data_report, execute_time) = \
-        query_results[0][0]
+    (id, name, description, train_model, loss_function, class_weight, is_test_algorithm, training_conditions, model_parameters, data_report,
+     fold_result_details, execute_time) = query_results[0][0]
     return Training(id=id,
                     name=name,
                     description=description,
@@ -20,6 +20,7 @@ def map_training(query_results) -> Training:
                     training_conditions=training_conditions,
                     model_parameters=model_parameters,
                     data_report=data_report,
+                    fold_result_details=fold_result_details,
                     execute_time=execute_time)
 
 

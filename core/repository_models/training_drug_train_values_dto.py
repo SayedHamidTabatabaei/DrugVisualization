@@ -1,9 +1,11 @@
 from dataclasses import dataclass
 
+from numpy import ndarray
+
 from common.enums.category import Category
 
 
 @dataclass
 class TrainingDrugTrainValuesDTO:
     category: Category
-    values: list[float] | dict[int, float]
+    values: ndarray | dict[int, float]

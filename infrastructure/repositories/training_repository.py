@@ -30,14 +30,15 @@ class TrainingRepository(MySqlRepository):
 
         return id
 
-    def update(self, id: int, data_report: str, model_parameters: str) -> None:
+    def update(self, id: int, data_report: str, model_parameters: str, fold_result_details: str) -> None:
 
         training = self.get_training_by_id(id)
 
         training.data_report = data_report
         training.model_parameters = model_parameters
+        training.fold_result_details = fold_result_details
 
-        update_columns = ['data_report', 'model_parameters']
+        update_columns = ['data_report', 'model_parameters', 'fold_result_details']
 
         super().update(training, update_columns)
 

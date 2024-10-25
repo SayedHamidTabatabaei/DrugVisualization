@@ -185,6 +185,17 @@ class TrainingController(MethodView):
         else:
             return jsonify({'data': train_history_data_reports, 'message': "No data found!", 'status': False})
 
+    @route('get_history_fold_result_details', methods=['GET'])
+    def get_history_fold_result_details(self):
+        train_id = request.args.get('trainHistoryId')
+
+        train_history_fold_result_details = self.training_business.get_history_fold_result_details(int(train_id))
+
+        if train_history_fold_result_details:
+            return jsonify({'data': train_history_fold_result_details, 'status': True})
+        else:
+            return jsonify({'data': train_history_fold_result_details, 'message': "No data found!", 'status': False})
+
     @route('get_history_plots', methods=['GET'])
     def get_history_plots(self):
         train_id = request.args.get('trainHistoryId')

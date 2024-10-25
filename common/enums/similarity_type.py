@@ -17,4 +17,5 @@ class SimilarityType(Enum):
     Bhattacharyya = 12
     Edit = 13
     DynamicTime = 14
-    Hausdorff = 15
+    Hausdorff = 15,
+    DeepDDISmiles = 20

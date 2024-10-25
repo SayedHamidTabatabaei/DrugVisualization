@@ -26,6 +26,6 @@ class SciBertEmbeddingService(EmbeddingBaseService):
             inputs = self.scibert_tokenizer(text, return_tensors="pt", padding=True, truncation=True, max_length=512)
             outputs = self.scibert_model(**inputs)
             issue_on_max_length = True
-            print(f'Exception message {e}')
+            # print(f'Exception message {e}')
 
-        return EmbeddingBaseService.parse_string(outputs.last_hidden_state.mean(dim=1).detach().numpy()), issue_on_max_length
+        return super().parse_string(outputs.last_hidden_state), issue_on_max_length

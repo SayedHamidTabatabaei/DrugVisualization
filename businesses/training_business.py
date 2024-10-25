@@ -24,17 +24,16 @@ from common.enums.similarity_type import SimilarityType
 from common.enums.text_type import TextType
 from common.enums.train_models import TrainModel
 from common.enums.training_result_type import TrainingResultType
-from common.helpers import math_helper, embedding_helper, json_helper
+from common.helpers import math_helper, embedding_helper, json_helper, smiles_helper
 from core.domain.training_result import TrainingResult
 from core.domain.training_result_detail import TrainingResultDetail
 from core.models.training_parameter_base_model import TrainingParameterBaseModel
 from core.models.training_parameter_models.split_drugs_test_with_test_training_parameter_model import SplitDrugsTestWithTestTrainingParameterModel
 from core.models.training_parameter_models.split_drugs_test_with_train_training_parameter_model import SplitDrugsTestWithTrainTrainingParameterModel
-from core.models.training_parameter_models.split_interaction_originals_training_parameter_model import SplitInteractionOriginalsTrainingParameterModel
 from core.models.training_parameter_models.split_interaction_similarities_training_parameter_model import SplitInteractionSimilaritiesTrainingParameterModel
 from core.repository_models.compare_plot_dto import ComparePlotDTO
-from core.repository_models.interaction_dto import InteractionDTO
 from core.repository_models.training_drug_data_dto import TrainingDrugDataDTO
+from core.repository_models.training_drug_interaction_dto import TrainingDrugInteractionDTO
 from core.repository_models.training_drug_train_values_dto import TrainingDrugTrainValuesDTO
 from core.repository_models.training_result_detail_dto import TrainingResultDetailDTO
 from core.repository_models.training_result_dto import TrainingResultDTO
@@ -168,19 +167,21 @@ class TrainingBusiness(BaseBusiness):
         print('Update...')
         self.training_repository.update(train_id,
                                         data_report=json.dumps(training_result.data_report, default=json_helper.convert_numpy_types),
-                                        model_parameters=json.dumps(training_result.model_info, default=json_helper.convert_numpy_types))
+                                        model_parameters=json.dumps(training_result.model_info, default=json_helper.convert_numpy_types),
+                                        fold_result_details=json.dumps(training_result.fold_result_details, default=json_helper.convert_numpy_types))
 
         print('Training Results...')
         training_results = [TrainingResult(training_id=train_id, training_result_type=item.training_result_type, result_value=item.result_value)
                             for item in training_result.training_results]
         self.training_result_repository.insert_batch_check_duplicate(training_results)
 
-        # model_binary = pickle.dumps(training_result.model)
-        # model = pickle.loads(model_binary)
-        # model.save('training_models/{train_id}.h5')
-
-        with open(f'training_models/{train_id}.pkl', 'wb') as file:
-            pickle.dump(training_result.model, file)
+        if isinstance(training_result.model, bytes):
+            with open(f'training_models/{train_id}.pkl', 'wb') as file:
+                pickle.dump(training_result.model, file)
+        elif isinstance(training_result.model, list):
+            for idx in range(len(training_result.model)):
+                with open(f'training_models/{train_id}_{idx}.pkl', 'wb') as file:
+                    pickle.dump(training_result.model, file)
 
         train_result_details = [TrainingResultDetail(training_id=train_id,
                                                      training_label=item.training_label,
@@ -200,10 +201,13 @@ class TrainingBusiness(BaseBusiness):
 
         match train_schedule.train_model.scenario:
             case Scenarios.SplitInteractionSimilarities:
-                drug_data = self.prepare_drug_data(TrainRequestViewModel.from_json(train_schedule.training_conditions), train_schedule.is_test_algorithm)
+                drug_data = self.prepare_drug_data(TrainRequestViewModel.from_json(train_schedule.training_conditions))
 
                 print("Fetching Interactions!")
                 interaction_data = self.drug_interaction_repository.find_training_interactions(True, True, True, True)
+
+                if train_schedule.is_test_algorithm:
+                    interaction_data = self.stratified_sample(interaction_data, test_size=0.01, min_samples_per_category=5)
 
                 return SplitInteractionSimilaritiesTrainingParameterModel(train_id=train_id,
                                                                           loss_function=train_schedule.loss_function,
@@ -211,20 +215,9 @@ class TrainingBusiness(BaseBusiness):
                                                                           is_test_algorithm=train_schedule.is_test_algorithm,
                                                                           drug_data=drug_data,
                                                                           interaction_data=interaction_data)
-            case Scenarios.SplitInteractionOriginals:
-                drug_data = self.prepare_drug_data(TrainRequestViewModel.from_json(train_schedule.training_conditions), train_schedule.is_test_algorithm)
 
-                print("Fetching Interactions!")
-                interaction_data = self.drug_interaction_repository.find_training_interactions(True, True, True, True)
-
-                return SplitInteractionOriginalsTrainingParameterModel(train_id=train_id,
-                                                                       loss_function=train_schedule.loss_function,
-                                                                       class_weight=train_schedule.class_weight,
-                                                                       is_test_algorithm=train_schedule.is_test_algorithm,
-                                                                       drug_data=drug_data,
-                                                                       interaction_data=interaction_data)
             case Scenarios.SplitDrugsTestWithTrain:
-                drug_data = self.prepare_drug_data(TrainRequestViewModel.from_json(train_schedule.training_conditions), train_schedule.is_test_algorithm)
+                drug_data = self.prepare_drug_data(TrainRequestViewModel.from_json(train_schedule.training_conditions))
 
                 print("Fetching Interactions!")
                 interaction_data = self.drug_interaction_repository.find_training_interactions(True, True, True, True)
@@ -236,7 +229,7 @@ class TrainingBusiness(BaseBusiness):
                                                                      drug_data=drug_data,
                                                                      interaction_data=interaction_data)
             case Scenarios.SplitDrugsTestWithTest:
-                drug_data = self.prepare_drug_data(TrainRequestViewModel.from_json(train_schedule.training_conditions), train_schedule.is_test_algorithm)
+                drug_data = self.prepare_drug_data(TrainRequestViewModel.from_json(train_schedule.training_conditions))
 
                 print("Fetching Interactions!")
                 interaction_data = self.drug_interaction_repository.find_training_interactions(True, True, True, True)
@@ -291,6 +284,12 @@ class TrainingBusiness(BaseBusiness):
         result = self.training_repository.get_training_by_id(train_id)
 
         return result.data_report
+
+    def get_history_fold_result_details(self, train_id: int):
+
+        result = self.training_repository.get_training_by_id(train_id)
+
+        return result.fold_result_details
 
     def get_history_plots(self, train_id: int) -> list[ImageInfoViewModel]:
 
@@ -633,7 +632,7 @@ class TrainingBusiness(BaseBusiness):
             grouped_data[item.interaction_type].append(item)
         return grouped_data
 
-    def stratified_sample(self, data: list[InteractionDTO], test_size=0.1, min_samples_per_category=5) -> list[InteractionDTO]:
+    def stratified_sample(self, data: list[TrainingDrugInteractionDTO], test_size=0.1, min_samples_per_category=5) -> list[TrainingDrugInteractionDTO]:
         grouped_data = self.group_by_category(data)
 
         test_data = []
@@ -649,7 +648,7 @@ class TrainingBusiness(BaseBusiness):
         return test_data
 
     # region Prepare data
-    def prepare_drug_data(self, train_request: TrainRequestViewModel, is_test_algorithm: bool) -> list[TrainingDrugDataDTO]:
+    def prepare_drug_data(self, train_request: TrainRequestViewModel) -> list[TrainingDrugDataDTO]:
 
         drugs = self.drug_repository.find_all_active_drugs(True, True, True, True)
 
@@ -727,8 +726,15 @@ class TrainingBusiness(BaseBusiness):
         else:
             similarities = self.get_original_data(category)
             for d in tqdm(drugs, f'Updating {category.name} data...'):
-                d.train_values.append(TrainingDrugTrainValuesDTO(category=category,
-                                                                 values=[float(value) for key, value in similarities.items() if key == d.drug_id]))
+                if category != Category.Substructure:
+                    d.train_values.append(TrainingDrugTrainValuesDTO(category=category,
+                                                                     values=[float(value) for key, value in similarities.items() if key == d.drug_id]))
+                else:
+                    value = next((s for k, s in similarities.items() if k == d.drug_id), None)
+
+                    d.train_values.append(TrainingDrugTrainValuesDTO(category=category,
+                                                                     values=smiles_helper.smiles_to_feature_matrix(value)))
+
         return drugs
 
     def get_original_data(self, category: Category):
@@ -750,12 +756,18 @@ class TrainingBusiness(BaseBusiness):
         print(f'Fetching {text_type.name}-{embedding_type.name} data!')
         embeddings = self.drug_embedding_repository.find_all_embedding_dict(embedding_type=embedding_type, text_type=text_type)
 
-        embeddings = {key: [float(x) for x in values.replace('[', '').replace(']', '').split()] for key, values in embeddings.items()}
+        embeddings = {k: self.validate_and_reshape(json.loads(v)) for k, v in tqdm(embeddings.items(), "Converting string to array...")}
 
         for d in tqdm(drugs, f"Fetching {text_type.name}-{embedding_type.name}...."):
             d.train_values.append(TrainingDrugTrainValuesDTO(category=embedding_helper.find_category(embedding_type, text_type),
                                                              values=embeddings.get(d.drug_id, [])))
 
         return drugs
+
+    @staticmethod
+    def validate_and_reshape(array):
+        if len(array) != 1:
+            raise ValueError("The length of the outer list is not 1.")
+        return np.array(array).reshape(-1, len(array[0]))
 
     # endregion

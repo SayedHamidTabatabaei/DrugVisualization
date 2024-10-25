@@ -1,11 +1,7 @@
-import numpy as np
-from rdkit import Chem
-from rdkit.Chem import rdmolops
-from spektral.layers import GATConv
-from tensorflow.keras.layers import Input, Dense, Concatenate
+import tensorflow as tf
+from tensorflow.keras.layers import Input, Dense, Concatenate, Layer, Dropout
 # noinspection PyUnresolvedReferences
 from tensorflow.keras.models import Model
-from tqdm import tqdm
 
 from businesses.trains.train_base_service import TrainBaseService
 from common.enums.category import Category
@@ -13,9 +9,65 @@ from common.enums.train_models import TrainModel
 from core.models.data_params import DataParams
 from core.models.training_parameter_models.split_interaction_similarities_training_parameter_model import SplitInteractionSimilaritiesTrainingParameterModel
 from core.models.training_params import TrainingParams
+from core.repository_models.training_drug_data_dto import TrainingDrugDataDTO
 from core.repository_models.training_summary_dto import TrainingSummaryDTO
 
 train_model = TrainModel.GAT_AE_Con_DNN
+
+
+class GATLayer(Layer):
+    def __init__(self, units, num_heads, **kwargs):
+        super(GATLayer, self).__init__(**kwargs)
+        self.units = units
+        self.num_heads = num_heads
+        self.attention_heads = [
+            Dense(units, activation="relu") for _ in range(num_heads)
+        ]
+        self.attention_weights = [
+            Dense(1) for _ in range(num_heads)
+        ]
+
+    def call(self, inputs, **kwargs):
+        # inputs: (batch_size, num_nodes, feature_dim)
+        all_heads = []
+        for head, weight in zip(self.attention_heads, self.attention_weights):
+            projection = head(inputs)  # (batch_size, num_nodes, units)
+            attention_logits = weight(projection)  # (batch_size, num_nodes, 1)
+            attention_scores = tf.nn.softmax(attention_logits, axis=1)  # (batch_size, num_nodes, 1)
+            weighted_projection = projection * attention_scores  # (batch_size, num_nodes, units)
+            all_heads.append(weighted_projection)
+
+        # Concatenate attention heads or take their average
+        return tf.reduce_mean(tf.stack(all_heads, axis=0), axis=0)
+
+
+class AutoencoderLayer(Layer):
+    def __init__(self, encoding_dim, **kwargs):
+        super(AutoencoderLayer, self).__init__(**kwargs)
+        self.encoding_dim = encoding_dim
+        self.encoder = None  # We'll define this in build()
+
+    def build(self, input_shape):
+        # Define the dense layer with an input dimension inferred from input_shape
+        self.encoder = Dense(self.encoding_dim, activation='relu')
+        super(AutoencoderLayer, self).build(input_shape)
+
+    def call(self, inputs, **kwargs):
+        # Ensure the inputs match what the encoder expects
+        encoded = self.encoder(inputs)
+        return encoded
+
+    def compute_output_shape(self, input_shape):
+        return input_shape[0], self.encoding_dim
+
+
+class ReduceMeanLayer(Layer):
+    def __init__(self, axis=1, **kwargs):
+        super(ReduceMeanLayer, self).__init__(**kwargs)
+        self.axis = axis
+
+    def call(self, inputs):
+        return tf.reduce_mean(inputs, axis=self.axis)
 
 
 class GatAeConDnnTrainService(TrainBaseService):
@@ -23,114 +75,83 @@ class GatAeConDnnTrainService(TrainBaseService):
     def __init__(self, category: TrainModel):
         super().__init__(category)
         self.encoding_dim = 128
+        self.gat_units = 64
+        self.num_heads = 4
+        self.dense_units = [128, 64]
 
-    def create_autoencoder(self, input_shape):
-        input_layer = Input(input_shape)
-        encoded = Dense(self.encoding_dim, activation='relu')(input_layer)
-        return input_layer, encoded
+    def build_model(self, data: TrainingDrugDataDTO, x_train):
 
-    @staticmethod
-    def prepare_smiles_data(data_entry):
-        """
-        Prepares SMILES data into graph format suitable for a GAT model.
+        encoded_models_1 = []
+        encoded_models_2 = []
+        input_layers_1 = []
+        input_layers_2 = []
+        smiles_input_1 = None
+        smiles_input_2 = None
+        gat_output_1 = None
+        gat_output_2 = None
 
-        Parameters:
-        - data_entry: A single entry containing SMILES string(s) from TrainingDataDTO.
+        gat_layer = GATLayer(units=self.gat_units, num_heads=self.num_heads)
 
-        Returns:
-        - A dictionary containing 'node_features' and 'adjacency_matrix'.
-        """
-        smiles_string = data_entry[0].values_1  # Access SMILES string from data entry
-        mol = Chem.MolFromSmiles(smiles_string[0])
+        for idx, d in enumerate(data.train_values):
+            if d.category == Category.Substructure:
 
-        if mol is None:
-            raise ValueError(f"Invalid SMILES string: {smiles_string}")
+                smiles_input_shape = x_train[idx][0].shape
 
-        # Create adjacency matrix
-        adjacency_matrix = rdmolops.GetAdjacencyMatrix(mol)
+                # SMILES input (graph-like input)
+                smiles_input_1 = Input(shape=smiles_input_shape, name="Drug1_SMILES_Input")
+                smiles_input_2 = Input(shape=smiles_input_shape, name="Drug2_SMILES_Input")
 
-        # Create node features (e.g., atomic number)
-        node_features = []
-        for atom in mol.GetAtoms():
-            # Using atomic number as feature, you can add more features if necessary
-            node_features.append([atom.GetAtomicNum()])
+                # GAT processing for SMILES
+                gat_output_1 = gat_layer(smiles_input_1)
+                gat_output_1 = ReduceMeanLayer(axis=1)(gat_output_1)  # Aggregate over all nodes
 
-        # Convert node features to numpy array
-        node_features = np.array(node_features, dtype=np.float32)
+                # GAT processing for SMILES
+                gat_output_2 = gat_layer(smiles_input_2)
+                gat_output_2 = ReduceMeanLayer(axis=1)(gat_output_2)  # Aggregate over all nodes
 
-        return node_features, adjacency_matrix
+            else:
+                autoencoder_layer = AutoencoderLayer(encoding_dim=self.encoding_dim)
 
-    @staticmethod
-    def create_gat_model_on_smiles(node_features, adjacency_matrix, num_heads=4, hidden_units=64, output_dim=32):
-        """
-        Creates a GAT model for processing SMILES data.
+                input_layer_1 = Input(shape=x_train[idx][0].shape)
+                encoded_model_1 = autoencoder_layer(input_layer_1)
+                input_layers_1.append(input_layer_1)
+                encoded_models_1.append(encoded_model_1)
 
-        Parameters:
-        - node_features, adjacency_matrix: The input values for the SMILES data, which should be preprocessed graph data (node features and adjacency).
-        - num_heads: The number of attention heads in the GAT layers.
-        - hidden_units: The number of hidden units in the GAT layers.
-        - output_dim: The output dimension for the dense encoding layer.
+                input_layer_2 = Input(shape=x_train[idx][0].shape)
+                encoded_model_2 = autoencoder_layer(input_layer_2)
+                input_layers_2.append(input_layer_2)
+                encoded_models_2.append(encoded_model_2)
 
-        Returns:
-        - The encoded output from the GAT model.
-        """
+        # Concatenate GAT outputs with their respective feature inputs
+        combined_drug_1 = Concatenate()([gat_output_1] + encoded_models_1)
+        combined_drug_2 = Concatenate()([gat_output_2] + encoded_models_2)
 
-        # Define the input layers for node features and adjacency matrix
-        node_input = Input(shape=(node_features.shape[1],), name="Node_Input")  # Shape: (num_nodes, feature_dim)
-        adj_input = Input(shape=(node_features.shape[0],), name="Adj_Input")  # Shape: (num_nodes, num_nodes)
+        # Combine both drugs' information for interaction prediction
+        combined = Concatenate()([combined_drug_1, combined_drug_2])
 
-        # Define GAT layers
-        x = GATConv(hidden_units, activation='relu', attn_heads=num_heads)([node_input, adj_input])
-        x = GATConv(hidden_units, activation='relu', attn_heads=num_heads)([x, adj_input])
+        # Dense layers for final prediction
+        x = combined
+        for units in self.dense_units:
+            x = Dense(units, activation="relu")(x)
+            x = Dropout(0.3)(x)
 
-        # Dense layer to output the encoded representation
-        encoded_output = Dense(output_dim, activation='relu')(x)
+        # Output layer (example for binary classification, use appropriate activation and units for your case)
+        output = Dense(self.num_classes, activation="softmax")(x)
 
-        # Create the GAT model
-        gat_model = Model(inputs=[node_input, adj_input], outputs=encoded_output)
+        model_inputs = [smiles_input_1] + input_layers_1 + [smiles_input_2] + input_layers_2
 
-        return gat_model([node_features, adjacency_matrix])
+        model = Model(inputs=model_inputs, outputs=output)
+
+        return model
 
     def train(self, parameters: SplitInteractionSimilaritiesTrainingParameterModel) -> (TrainingSummaryDTO, object):
 
-        x_train, x_test, y_train, y_test = super().split_train_test(parameters.drug_data, parameters.interaction_data, padding=True)
+        x_train, x_test, y_train, y_test = super().split_deepface_train_test(parameters.drug_data, parameters.interaction_data, padding=False)
 
-        input_layers = []
-        encoded_models = []
-
-        for idx, d in tqdm(enumerate(x_train), "Creating Encoded Models..."):
-
-            shapes = {tuple(s.shape) for s in d}
-
-            if len(shapes) != 1:
-                raise ValueError(f"Error: Multiple shapes found: {shapes}")
-
-            if parameters.drug_data[0].train_values[idx].category != Category.Substructure:
-                input_layer, encoded_model = self.create_autoencoder(input_shape=shapes.pop())
-                input_layers.append(input_layer)
-                encoded_models.append(encoded_model)
-            else:
-                input_layer = Input(shape=shapes.pop())
-                node_features, adjacency_matrix = self.prepare_smiles_data(parameters.data[idx])  # Retrieve preprocessed SMILES graph data
-
-                # Call the GAT model creation function
-                gat_model_output = self.create_gat_model_on_smiles(node_features, adjacency_matrix)
-                encoded_model = Dense(self.encoding_dim, activation='relu')(gat_model_output)
-                input_layers.append(input_layer)
-                encoded_models.append(encoded_model)
-
-        concatenated = Concatenate()([encoded for encoded in encoded_models])
-
-        # Define DNN layers after concatenation
-        x = Dense(256, activation='relu')(concatenated)
-        x = Dense(128, activation='relu')(x)
-        output = Dense(self.num_classes, activation='softmax')(x)  # Softmax for multi-class classification
-
-        # Create the full model
-        full_model = Model(inputs=[input_layer for input_layer in input_layers], outputs=output)
+        model = self.build_model(parameters.drug_data[0], x_train)
 
         return super().fit_dnn_model(data_params=DataParams(x_train=x_train, y_train=y_train, x_test=x_test, y_test=y_test),
                                      training_params=TrainingParams(train_id=parameters.train_id, optimizer='adam', loss=parameters.loss_function,
                                                                     class_weight=parameters.class_weight),
-                                     model=full_model,
+                                     model=model,
                                      interactions=parameters.interaction_data)

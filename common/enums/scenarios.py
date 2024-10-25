@@ -3,9 +3,8 @@ from enum import Enum
 
 class Scenarios(Enum):
     SplitInteractionSimilarities = (1, "In this scenario splits by interactions and use similarity algorithms and splits 80-20.")
-    SplitInteractionOriginals = (2, "In this scenario splits by interactions and use original data and splits 80-20.")
-    SplitDrugsTestWithTrain = (3, "In this scenario splits by drugs and use similarity algorithms and test 'test set' with 'train set' and splits by k-fold.")
-    SplitDrugsTestWithTest = (4, "In this scenario splits by drugs and use similarity algorithms and test 'test set' with 'test set' and splits by k-fold.")
+    SplitDrugsTestWithTrain = (2, "In this scenario splits by drugs and use similarity algorithms and test 'test set' with 'train set' and splits by k-fold.")
+    SplitDrugsTestWithTest = (3, "In this scenario splits by drugs and use similarity algorithms and test 'test set' with 'test set' and splits by k-fold.")
 
     def __init__(self, value, description):
         self._value_ = value

@@ -1,15 +1,20 @@
 import contextlib
 import io
+import math
 import os
+import pickle
+import random
 import time
+from collections import defaultdict
 
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import tensorflow as tf
+from sklearn.decomposition import PCA
 from sklearn.metrics import accuracy_score, f1_score, roc_auc_score, average_precision_score, precision_score, \
     recall_score, log_loss
-from sklearn.model_selection import StratifiedShuffleSplit, KFold
+from sklearn.model_selection import StratifiedShuffleSplit
 from sklearn.preprocessing import label_binarize
 # noinspection PyUnresolvedReferences
 from tensorflow.keras.preprocessing.sequence import pad_sequences
@@ -19,6 +24,7 @@ from tensorflow.keras.preprocessing.text import Tokenizer
 from tensorflow.keras.utils import to_categorical
 from tqdm import tqdm
 
+from common.enums.category import Category
 from common.enums.train_models import TrainModel
 from common.enums.training_result_type import TrainingResultType
 from common.helpers import loss_helper
@@ -39,6 +45,8 @@ class TrainBaseService:
         self.category = category
         self.num_classes = 65
         self.num_folds = 5
+        self.usage_model_file = 'usage_models'
+        self.pca_model_file_name = 'PCA_tanimoto_model_50.pkl'
 
     def save_image(self, train_id):
         pass
@@ -78,6 +86,8 @@ class TrainBaseService:
 
         # For multi-class AUC and AUPR, you need to binarize the labels
         y_test_bin = label_binarize(y_test_classes, classes=range(self.num_classes))
+        list(set(np.argmax(y_test_bin, axis=1)))
+
         auc_weighted = roc_auc_score(y_test_bin, y_pred, average='weighted', multi_class='ovr')
         training_results.append(TrainingResultSummaryDTO(TrainingResultType.auc_weighted, auc_weighted))
 
@@ -144,7 +154,8 @@ class TrainBaseService:
                                   model=model,
                                   training_result_details=results_per_labels,
                                   data_report=None,
-                                  model_info=None)
+                                  model_info=None,
+                                  fold_result_details=None)
 
     @staticmethod
     def plot_accuracy(history, train_id: int):
@@ -352,8 +363,6 @@ class TrainBaseService:
 
         result.model_info = self.get_model_info(model)
 
-        model.summary()
-
         if interactions is not None:
             result.data_report = self.get_data_report_split(interactions, data_params.y_train, data_params.y_test)
 
@@ -402,18 +411,112 @@ class TrainBaseService:
             "test_report": self.get_data_report_by_labels(y_test, is_labels_categorical)
         }
 
+    @staticmethod
+    def calculate_fold_results(fold_results: list[TrainingSummaryDTO]):
+
+        results = []
+        mean_result: TrainingSummaryDTO
+
+        for idx, result in enumerate(fold_results):
+            result = {
+                "k": idx + 1,
+                "training_results": {
+                    r.training_result_type.name: r.result_value for r in result.training_results
+                },
+                "training_result_details": [
+                    {
+                        "training_label": r.training_label,
+                        "accuracy": r.accuracy,
+                        "f1_score": r.f1_score,
+                        "auc": r.auc,
+                        "aupr": r.aupr,
+                        "recall": r.recall,
+                        "precision": r.precision
+                    }
+                    for r in result.training_result_details
+                ]
+            }
+
+            results.append(result)
+
+        return TrainingSummaryDTO(
+            training_results=[
+                TrainingResultSummaryDTO(
+                    training_result_type=training_result_type,
+                    result_value=np.mean([r.result_value for result in fold_results for r in result.training_results if r.training_result_type ==
+                                          training_result_type])
+                )
+                for training_result_type in {r.training_result_type for result in fold_results for r in result.training_results}
+            ],
+            model=[r.model for r in fold_results],
+            data_report=[r.data_report for r in fold_results],
+            model_info=[r.model_info for r in fold_results],
+            fold_result_details=results,
+            training_result_details=[
+                TrainingResultDetailSummaryDTO(
+                    training_label=training_label,
+                    accuracy=np.mean([r.accuracy for result in fold_results for r in result.training_result_details if r.training_label == training_label]),
+                    f1_score=np.mean([r.f1_score for result in fold_results for r in result.training_result_details if r.training_label == training_label]),
+                    auc=np.mean([r.auc for result in fold_results for r in result.training_result_details if r.training_label == training_label]),
+                    aupr=np.mean([r.aupr for result in fold_results for r in result.training_result_details if r.training_label == training_label]),
+                    recall=np.mean([r.recall for result in fold_results for r in result.training_result_details if r.training_label == training_label]),
+                    precision=np.mean([r.precision for result in fold_results for r in result.training_result_details if r.training_label == training_label])
+                )
+                for training_label in {r.training_label for result in fold_results for r in result.training_result_details}
+            ]
+        )
+
     # region split data
-    def k_fold_train_test_data(self, drug_data: list[TrainingDrugDataDTO], interaction_data: list[TrainingDrugInteractionDTO], padding: bool = False,
-                               flat: bool = False):
+    def manual_k_fold_train_test_data(self, drug_data: list[TrainingDrugDataDTO], interaction_data: list[TrainingDrugInteractionDTO],
+                                      categorical_labels: bool = True, padding: bool = False, flat: bool = False):
 
-        kf = KFold(n_splits=self.num_folds, shuffle=True, random_state=42)
+        all_drugs = [drug.drug_id for drug in drug_data]
+        # min_test_drugs_in_folds = math.floor(len(drug_data) / self.num_folds)
+        previous_fold_tests = []
+        interaction_drugs: dict = self.get_drug_interaction_dict(interaction_data)
+        min_test_drugs_in_folds_per_interaction_type = \
+            {key: math.floor(len(value) / self.num_folds) if len(value) < 50 else math.ceil(len(value) / self.num_folds)
+             for key, value in sorted(interaction_drugs.items(), reverse=True)}
 
-        drug_ids = [drug.drug_id for drug in drug_data]
+        for k in range(1, self.num_folds):
+            active_drugs_on_test = {
+                key: {drug for drug in drugs if drug not in previous_fold_tests}
+                for key, drugs in sorted(interaction_drugs.items(), reverse=True)
+            }
 
-        for train_drug_indices, test_drug_indices in kf.split(drug_ids):
-            # Create sets of drug IDs for training and testing sets
-            train_drug_ids = {drug_ids[i] for i in train_drug_indices}
-            test_drug_ids = {drug_ids[i] for i in test_drug_indices}
+            test_drug_ids: list[int] = []
+            train_drug_ids: list[int] = []
+
+            if k == self.num_folds:
+                test_drug_ids = [drug for drugs in active_drugs_on_test.values() for drug in drugs]
+                train_drug_ids = [drug for drug in all_drugs if drug not in test_drug_ids]
+
+            else:
+                for key, drugs in active_drugs_on_test.items():
+
+                    temp_test = list(drugs.intersection(test_drug_ids))
+
+                    # print(f"key: {key}, min_test_drugs_in_folds_per_interaction_type: {min_test_drugs_in_folds_per_interaction_type[key]}, "
+                    #       f"len of temp_test: {len(temp_test)}, len of drugs {len(drugs)}, "
+                    #       f"length of other drugs {len([d for d in drugs if d not in test_drug_ids and d not in train_drug_ids])}")
+
+                    needed_data_count = min_test_drugs_in_folds_per_interaction_type[key] - len(temp_test)
+
+                    if 0 < needed_data_count < len([d for d in drugs if d not in test_drug_ids and d not in train_drug_ids]):
+                        temp_test = temp_test + random.sample([d for d in drugs if d not in test_drug_ids and d not in train_drug_ids], needed_data_count)
+
+                    if key == 0:
+                        pass
+
+                    test_drug_ids = list(set(test_drug_ids + temp_test))
+
+                    temp_train = [drug for drug in interaction_drugs[key] if drug not in temp_test]
+                    train_drug_ids = train_drug_ids + temp_train
+
+            test_drug_ids = list(set(test_drug_ids))
+            train_drug_ids = list(set(train_drug_ids))
+
+            previous_fold_tests.append(test_drug_ids)
 
             # Filter interaction_data based on the defined conditions
             train_interactions = [
@@ -432,6 +535,10 @@ class TrainBaseService:
             x_train = self.generate_x_values(drug_data, train_interactions, train_drug_ids)
             x_test = self.generate_x_values(drug_data, test_interactions, train_drug_ids)
 
+            if categorical_labels:
+                y_train = to_categorical(y_train, num_classes=self.num_classes)
+                y_test = to_categorical(y_test, num_classes=self.num_classes)
+
             if padding:
                 x_train, x_test = self.create_input_tensors_pad(x_train, x_test)
 
@@ -440,11 +547,18 @@ class TrainBaseService:
 
             yield x_train, x_test, y_train, y_test
 
+    @staticmethod
+    def get_drug_interaction_dict(interaction_data):
+        interaction_dict = defaultdict(set)
+        [interaction_dict[interaction.interaction_type].update([interaction.drug_1, interaction.drug_2]) for interaction in interaction_data]
+        return dict(sorted(interaction_dict.items(), reverse=True))
+
     def split_train_test(self, drug_data: list[TrainingDrugDataDTO], interaction_data: list[TrainingDrugInteractionDTO], categorical_labels: bool = True,
-                         padding: bool = False, flat: bool = False):
+                         padding: bool = False, flat: bool = False, mean_of_text_embeddings: bool = True, pca_generating: bool = False):
 
         drug_ids = [drug.drug_id for drug in drug_data]
-        x = self.generate_x_values(drug_data, interaction_data, drug_ids)
+
+        x = self.generate_x_values(drug_data, interaction_data, drug_ids, mean_of_text_embeddings=mean_of_text_embeddings, pca_generating=pca_generating)
         y = np.array([item.interaction_type for item in interaction_data])  # Extract labels
 
         x_train = [[] for _ in range(len(x))]
@@ -465,16 +579,16 @@ class TrainBaseService:
             y_train = to_categorical(y_train, num_classes=self.num_classes)
             y_test = to_categorical(y_test, num_classes=self.num_classes)
 
-            if padding:
-                x_train, x_test = self.create_input_tensors_pad(x_train, x_test)
+        if padding:
+            x_train, x_test = self.create_input_tensors_pad(x_train, x_test)
 
-            if flat:
-                x_train, x_test = self.create_input_tensors_flat(x_train, x_test)
+        if flat:
+            x_train, x_test = self.create_input_tensors_flat(x_train, x_test)
 
         return x_train, x_test, y_train, y_test
 
-    @staticmethod
-    def generate_x_values(drug_data: list[TrainingDrugDataDTO], interactions: list[TrainingDrugInteractionDTO], train_drug_ids):
+    def generate_x_values(self, drug_data: list[TrainingDrugDataDTO], interactions: list[TrainingDrugInteractionDTO], train_drug_ids: list[int],
+                          mean_of_text_embeddings: bool = True, pca_generating: bool = False):
         x_output = []
 
         for data_set_index in tqdm(range(len(drug_data[0].train_values)), "Find X values per interactions...."):
@@ -485,6 +599,9 @@ class TrainBaseService:
                 drug_dict = {drug.drug_id: [value for key, value in drug.train_values[data_set_index].values.items() if key in train_drug_ids] for drug in
                              drug_data}
 
+                if pca_generating:
+                    drug_dict = self.calculate_pca(drug_dict)
+
                 for interaction in interactions:
                     drug_1_values = drug_dict.get(interaction.drug_1)
                     drug_2_values = drug_dict.get(interaction.drug_2)
@@ -492,7 +609,10 @@ class TrainBaseService:
                     output_interactions.append(drug_1_values + drug_2_values)
 
             else:
-                drug_dict = {drug.drug_id: drug.train_values[data_set_index].values for drug in drug_data}
+                if mean_of_text_embeddings:
+                    drug_dict = {drug.drug_id: np.mean(drug.train_values[data_set_index].values, axis=1) for drug in drug_data}
+                else:
+                    drug_dict = {drug.drug_id: drug.train_values[data_set_index].values for drug in drug_data}
 
                 for interaction in interactions:
                     drug_1_values = drug_dict.get(interaction.drug_1)
@@ -504,4 +624,104 @@ class TrainBaseService:
 
         return x_output
 
+    def split_deepface_train_test(self, drug_data: list[TrainingDrugDataDTO], interaction_data: list[TrainingDrugInteractionDTO],
+                                  categorical_labels: bool = True, padding: bool = False, flat: bool = False, mean_of_text_embeddings: bool = True,
+                                  pca_generating: bool = False):
+
+        drug_ids = [drug.drug_id for drug in drug_data]
+
+        x = self.generate_deepface_x_values(drug_data, interaction_data, drug_ids, mean_of_text_embeddings=mean_of_text_embeddings,
+                                            pca_generating=pca_generating)
+        y = np.array([item.interaction_type for item in interaction_data])  # Extract labels
+
+        x_train = [[] for _ in range(len(x))]
+        x_test = [[] for _ in range(len(x))]
+
+        y_train = []
+        y_test = []
+
+        stratified_split = StratifiedShuffleSplit(n_splits=1, test_size=0.2, random_state=42)
+        for train_index, test_index in stratified_split.split(x[0], y):
+            for i in tqdm(range(len(x)), "Splitting data"):
+                x_train[i] = [x[i][idx] for idx in train_index]
+                x_test[i] = [x[i][idx] for idx in test_index]
+
+            y_train, y_test = y[train_index], y[test_index]
+
+        if categorical_labels:
+            y_train = to_categorical(y_train, num_classes=self.num_classes).astype(np.int16)
+            y_test = to_categorical(y_test, num_classes=self.num_classes).astype(np.int16)
+
+        # if padding:
+        #     x_train, x_test = self.create_input_tensors_pad(x_train, x_test)
+        #
+        # if flat:
+        #     x_train, x_test = self.create_input_tensors_flat(x_train, x_test)
+
+        return [np.array(x) for x in x_train], [np.array(x) for x in x_test], y_train, y_test
+
+    def generate_deepface_x_values(self, drug_data: list[TrainingDrugDataDTO], interactions: list[TrainingDrugInteractionDTO], train_drug_ids: list[int],
+                                   mean_of_text_embeddings: bool = True, pca_generating: bool = False):
+        x_output_1 = []
+        x_output_2 = []
+
+        for data_set_index in tqdm(range(len(drug_data[0].train_values)), "Find X values per interactions...."):
+
+            output_interactions_1 = []
+            output_interactions_2 = []
+
+            if isinstance(drug_data[0].train_values[data_set_index].values, dict):
+                drug_dict = {drug.drug_id: [value for key, value in drug.train_values[data_set_index].values.items() if key in train_drug_ids] for drug in
+                             drug_data}
+
+                if pca_generating:
+                    drug_dict = self.calculate_pca(drug_dict)
+
+                for interaction in interactions:
+                    drug_1_values = drug_dict.get(interaction.drug_1)
+                    drug_2_values = drug_dict.get(interaction.drug_2)
+
+                    output_interactions_1.append(drug_1_values)
+                    output_interactions_2.append(drug_2_values)
+
+            else:
+                if mean_of_text_embeddings and drug_data[0].train_values[data_set_index].category not in (Category.Substructure, Category.Target,
+                                                                                                          Category.Pathway, Category.Enzyme):
+                    drug_dict = {drug.drug_id: np.mean(drug.train_values[data_set_index].values, axis=1) for drug in drug_data}
+                else:
+                    drug_dict = {drug.drug_id: drug.train_values[data_set_index].values for drug in drug_data}
+
+                for interaction in interactions:
+                    drug_1_values = drug_dict.get(interaction.drug_1)
+                    drug_2_values = drug_dict.get(interaction.drug_2)
+
+                    output_interactions_1.append(drug_1_values)
+                    output_interactions_2.append(drug_2_values)
+
+            x_output_1.append(output_interactions_1)
+            x_output_2.append(output_interactions_2)
+
+        return x_output_1 + x_output_2
+
+    @staticmethod
+    def calculate_pca(drug_dict: dict) -> dict:
+
+        df = pd.DataFrame.from_dict(drug_dict)
+
+        pca = PCA(n_components=50)
+
+        x = df.to_numpy()
+        x_transformed = pca.fit_transform(x)
+
+        transformed_dict = {key: x_transformed[i, :] for i, key in enumerate(drug_dict.keys())}
+
+        return transformed_dict
+
     # endregion
+
+
+class PCAFixUnpickler(pickle.Unpickler):
+    def find_class(self, module, name):
+        if module == "sklearn.decomposition.pca" and name == "PCA":
+            return PCA
+        return super().find_class(module, name)

@@ -19,8 +19,9 @@ from core.repository_models.training_drug_data_dto import TrainingDrugDataDTO
 def map_drug_smiles(query_results) -> list[DrugSmilesDTO]:
     drugs = []
     for result in query_results:
-        drug_id, smiles, has_enzyme, has_pathway, has_target, has_smiles = result
+        drug_id, drugbank_id, smiles, has_enzyme, has_pathway, has_target, has_smiles = result
         drug = DrugSmilesDTO(id=drug_id,
+                             drugbank_id=drugbank_id,
                              smiles=smiles,
                              has_enzyme=has_enzyme,
                              has_pathway=has_pathway,

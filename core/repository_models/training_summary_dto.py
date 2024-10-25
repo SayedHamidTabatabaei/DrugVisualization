@@ -8,7 +8,8 @@ from core.repository_models.training_result_summary_dto import TrainingResultSum
 class TrainingSummaryDTO:
 
     training_results: list[TrainingResultSummaryDTO]
-    model: bytes
+    model: bytes | list[bytes]
     data_report: object
     model_info: object
+    fold_result_details: object
     training_result_details: list[TrainingResultDetailSummaryDTO]

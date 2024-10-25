@@ -17,4 +17,5 @@ class Training(BaseModel):
     training_conditions = Column(TEXT, nullable=False)
     model_parameters = Column(TEXT, nullable=False)
     data_report = Column(TEXT, nullable=False)
+    fold_result_details = Column(TEXT, nullable=False)
     execute_time = Column(DateTime, nullable=False)

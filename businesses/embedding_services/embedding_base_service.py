@@ -1,4 +1,5 @@
 import re
+import numpy as np
 
 from common.enums.embedding_type import EmbeddingType
 from configs.config import enable_bert_embedding
@@ -16,7 +17,11 @@ class EmbeddingBaseService:
 
     @staticmethod
     def parse_string(embedding) -> str:
-        str_embedding = str(embedding)
+        embedding = embedding.detach().numpy()
 
-        str_embedding = re.sub(r'\[\[\s*', '[[', str_embedding)
-        return re.sub(r'\s+', ' ', str_embedding)
+        str_embedding = np.array2string(embedding, separator=', ', threshold=np.inf)
+
+        str_embedding = re.sub(r'\n\s*', ' ', str_embedding)
+        str_embedding = re.sub(r'\s+', ' ', str_embedding)
+
+        return str_embedding

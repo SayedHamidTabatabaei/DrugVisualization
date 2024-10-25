@@ -1,4 +1,5 @@
 from businesses.similarity_services.cosine_similarity_service import CosineSimilarityService
+from businesses.similarity_services.drug_structure_similarity_service import DrugStructureSimilarityService
 from businesses.similarity_services.jacquard_similarity_service import JacquardSimilarityService
 from businesses.similarity_services.similarity_base_service import SimilarityBaseService
 from common.enums.similarity_type import SimilarityType
@@ -38,5 +39,7 @@ def get_instance(category: SimilarityType) -> SimilarityBaseService:
             pass
         case SimilarityType.Hausdorff:
             pass
+        case SimilarityType.DeepDDISmiles:
+            return DrugStructureSimilarityService(category)
         case _:
             raise ValueError("No suitable subclass found")

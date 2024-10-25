@@ -64,7 +64,8 @@ class MySqlRepository:
             self.connection.commit()
 
     def insert_batch_check_duplicate(self, entities: list[BaseModel], update_properties):
-        for i in tqdm(range(0, len(entities), batch_size), desc="Inserting data"):
+        # for i in tqdm(range(0, len(entities), batch_size), desc="Inserting data"):
+        for i in range(0, len(entities), batch_size):
             batch = entities[i:i + batch_size]
             query, values = sql_helper.generate_batch_insert_check_duplicate_command(batch, update_properties)
 

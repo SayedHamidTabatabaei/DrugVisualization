@@ -1,4 +1,6 @@
 from businesses.trains.con_ae_dnn_train_service import ConAeDnnTrainService
+from businesses.trains.deep_ddi_train_service import DeepDDITrainService
+from businesses.trains.drug_ae_con_dnn_train_service import DrugAeConDnnTrainService
 from businesses.trains.gat_ae_con_dnn_train_service import GatAeConDnnTrainService
 from businesses.trains.lr_train_service import LrTrainService
 from businesses.trains.mha_train_service import MhaTrainService
@@ -37,6 +39,10 @@ def get_instance(category: TrainModel) -> TrainBaseService:
         return GatAeConDnnTrainService(category)
     elif category == TrainModel.MHA:
         return MhaTrainService(category)
+    elif category == TrainModel.Drug_AE_Con_DNN:
+        return DrugAeConDnnTrainService(category)
+    elif category == TrainModel.Deep_DDI:
+        return DeepDDITrainService(category)
     elif category == TrainModel.Test:
         return TrainPlanTest(category)
     else:

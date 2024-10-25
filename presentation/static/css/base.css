@@ -16,6 +16,8 @@ body {
 
 /* Header styles */
 header {
+    position: fixed;
+    width: 100%;
     background-color: #343a40;
     color: white;
     text-align: center;
@@ -28,7 +30,7 @@ header {
     flex: 1;
     width: 100%;
     max-width: 95% !important;
-    margin: 0 !important;
+    margin: 75px 0 !important;
     padding: 0 !important;
 }
 
@@ -49,7 +51,7 @@ footer {
     background-color: #343a40;
     color: white;
     text-align: center;
-    padding: 10px;
+    padding: 13px;
     margin-top: auto; /* Push footer to the bottom */
 }
 

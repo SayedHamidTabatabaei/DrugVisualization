@@ -115,7 +115,7 @@ class DrugEmbeddingBusiness(BaseBusiness):
             case _:
                 raise
 
-        self.generate_embedding(drugs, embedding_type, text_type)
+        self.generate_embedding_one_by_one(drugs, embedding_type, text_type)
 
     def generate_embedding(self, drugs, embedding_type: EmbeddingType, text_type: TextType):
 
@@ -133,6 +133,22 @@ class DrugEmbeddingBusiness(BaseBusiness):
 
         self.drug_embedding_repository.insert_batch_check_duplicate(
             drug_embeddings, [DrugEmbedding.embedding, DrugEmbedding.issue_on_max_length])
+
+    def generate_embedding_one_by_one(self, drugs, embedding_type: EmbeddingType, text_type: TextType):
+
+        instance = embedding_instances.get_instance(embedding_type)
+
+        drug_embedding: DrugEmbedding
+        for drug in tqdm(drugs, desc=f"Processing embedding ({text_type.name} - {embedding_type.name})"):
+            embedding, issue_on_max_length = instance.embed(drug.text)
+
+            drug_embedding = DrugEmbedding(drug_id=drug.id,
+                                           embedding_type=embedding_type,
+                                           text_type=text_type,
+                                           embedding=embedding,
+                                           issue_on_max_length=issue_on_max_length)
+
+            self.drug_embedding_repository.insert_batch_check_duplicate([drug_embedding], [DrugEmbedding.embedding, DrugEmbedding.issue_on_max_length])
 
     def generate_interaction_embedding(self, interactions, embedding_type: EmbeddingType, text_type: TextType):
 
