@@ -63,6 +63,7 @@ function find_body(){
     body.model_description = document.getElementById('modelDescription').value
     body.is_test_algorithm = document.getElementById('test-algorithm-check').checked;
     body.class_weight = document.getElementById('class-weight-check').checked;
+    body.min_sample_count = document.getElementById('min_number_samples').value;
 
     if(document.getElementById('substructure-check').checked)
     {
@@ -256,4 +257,79 @@ function updateLossFormula() {
         console.log('Error:', error)
     });
 
+}
+
+function updateTrainDescription(){
+
+    const sections = document.querySelectorAll('.section.column-container');
+    const description_field = document.getElementById('modelDescription');
+
+    const values = [];
+
+    sections.forEach(section => {
+        const checkedCheckboxes = section.querySelectorAll('input[type="checkbox"]:checked');
+
+        checkedCheckboxes.forEach(checkbox => values.push(checkbox.value));
+    });
+
+    let descriptions = []
+
+    values.forEach(value => {
+        if (value === 'Substructure') {
+            descriptions.push('S');
+        }
+        else if (value === 'Target'){
+            descriptions.push('T');
+        }
+        else if (value === 'Enzyme'){
+            descriptions.push('E');
+        }
+        else if (value === 'Pathway'){
+            descriptions.push('P');
+        }
+        else if (value === 'Description'){
+            descriptions.push('D');
+        }
+        else if (value === 'Indication'){
+            descriptions.push('I');
+        }
+        else if (value === 'Pharmacodynamics'){
+            descriptions.push('Ph');
+        }
+        else if (value === 'mechanism-of-action'){
+            descriptions.push('Moa');
+        }
+        else if (value === 'Toxicity'){
+            descriptions.push('Tox');
+        }
+        else if (value === 'Metabolism'){
+            descriptions.push('M');
+        }
+        else if (value === 'Absorption'){
+            descriptions.push('A');
+        }
+        else if (value === 'half-life'){
+            descriptions.push('Hl');
+        }
+        else if (value === 'protein-binding'){
+            descriptions.push('Pb');
+        }
+        else if (value === 'route-of-elimination'){
+            descriptions.push('Roe');
+        }
+        else if (value === 'volume-of-distribution'){
+            descriptions.push('Vod');
+        }
+        else if (value === 'Clearance'){
+            descriptions.push('C');
+        }
+        else if (value === 'classification-description'){
+            descriptions.push('CD');
+        }
+        else if (value === 'interaction-description'){
+            descriptions.push('Int-D');
+        }
+    })
+
+    description_field.innerText = descriptions.join(' + ');
 }

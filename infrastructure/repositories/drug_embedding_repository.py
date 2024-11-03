@@ -4,6 +4,7 @@ from common.enums.embedding_type import EmbeddingType
 from common.enums.text_type import TextType
 from core.domain.drug_embedding import DrugEmbedding
 from core.mappers.drug_embedding_mapper import map_drug_embedding, map_text_embedding, map_drug_embedding_dict
+from core.mappers.interaction_embedding_mapper import map_interaction_embedding_dict
 from core.repository_models.drug_embedding_dto import DrugEmbeddingDTO
 from core.repository_models.text_embedding_dto import TextEmbeddingDTO
 from infrastructure.mysqldb.mysql_repository import MySqlRepository
@@ -67,6 +68,12 @@ class DrugEmbeddingRepository(MySqlRepository):
         result, _ = self.call_procedure('FindAllEmbedding', [embedding_type.value, text_type.value])
 
         return map_drug_embedding_dict(result[0])
+
+    def find_all_interaction_embedding_dict(self, embedding_type: EmbeddingType, text_type: TextType) \
+            -> dict:
+        result, _ = self.call_procedure('FindAllInteractionEmbedding', [embedding_type.value, text_type.value])
+
+        return map_interaction_embedding_dict(result[0])
 
     def find_drug_embedding_description(self, embedding_type: EmbeddingType, start: int, length: int) \
             -> list[TextEmbeddingDTO]:

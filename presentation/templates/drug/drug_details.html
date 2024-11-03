@@ -7,6 +7,18 @@
 <link rel="stylesheet" href="{{ url_for('static', filename='css/grid.css') }}">
 <link rel="stylesheet" href="{{ url_for('static', filename='css/drug_information.css') }}">
 
+{% endblock %}
+
+{% block script %}
+<script src="{{ url_for('static', filename='js/lib/3Dmol.js') }}"></script>
+<script src="{{ url_for('static', filename='js/drug_details.js') }}"></script>
+{% endblock %}
+
+
+{% block content %}
+<h2>Drug Details</h2>
+
+
 <style>
     .drugbank-id-container {
         margin: 20px 0;
@@ -21,17 +33,11 @@
         font-size: 1.2em;
         font-weight: bolder;
     }
+
+    #adjacency-table_wrapper{
+        max-width: 1100px;
+    }
 </style>
-{% endblock %}
-
-{% block script %}
-<script src="{{ url_for('static', filename='js/lib/3Dmol.js') }}"></script>
-<script src="{{ url_for('static', filename='js/drug_details.js') }}"></script>
-{% endblock %}
-
-
-{% block content %}
-<h2>Drug Details</h2>
 <div class="tab-container">
     <div class="drugbank-id-container" id="drugbank-id-container">
         <p>DrugBank ID: <span class="drugbank-id" id="drugbank-id">{{ drugbank_id }}</span></p>
@@ -40,7 +46,7 @@
 
     <div class="tabs">
         <div class="tab active" onclick="openTab(event, 'info_tab')">Information</div>
-        <div class="tab" onclick="openTab(event, 'visualization_tab')">Visualization</div>
+        <div class="tab" onclick="openTab(event, 'visualization_tab');fillAdjacency();">Visualization</div>
         <div class="tab" onclick="openTab(event, 'enzyme_tab');fillEnzyme();">Enzymes</div>
         <div class="tab" onclick="openTab(event, 'target_tab');fillTarget();">Targets</div>
         <div class="tab" onclick="openTab(event, 'pathway_tab');fillPathway();">Pathways</div>
@@ -51,7 +57,15 @@
     </div>
     <div id="visualization_tab" class="tab-content">
         <div id="result" style="display: none;"></div>
-        <div id="mol-container" style="width: 500px; height: 500px;"></div>
+        <div style="display: flex;">
+            <div id="mol-container" style="width: 700px; height: 700px;"></div>
+            <table id="adjacency-table"  class="display">
+                <thead>
+                    <tr id="adjacency-tableHeaders"></tr>
+                </thead>
+                <tbody id="adjacency-tableBody"></tbody>
+            </table>
+        </div>
     </div>
     <div id="enzyme_tab" class="tab-content">
         <div class="grid-container">

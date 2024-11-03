@@ -4,6 +4,7 @@ from core.repository_models.drug_clearance_dto import DrugClearanceDTO
 from core.repository_models.drug_description_dto import DrugDescriptionDTO
 from core.repository_models.drug_half_life_dto import DrugHalfLifeDTO
 from core.repository_models.drug_indication_dto import DrugIndicationDTO
+from core.repository_models.drug_information_dto import DrugInformationDTO
 from core.repository_models.drug_mechanism_of_action_dto import DrugMechanismOfActionDTO
 from core.repository_models.drug_metabolism_dto import DrugMetabolismDTO
 from core.repository_models.drug_pharmacodynamics_dto import DrugPharmacodynamicsDTO
@@ -14,6 +15,70 @@ from core.repository_models.drug_text_property_dto import DrugTextPropertyDTO
 from core.repository_models.drug_toxicity_dto import DrugToxicityDTO
 from core.repository_models.drug_volume_of_distribution_dto import DrugVolumeOfDistributionDTO
 from core.repository_models.training_drug_data_dto import TrainingDrugDataDTO
+
+
+def map_drug_information_dto(query_result) -> DrugInformationDTO:
+    (id, drugbank_drug_id, drug_name, drugbank_id, smiles, drug_type, description, average_mass, monoisotopic_mass, state, indication, pharmacodynamics,
+     mechanism_of_action, toxicity, metabolism, absorption, half_life, protein_binding, route_of_elimination, volume_of_distribution, clearance,
+     classification_description, classification_direct_parent, classification_kingdom, classification_superclass, classification_class_category,
+     classification_subclass, bioavailability, ghose_filter, h_bond_acceptor_count, h_bond_donor_count, log_p, log_s, mddr_like_rule, molecular_formula,
+     molecular_weight, monoisotopic_weight, number_of_rings, physiological_charge, pka_strongest_acidic, pka_strongest_basic, polar_surface_area,
+     polarizability, refractivity, rotatable_bond_count, rule_of_five, water_solubility, rdkit_3d, rdkit_2d, has_enzyme, has_pathway, has_target,
+     has_smiles) = query_result
+
+    return DrugInformationDTO(id=id,
+                              drugbank_drug_id=drugbank_drug_id,
+                              drug_name=drug_name,
+                              drugbank_id=drugbank_id,
+                              smiles=smiles,
+                              drug_type=drug_type,
+                              description=description,
+                              average_mass=average_mass,
+                              monoisotopic_mass=monoisotopic_mass,
+                              state=state,
+                              indication=indication,
+                              pharmacodynamics=pharmacodynamics,
+                              mechanism_of_action=mechanism_of_action,
+                              toxicity=toxicity,
+                              metabolism=metabolism,
+                              absorption=absorption,
+                              half_life=half_life,
+                              protein_binding=protein_binding,
+                              route_of_elimination=route_of_elimination,
+                              volume_of_distribution=volume_of_distribution,
+                              clearance=clearance,
+                              classification_description=classification_description,
+                              classification_direct_parent=classification_direct_parent,
+                              classification_kingdom=classification_kingdom,
+                              classification_superclass=classification_superclass,
+                              classification_class_category=classification_class_category,
+                              classification_subclass=classification_subclass,
+                              bioavailability=bioavailability,
+                              ghose_filter=ghose_filter,
+                              h_bond_acceptor_count=h_bond_acceptor_count,
+                              h_bond_donor_count=h_bond_donor_count,
+                              log_p=log_p,
+                              log_s=log_s,
+                              mddr_like_rule=mddr_like_rule,
+                              molecular_formula=molecular_formula,
+                              molecular_weight=molecular_weight,
+                              monoisotopic_weight=monoisotopic_weight,
+                              number_of_rings=number_of_rings,
+                              physiological_charge=physiological_charge,
+                              pka_strongest_acidic=pka_strongest_acidic,
+                              pka_strongest_basic=pka_strongest_basic,
+                              polar_surface_area=polar_surface_area,
+                              polarizability=polarizability,
+                              refractivity=refractivity,
+                              rotatable_bond_count=rotatable_bond_count,
+                              rule_of_five=rule_of_five,
+                              water_solubility=water_solubility,
+                              rdkit_3d=rdkit_3d,
+                              rdkit_2d=rdkit_2d,
+                              has_enzyme=has_enzyme,
+                              has_pathway=has_pathway,
+                              has_target=has_target,
+                              has_smiles=has_smiles)
 
 
 def map_drug_smiles(query_results) -> list[DrugSmilesDTO]:

@@ -7,10 +7,12 @@ function get_history()
 {
     const scenario = document.getElementById('scenarioSelect').value;
     const train_model = document.getElementById('trainModelSelect').value;
+    const dateFilter = document.getElementById('dateFilter').value;
+    const min_sample_count = document.getElementById('minSampleCountSelect').value;
 
     showSpinner();
 
-    fetch(`/training/get_history?start=0&length=10000&scenario=${scenario}&trainModel=${train_model}`, {
+    fetch(`/training/get_history?start=0&length=10000&scenario=${scenario}&trainModel=${train_model}&date=${dateFilter}&min_sample_count=${min_sample_count}`, {
         method: 'GET',
         headers: {
             'Content-Type': 'application/json'
@@ -307,7 +309,26 @@ function get_history()
                     if (table) {
                         table.removeAttribute('style');
                     }
+                },
+        dom: 'Bfrtip',
+        buttons: [
+            {
+                extend: 'pdfHtml5',
+                title: 'Training Results',
+                orientation: 'landscape',
+                pageSize: 'A3',
+                text: '<i class="fas fa-file-pdf"></i>',
+                exportOptions: {
+                    columns: ':visible'
                 }
+            },
+            {
+                text: '<i class="fas fa-file-code"></i>',
+                action: function (e, dt, button, config) {
+                    generateLatexCode(data.columns, data.data);
+                }
+            }
+        ]
             });
         } else {
             console.log('Error: No data found.');
@@ -428,26 +449,66 @@ function fill_accuracy_plots(){
     plotsGridContainer.innerHTML = '';
 
     selectedItems.forEach((value, key) => {
+        let multiple_images = false;
 
-        const plotBox = document.createElement('div');
-        plotBox.classList.add('plot-box');
+        const basePath = `/training/training_history_plots/training_plots/${key}`;
+        let imagePath = `${basePath}/accuracy_plot.png`;
+
+        // Function to handle the image loading and fallback mechanism
+        const loadImage = (imgElement, basePath, initialPath, final_value) => {
+            let attempt = 0;
+
+            const getFallbackPath = (base, attempt) => `${base}_${attempt}`;
+
+            imgElement.src = initialPath;
+            imgElement.onload = () => {
+                create_plot_image(plotsGridContainer, initialPath, final_value)
+
+                return true;
+            }
+
+            imgElement.onerror = () => {
+                if (multiple_images){
+                    return false;
+                }
+
+                multiple_images = true
+
+                while (attempt <= 10){
+                    const fallbackBasePath = getFallbackPath(basePath, attempt);
+
+                    const fallbackPath = `${fallbackBasePath}/accuracy_plot.png`;
+
+                    const insidePlotImage = document.createElement('img');
+                    loadImage(insidePlotImage, fallbackBasePath, fallbackPath, `${value} ${attempt}`);
+
+                    attempt++;
+                }
+            }
+        };
 
         const plotImage = document.createElement('img');
-        plotImage.src = `/training/training_history_plots/training_plots/${key}/accuracy_plot.png`;
-        plotImage.alt = `Line Plot ${value}`;
-        plotImage.onclick = () => openImageModal(plotImage);
-
-        const caption = document.createElement('p');
-        caption.classList.add('plot-caption');
-        caption.textContent =value;
-
-        // Append image to the plot box
-        plotBox.appendChild(plotImage);
-        plotBox.appendChild(caption);
-
-        // Append plot box to the grid container
-        plotsGridContainer.appendChild(plotBox);
+        loadImage(plotImage, basePath, imagePath, value);
     });
+}
+
+function create_plot_image(container, src, value) {
+    const plotImage = document.createElement('img');
+    plotImage.src = src;
+    plotImage.alt = `Line Plot ${value}`;
+    plotImage.onclick = () => openImageModal(plotImage);
+
+    const caption = document.createElement('p');
+    caption.classList.add('plot-caption');
+    caption.textContent = value;
+
+    const plotBox = document.createElement('div');
+    plotBox.classList.add('plot-box');
+    plotBox.appendChild(plotImage);
+    plotBox.appendChild(caption);
+
+    // Append plot box to the grid container
+    container.appendChild(plotBox);
 }
 
 function fill_loss_plots(){
@@ -553,4 +614,361 @@ function fill_grid(grid_type){
 
 function showImage(image_name) {
     openImageModalBySrc(`../training/training_models/training_model_images/${image_name}.png`);
+}
+
+function fill_data_report(){
+    let data_report_type = document.querySelector(`input[name='data_radio_group']:checked`).value;
+
+    if (data_report_type === 'data-summary'){
+        fill_data_summary_grid();
+    }
+    else if (data_report_type === 'train-data') {
+        fill_train_data_report();
+    }
+    else if (data_report_type === 'test-data') {
+        fill_test_data_report();
+    }
+}
+
+function fill_data_summary_grid(){
+
+    let grid = document.getElementById(`data-grid`);
+
+    let selectedIds= [];
+    $('input.row-checkbox:checked').each(function() {
+
+        const [id, name] = $(this).val().split('|'); // Get the value of the checked checkbox
+
+        selectedIds.push(id);
+    });
+
+    setTimeout(() => {
+        fetch(`/training/get_data_summary?trainHistoryIds=${selectedIds}`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+
+            let column_title = data.columns.map(col => col.replace('Total', '').replace('Train', '').replace('Test', ''))
+
+            let headersHtml = column_title.map(col => `<th>${col}</th>`).join('\n');
+            let colSpan = ((data.columns.length) - 1) / 3
+
+            grid.innerHTML = `<table id='data-summary-table' class="display">
+                                <thead>
+                                    <tr>
+                                        <th>level</th>
+                                        <th colspan="${colSpan}">Total</th>
+                                        <th colspan="${colSpan}">Train</th>
+                                        <th colspan="${colSpan}">Test</th>
+                                    </tr>
+                                    <tr id='data-summary-tableHeaders'>
+                                        ${headersHtml}
+                                    </tr>
+                                </thead>
+                                <tbody id='data-summary-tableBody'></tbody>
+                            </table>`;
+
+
+            // Initialize the DataTable with new data
+            $(`#data-summary-table`).DataTable({
+                destroy: true,
+                data: data.data,
+                scrollX: true,
+                scrollY: 400,
+                fixedColumns: {
+                    leftColumns: 1,
+                },
+                columns: data.columns.map(col => ({ data: col })), // Map column names to data keys
+                paging: false,
+                ordering: false,
+                searching: false,
+                dom: 'Bfrtip',
+                buttons: [
+                    {
+                        extend: 'pdfHtml5',
+                        title: 'Data Summary Table',
+                        orientation: 'landscape',
+                        pageSize: 'A4',
+                        text: '<i class="fas fa-file-pdf"></i>',
+                        exportOptions: {
+                            columns: ':visible'
+                        }
+                    },
+                    {
+                        text: '<i class="fas fa-file-code"></i>',
+                        action: function (e, dt, button, config) {
+                            generateLatexCode(data.columns, data.data);
+                        }
+                    }
+                ]
+            });
+
+        })
+        .catch(error => console.log('Error fetching data:', error));
+    }, 1000); // Delay of 1000 milliseconds (1 second)
+}
+
+function generateLatexCode(columns, data) {
+    let latexCode = "\\begin{tabular}{|" + "c|".repeat(columns.length) + "} \\hline\n";
+
+    latexCode += columns.join(' & ') + " \\\\ \\hline\n";
+
+    data.forEach(row => {
+        latexCode += columns.map(col => row[col] || "").join(' & ') + " \\\\ \\hline\n";
+    });
+
+    latexCode += "\\end{tabular}";
+
+    console.log(latexCode);
+    alert("LaTeX Code:\n\n" + latexCode);
+}
+
+function fill_train_data_report(){
+
+    let grid = document.getElementById(`data-grid`);
+
+    let selectedIds= [];
+    $('input.row-checkbox:checked').each(function() {
+
+        const [id, name] = $(this).val().split('|'); // Get the value of the checked checkbox
+
+        selectedIds.push(id);
+    });
+
+    setTimeout(() => {
+
+        showSpinner();
+
+        fetch(`/training/get_train_data_report?trainHistoryIds=${selectedIds}`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+
+            let column_title = data.columns.map(col => col.replace('Total', '').replace('Train', '').replace('Test', ''))
+
+            let headersHtml = column_title.map(col => `<th>${col}</th>`).join('\n');
+
+            grid.innerHTML = `<table id='data-summary-table' class="display">
+                                <thead>
+                                    <tr id='data-summary-tableHeaders'>
+                                        ${headersHtml}
+                                    </tr>
+                                </thead>
+                                <tbody id='data-summary-tableBody'></tbody>
+                            </table>`;
+
+            data.data = data.data.map(row => { for (let key in row) { if (row[key] === null) { row[key] = 'null'; } } return row; });
+
+            $(`#data-summary-table`).DataTable({
+                destroy: true,
+                data: data.data,
+                scrollX: true,
+                scrollY: 400,
+                fixedColumns: {
+                    leftColumns: 1,
+                },
+                columns: data.columns.map(col => ({ data: col })), // Map column names to data keys
+                paging: true,
+                ordering: true,
+                searching: true,
+                dom: 'Bfrtip',
+                buttons: [
+                    {
+                        extend: 'pdfHtml5',
+                        title: 'Data Summary Table',
+                        orientation: 'landscape',
+                        pageSize: 'A4',
+                        text: '<i class="fas fa-file-pdf"></i>',
+                        exportOptions: {
+                            columns: ':visible'
+                        }
+                    },
+                    {
+                        text: '<i class="fas fa-file-code"></i>',
+                        action: function (e, dt, button, config) {
+                            generateLatexCode(data.columns, data.data);
+                        }
+                    }
+                ]
+            });
+            hideSpinner(true);
+        })
+        .catch(error => {
+            console.log('Error fetching data:', error)
+            hideSpinner(true);
+        });
+    }, 1000); // Delay of 1000 milliseconds (1 second)
+}
+
+function fill_validation_data_report(){
+
+    let grid = document.getElementById(`data-grid`);
+
+    let selectedIds= [];
+    $('input.row-checkbox:checked').each(function() {
+
+        const [id, name] = $(this).val().split('|'); // Get the value of the checked checkbox
+
+        selectedIds.push(id);
+    });
+
+    setTimeout(() => {
+
+        showSpinner();
+
+        fetch(`/training/get_validation_data_report?trainHistoryIds=${selectedIds}`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+
+            let column_title = data.columns.map(col => col.replace('Total', '').replace('Train', '').replace('Test', ''))
+
+            let headersHtml = column_title.map(col => `<th>${col}</th>`).join('\n');
+
+            grid.innerHTML = `<table id='data-summary-table' class="display">
+                                <thead>
+                                    <tr id='data-summary-tableHeaders'>
+                                        ${headersHtml}
+                                    </tr>
+                                </thead>
+                                <tbody id='data-summary-tableBody'></tbody>
+                            </table>`;
+
+            data.data = data.data.map(row => { for (let key in row) { if (row[key] === null) { row[key] = 'null'; } } return row; });
+
+            $(`#data-summary-table`).DataTable({
+                destroy: true,
+                data: data.data,
+                scrollX: true,
+                scrollY: 400,
+                fixedColumns: {
+                    leftColumns: 1,
+                },
+                columns: data.columns.map(col => ({ data: col })), // Map column names to data keys
+                paging: true,
+                ordering: true,
+                searching: true,
+                dom: 'Bfrtip',
+                buttons: [
+                    {
+                        extend: 'pdfHtml5',
+                        title: 'Data Summary Table',
+                        orientation: 'landscape',
+                        pageSize: 'A4',
+                        text: '<i class="fas fa-file-pdf"></i>',
+                        exportOptions: {
+                            columns: ':visible'
+                        }
+                    },
+                    {
+                        text: '<i class="fas fa-file-code"></i>',
+                        action: function (e, dt, button, config) {
+                            generateLatexCode(data.columns, data.data);
+                        }
+                    }
+                ]
+            });
+            hideSpinner(true);
+        })
+        .catch(error => {
+            console.log('Error fetching data:', error)
+            hideSpinner(true);
+        });
+    }, 1000); // Delay of 1000 milliseconds (1 second)
+}
+
+function fill_test_data_report(){
+
+    let grid = document.getElementById(`data-grid`);
+
+    let selectedIds= [];
+    $('input.row-checkbox:checked').each(function() {
+
+        const [id, name] = $(this).val().split('|'); // Get the value of the checked checkbox
+
+        selectedIds.push(id);
+    });
+
+    setTimeout(() => {
+
+        showSpinner();
+
+        fetch(`/training/get_test_data_report?trainHistoryIds=${selectedIds}`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+
+            let column_title = data.columns.map(col => col.replace('Total', '').replace('Train', '').replace('Test', ''))
+
+            let headersHtml = column_title.map(col => `<th>${col}</th>`).join('\n');
+
+            data.data = data.data.map(row => { for (let key in row) { if (row[key] === null) { row[key] = 'null'; } } return row; });
+
+            grid.innerHTML = `<table id='data-summary-table' class="display">
+                                <thead>
+                                    <tr id='data-summary-tableHeaders'>
+                                        ${headersHtml}
+                                    </tr>
+                                </thead>
+                                <tbody id='data-summary-tableBody'></tbody>
+                            </table>`;
+
+
+            // Initialize the DataTable with new data
+            $(`#data-summary-table`).DataTable({
+                destroy: true,
+                data: data.data,
+                scrollX: true,
+                scrollY: 400,
+                fixedColumns: {
+                    leftColumns: 1,
+                },
+                columns: data.columns.map(col => ({ data: col })), // Map column names to data keys
+                paging: true,
+                ordering: true,
+                searching: true,
+                dom: 'Bfrtip',
+                buttons: [
+                    {
+                        extend: 'pdfHtml5',
+                        title: 'Data Summary Table',
+                        orientation: 'landscape',
+                        pageSize: 'A4',
+                        text: '<i class="fas fa-file-pdf"></i>',
+                        exportOptions: {
+                            columns: ':visible'
+                        }
+                    },
+                    {
+                        text: '<i class="fas fa-file-code"></i>',
+                        action: function (e, dt, button, config) {
+                            generateLatexCode(data.columns, data.data);
+                        }
+                    }
+                ]
+            });
+            hideSpinner(true);
+        })
+        .catch(error => {
+            console.log('Error fetching data:', error)
+            hideSpinner(true);
+
+        });
+    }, 1000); // Delay of 1000 milliseconds (1 second)
 }

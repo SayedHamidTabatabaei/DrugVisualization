@@ -15,3 +15,4 @@ class TrainingScheduledDTO:
     is_test_algorithm: bool
     training_conditions: str
     schedule_date: str
+    min_sample_count: int

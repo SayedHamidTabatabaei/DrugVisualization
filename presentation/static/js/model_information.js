@@ -10,8 +10,18 @@ function showmodelinfo(id) {
         .then(data => {
             if (data.status) {
                 const parsedData = typeof data.data === 'string' ? JSON.parse(data.data) : data.data;  // Parse only if it's a string
+                if (parsedData.length > 1) {
+                    let htmlContent = "";
 
-                document.getElementById('jsonData').innerHTML = "<pre style='font-size: 150%; font-weight: bold'>" + parsedData['model_summary'] + "</pre>";
+                    parsedData.forEach((item, index) => {
+                      htmlContent += `<strong style='font-size: 250%; font-weight: bold'>k: ${index}</strong><pre style='font-size: 150%; font-weight: bold'> ${item['model_summary']}</pre><br><hr><br>`;
+                    });
+
+                    document.getElementById('jsonData').innerHTML = htmlContent;
+                }
+                else {
+                    document.getElementById('jsonData').innerHTML = "<pre style='font-size: 150%; font-weight: bold'>" + parsedData['model_summary'] + "</pre>";
+                }
 
                 document.getElementById('jsonModal').style.display = 'block';
             } else {
@@ -26,7 +36,6 @@ function closeModal() {
 }
 
 function summaryToHtml(summaryText) {
-    debugger;
     // Split text by lines
     const lines = summaryText.trim().split('\n');
 

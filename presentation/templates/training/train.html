@@ -66,11 +66,14 @@
         </div>
 
         <div class="property-container">
-            <span>Use Class Weight</span>
-
             <label id="class-weight-label" class="checkbox-label" style="margin-left: 20px; margin-bottom: 20px;">
+                Use Class Weight
                 <input type="checkbox" id="class-weight-check">
                 <span class="checkbox-custom"></span>
+            </label>
+
+            <label for="min_number_samples">Min number of samples
+                <input style="max-width: 50px;" type="number" value="0" id="min_number_samples">
             </label>
         </div>
 
@@ -99,7 +102,7 @@
         <div class="checkbox-container">
             <label class="checkbox-label">
                 <input type="checkbox" id="substructure-check" value="Substructure"
-                       onclick="toggleDropdowns(this, 'substructure-details');filterSimilaritySelect('substructure-similarity-select', 'substructure-check');">
+                       onclick="toggleDropdowns(this, 'substructure-details');filterSimilaritySelect('substructure-similarity-select', 'substructure-check');updateTrainDescription();">
                 <span class="checkbox-custom"></span>
                 Substructure
             </label>
@@ -113,7 +116,7 @@
         <div class="checkbox-container">
             <label class="checkbox-label">
                 <input type="checkbox" id="target-check" value="Target"
-                       onclick="toggleDropdowns(this, 'target-details');filterSimilaritySelect('target-similarity-select', 'target-check');">
+                       onclick="toggleDropdowns(this, 'target-details');filterSimilaritySelect('target-similarity-select', 'target-check');updateTrainDescription();">
                 <span class="checkbox-custom"></span>
                 Target
             </label>
@@ -127,7 +130,7 @@
         <div class="checkbox-container">
             <label class="checkbox-label">
                 <input type="checkbox" id="enzyme-check" value="Enzyme"
-                       onclick="toggleDropdowns(this, 'enzyme-details');filterSimilaritySelect('enzyme-similarity-select', 'enzyme-check');">
+                       onclick="toggleDropdowns(this, 'enzyme-details');filterSimilaritySelect('enzyme-similarity-select', 'enzyme-check');updateTrainDescription();">
                 <span class="checkbox-custom"></span>
                 Enzyme
             </label>
@@ -141,7 +144,7 @@
         <div class="checkbox-container">
             <label class="checkbox-label">
                 <input type="checkbox" id="pathway-check" value="Pathway"
-                       onclick="toggleDropdowns(this, 'pathway-details');filterSimilaritySelect('pathway-similarity-select', 'pathway-check');">
+                       onclick="toggleDropdowns(this, 'pathway-details');filterSimilaritySelect('pathway-similarity-select', 'pathway-check');updateTrainDescription();">
                 <span class="checkbox-custom"></span>
                 Pathway
             </label>
@@ -159,7 +162,8 @@
 
         <div class="checkbox-container">
             <label class="checkbox-label">
-                <input type="checkbox" id="description-check" onclick="toggleDropdowns(this, 'description-details');fillEmbeddingSelect('description-embedding-select');">
+                <input type="checkbox" id="description-check" value="Description"
+                       onclick="toggleDropdowns(this, 'description-details');fillEmbeddingSelect('description-embedding-select');updateTrainDescription();">
                 <span class="checkbox-custom"></span>
                 Description
             </label>
@@ -172,7 +176,8 @@
 
         <div class="checkbox-container">
             <label class="checkbox-label">
-                <input type="checkbox" id="indication-check" onclick="toggleDropdowns(this, 'indication-details');fillEmbeddingSelect('indication-embedding-select');">
+                <input type="checkbox" id="indication-check" value="Indication"
+                       onclick="toggleDropdowns(this, 'indication-details');fillEmbeddingSelect('indication-embedding-select');updateTrainDescription();">
                 <span class="checkbox-custom"></span>
                 Indication
             </label>
@@ -185,7 +190,8 @@
 
         <div class="checkbox-container">
             <label class="checkbox-label">
-                <input type="checkbox" id="pharmacodynamics-check" onclick="toggleDropdowns(this, 'pharmacodynamics-details');fillEmbeddingSelect('pharmacodynamics-embedding-select');">
+                <input type="checkbox" id="pharmacodynamics-check" value="Pharmacodynamics"
+                       onclick="toggleDropdowns(this, 'pharmacodynamics-details');fillEmbeddingSelect('pharmacodynamics-embedding-select');updateTrainDescription();">
                 <span class="checkbox-custom"></span>
                 Pharmacodynamics
             </label>
@@ -198,7 +204,8 @@
 
         <div class="checkbox-container">
             <label class="checkbox-label">
-                <input type="checkbox" id="mechanism-of-action-check" onclick="toggleDropdowns(this, 'mechanism-of-action-details');fillEmbeddingSelect('mechanism-of-action-embedding-select');">
+                <input type="checkbox" id="mechanism-of-action-check" value="mechanism-of-action"
+                       onclick="toggleDropdowns(this, 'mechanism-of-action-details');fillEmbeddingSelect('mechanism-of-action-embedding-select');updateTrainDescription();">
                 <span class="checkbox-custom"></span>
                 Mechanism Of Action
             </label>
@@ -211,7 +218,8 @@
 
         <div class="checkbox-container">
             <label class="checkbox-label">
-                <input type="checkbox" id="toxicity-check" onclick="toggleDropdowns(this, 'toxicity-details');fillEmbeddingSelect('toxicity-embedding-select');">
+                <input type="checkbox" id="toxicity-check" value = "Toxicity"
+                       onclick="toggleDropdowns(this, 'toxicity-details');fillEmbeddingSelect('toxicity-embedding-select');updateTrainDescription();">
                 <span class="checkbox-custom"></span>
                 Toxicity
             </label>
@@ -224,7 +232,8 @@
 
         <div class="checkbox-container">
             <label class="checkbox-label">
-                <input type="checkbox" id="metabolism-check" onclick="toggleDropdowns(this, 'metabolism-details');fillEmbeddingSelect('metabolism-embedding-select');">
+                <input type="checkbox" id="metabolism-check" value="Metabolism"
+                       onclick="toggleDropdowns(this, 'metabolism-details');fillEmbeddingSelect('metabolism-embedding-select');updateTrainDescription();">
                 <span class="checkbox-custom"></span>
                 Metabolism
             </label>
@@ -237,7 +246,8 @@
 
         <div class="checkbox-container">
             <label class="checkbox-label">
-                <input type="checkbox" id="absorption-check" onclick="toggleDropdowns(this, 'absorption-details');fillEmbeddingSelect('absorption-embedding-select');">
+                <input type="checkbox" id="absorption-check" value="Absorption"
+                       onclick="toggleDropdowns(this, 'absorption-details');fillEmbeddingSelect('absorption-embedding-select');updateTrainDescription();">
                 <span class="checkbox-custom"></span>
                 Absorption
             </label>
@@ -250,7 +260,8 @@
 
         <div class="checkbox-container">
             <label class="checkbox-label">
-                <input type="checkbox" id="half-life-check" onclick="toggleDropdowns(this, 'half-life-details');fillEmbeddingSelect('half-life-embedding-select');">
+                <input type="checkbox" id="half-life-check" value="half-life"
+                       onclick="toggleDropdowns(this, 'half-life-details');fillEmbeddingSelect('half-life-embedding-select');updateTrainDescription();">
                 <span class="checkbox-custom"></span>
                 Half Life
             </label>
@@ -263,7 +274,8 @@
 
         <div class="checkbox-container">
             <label class="checkbox-label">
-                <input type="checkbox" id="protein-binding-check" onclick="toggleDropdowns(this, 'protein-binding-details');fillEmbeddingSelect('protein-binding-embedding-select');">
+                <input type="checkbox" id="protein-binding-check" value="protein-binding"
+                       onclick="toggleDropdowns(this, 'protein-binding-details');fillEmbeddingSelect('protein-binding-embedding-select');updateTrainDescription();">
                 <span class="checkbox-custom"></span>
                 Protein Binding
             </label>
@@ -276,7 +288,8 @@
 
         <div class="checkbox-container">
             <label class="checkbox-label">
-                <input type="checkbox" id="route-of-elimination-check" onclick="toggleDropdowns(this, 'route-of-elimination-details');fillEmbeddingSelect('route-of-elimination-embedding-select');">
+                <input type="checkbox" id="route-of-elimination-check" value="route-of-elimination"
+                       onclick="toggleDropdowns(this, 'route-of-elimination-details');fillEmbeddingSelect('route-of-elimination-embedding-select');updateTrainDescription();">
                 <span class="checkbox-custom"></span>
                 Route Of Elimination
             </label>
@@ -289,7 +302,8 @@
 
         <div class="checkbox-container">
             <label class="checkbox-label">
-                <input type="checkbox" id="volume-of-distribution-check" onclick="toggleDropdowns(this, 'volume-of-distribution-details');fillEmbeddingSelect('volume-of-distribution-embedding-select');">
+                <input type="checkbox" id="volume-of-distribution-check" value="volume-of-distribution"
+                       onclick="toggleDropdowns(this, 'volume-of-distribution-details');fillEmbeddingSelect('volume-of-distribution-embedding-select');updateTrainDescription();">
                 <span class="checkbox-custom"></span>
                 Volume Of Distribution
             </label>
@@ -302,7 +316,8 @@
 
         <div class="checkbox-container">
             <label class="checkbox-label">
-                <input type="checkbox" id="clearance-check" onclick="toggleDropdowns(this, 'clearance-details');fillEmbeddingSelect('clearance-embedding-select');">
+                <input type="checkbox" id="clearance-check" value="Clearance"
+                       onclick="toggleDropdowns(this, 'clearance-details');fillEmbeddingSelect('clearance-embedding-select');updateTrainDescription();">
                 <span class="checkbox-custom"></span>
                 Clearance
             </label>
@@ -315,7 +330,8 @@
 
         <div class="checkbox-container">
             <label class="checkbox-label">
-                <input type="checkbox" id="classification-description-check" onclick="toggleDropdowns(this, 'classification-description-details');fillEmbeddingSelect('classification-description-embedding-select');">
+                <input type="checkbox" id="classification-description-check" value="classification-description"
+                       onclick="toggleDropdowns(this, 'classification-description-details');fillEmbeddingSelect('classification-description-embedding-select');updateTrainDescription();">
                 <span class="checkbox-custom"></span>
                 Classification Description
             </label>
@@ -331,8 +347,8 @@
 
         <div class="checkbox-container">
             <label class="checkbox-label">
-                <input type="checkbox" id="interaction-description-check"
-                       onclick="toggleDropdowns(this, 'interaction-description-details');fillEmbeddingSelect('interaction-description-embedding-select');">
+                <input type="checkbox" id="interaction-description-check" value="interaction-description"
+                       onclick="toggleDropdowns(this, 'interaction-description-details');fillEmbeddingSelect('interaction-description-embedding-select');updateTrainDescription();">
                 <span class="checkbox-custom"></span>
                 Description
             </label>

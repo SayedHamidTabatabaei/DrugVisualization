@@ -28,3 +28,4 @@ class TrainingHistoryViewModel:
     precision_micro: float
     precision_macro: float
     execute_time: str
+    min_sample_count: int

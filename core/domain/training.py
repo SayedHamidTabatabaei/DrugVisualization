@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Enum as SqlEnum, DateTime, TEXT, NVARCHAR, BOOLEAN
+from sqlalchemy import Column, Enum as SqlEnum, DateTime, TEXT, NVARCHAR, BOOLEAN, INT
 
 from common.enums.loss_functions import LossFunctions
 from common.enums.train_models import TrainModel
@@ -19,3 +19,4 @@ class Training(BaseModel):
     data_report = Column(TEXT, nullable=False)
     fold_result_details = Column(TEXT, nullable=False)
     execute_time = Column(DateTime, nullable=False)
+    min_sample_count = Column(INT, nullable=False)

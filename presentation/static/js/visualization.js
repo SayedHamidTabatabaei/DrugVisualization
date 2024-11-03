@@ -7,7 +7,6 @@ document.addEventListener('DOMContentLoaded', function() {
             var drugbank_id = document.getElementById('drugbank-id').value;
 
             function visualizeMolecule(rdkitMol) {
-
                     var viewer = $3Dmol.createViewer('mol-container', {
                         defaultcolors: $3Dmol.rasmolElementColors
                     });

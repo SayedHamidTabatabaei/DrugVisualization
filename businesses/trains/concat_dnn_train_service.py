@@ -13,7 +13,7 @@ train_model = TrainModel.Contact_DNN
 class ConcatDnnTrainService(TrainBaseService):
 
     def train(self, parameters: SplitInteractionSimilaritiesTrainingParameterModel) -> TrainingSummaryDTO:
-        x_train, x_test, y_train, y_test = super().split_train_test(parameters.drug_data, parameters.interaction_data, padding=True, flat=True)
+        x_train, x_test, y_train, y_test = super().split_train_test(parameters.drug_data, parameters.interaction_data, train_id=parameters.train_id, padding=True, flat=True)
 
         input_shape = x_train.shape[1]
 

@@ -1,4 +1,4 @@
-from core.mappers.drug_mapper import map_drug_smiles, map_drug_text, map_training_drug_data_dto
+from core.mappers.drug_mapper import map_drug_smiles, map_drug_text, map_training_drug_data_dto, map_drug_information_dto
 from core.repository_models.drug_smiles_dto import DrugSmilesDTO
 from core.repository_models.drug_text_property_dto import DrugTextPropertyDTO
 from core.repository_models.training_drug_data_dto import TrainingDrugDataDTO
@@ -35,7 +35,7 @@ class DrugRepository(MySqlRepository):
 
     def get_drug_information_by_drugbank_id(self, drugbank_id):
         result, _ = self.call_procedure('FindDrugInformationByDrugBankId', [drugbank_id])
-        return result
+        return map_drug_information_dto(result[0][0])
 
     def get_interactions_by_drug_id(self, drug_id):
         result, _ = self.call_procedure('FindInteractionsByDrugId', [drug_id])

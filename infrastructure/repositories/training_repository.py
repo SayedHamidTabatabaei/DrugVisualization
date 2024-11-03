@@ -14,7 +14,7 @@ class TrainingRepository(MySqlRepository):
         super().__init__('trainings')
 
     def insert(self, name: str, description: str, train_model: TrainModel, loss_function: LossFunctions, class_weight: bool, is_test_algorithm: bool,
-               training_conditions: str) -> int:
+               min_sample_count: int, training_conditions: str) -> int:
         data = Training(name=name,
                         description=description,
                         train_model=train_model,
@@ -24,7 +24,8 @@ class TrainingRepository(MySqlRepository):
                         training_conditions=training_conditions,
                         model_parameters="",
                         data_report="",
-                        execute_time=datetime.now(timezone.utc))
+                        execute_time=datetime.now(timezone.utc),
+                        min_sample_count=min_sample_count)
 
         id = super().insert(data)
 
@@ -46,16 +47,28 @@ class TrainingRepository(MySqlRepository):
         result, _ = self.call_procedure('GetTrainingById', [id])
         return training_mapper.map_training(result)
 
-    def get_training_count(self, train_models: list[TrainModel]):
+    def get_training_by_ids(self, ids: list[int]) -> list[Training]:
+        ids_json = json.dumps(ids)
+
+        result, _ = self.call_procedure('GetTrainingByIds', [ids_json])
+        return training_mapper.map_training_list(result)
+
+    def get_training_count(self, train_models: list[TrainModel], create_date: datetime, min_sample_count: int):
         model_values = json.dumps([train_model.value for train_model in train_models]) if train_models is not None else None
 
-        result, _ = self.call_procedure('GetTrainingCount', [model_values])
+        result, _ = self.call_procedure('GetTrainingCount', [model_values, create_date, min_sample_count])
 
         return result[0][0]
 
-    def find_all_training(self, train_models: list[TrainModel], start: int, length: int) -> list[TrainingResultDTO]:
+    def get_training_sample_counts(self):
+        result, _ = self.call_procedure('GetTrainingSampleCounts')
+
+        return [r[0] for r in result[0]]
+
+    def find_all_training(self, train_models: list[TrainModel], create_date: datetime, min_sample_count: int, start: int, length: int) \
+            -> list[TrainingResultDTO]:
         model_values = json.dumps([train_model.value for train_model in train_models]) if train_models is not None else None
 
-        result, _ = self.call_procedure('FindAllTrainings', [model_values, start, length])
+        result, _ = self.call_procedure('FindAllTrainings', [model_values, create_date, min_sample_count, start, length])
 
         return training_mapper.map_trainings(result[0])

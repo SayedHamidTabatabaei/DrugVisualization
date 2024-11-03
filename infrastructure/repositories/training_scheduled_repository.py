@@ -13,7 +13,7 @@ class TrainingScheduledRepository(MySqlRepository):
         super().__init__('training_scheduled')
 
     def insert(self, name: str, description: str, train_model: TrainModel, loss_function: LossFunctions, class_weight: bool, is_test_algorithm: bool,
-               training_conditions: str, schedule_date: datetime) \
+               training_conditions: str, schedule_date: datetime, min_sample_count: int) \
             -> int:
         data = TrainingScheduled(name=name,
                                  description=description,
@@ -22,7 +22,8 @@ class TrainingScheduledRepository(MySqlRepository):
                                  class_weight=class_weight,
                                  is_test_algorithm=bool(is_test_algorithm),
                                  training_conditions=training_conditions,
-                                 schedule_date=schedule_date)
+                                 schedule_date=schedule_date,
+                                 min_sample_count=min_sample_count)
 
         id = super().insert(data)
 

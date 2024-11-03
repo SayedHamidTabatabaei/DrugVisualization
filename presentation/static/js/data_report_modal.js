@@ -36,7 +36,7 @@ function showdatareport(id) {
                             formattedJson += `<strong>${key}</strong>: {<br>`;
                             for (let prop in parsedData[key]) {
                                 if (parsedData[key].hasOwnProperty(prop)) {
-                                    formattedJson += `&nbsp;&nbsp;&nbsp;&nbsp;<strong>${prop}</strong>: ${parsedData[key][prop]}<br>`;
+                                    formattedJson += `&nbsp;&nbsp;&nbsp;&nbsp;<strong>${prop}</strong>: ${JSON.stringify(parsedData[key][prop])}<br>`;
                                 }
                             }
                             formattedJson += `}<br><br>`;

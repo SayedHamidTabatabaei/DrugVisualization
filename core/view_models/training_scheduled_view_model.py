@@ -9,3 +9,4 @@ class TrainingScheduledViewModel:
     train_model: str
     training_conditions: str
     schedule_date: str
+    min_sample_count: int

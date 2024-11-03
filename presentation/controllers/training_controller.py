@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from flask import Blueprint, jsonify, request
 from flask.views import MethodView
 from injector import inject
@@ -10,15 +12,17 @@ from common.enums.loss_functions import LossFunctions
 from common.enums.scenarios import Scenarios
 from common.enums.train_models import TrainModel
 from core.view_models.train_request_view_model import TrainRequestViewModel
+from infrastructure.repositories.training_repository import TrainingRepository
 from infrastructure.repositories.training_scheduled_repository import TrainingScheduledRepository
 
 
 class TrainingController(MethodView):
     @inject
     def __init__(self, training_business: TrainingBusiness, job_business: JobBusiness,
-                 training_scheduled_repository: TrainingScheduledRepository):
+                 training_scheduled_repository: TrainingScheduledRepository, training_repository: TrainingRepository):
         self.training_business = training_business
         self.job_business = job_business
+        self.training_repository = training_repository
         self.training_scheduled_repository = training_scheduled_repository
 
     blue_print = Blueprint('training', __name__)
@@ -26,6 +30,13 @@ class TrainingController(MethodView):
     @route('fillScenarios', methods=['GET'])
     def get_scenarios(self):
         types = [{"name": scenario.name, "value": scenario.value} for scenario in Scenarios]
+        return jsonify(types)
+
+    @route('trainingSampleCounts', methods=['GET'])
+    def get_training_sample_counts(self):
+        training_sample_counts = self.training_repository.get_training_sample_counts()
+
+        types = [{"name": tsc, "value": tsc} for tsc in training_sample_counts]
         return jsonify(types)
 
     @route('fillTrainingModels', methods=['GET'])
@@ -104,6 +115,7 @@ class TrainingController(MethodView):
         start = int(request.args.get('start', 0))
         length = int(request.args.get('length', 10))
         draw = int(request.args.get('draw', 1))
+
         train_model_str = request.args.get('trainModel')
 
         train_model = None
@@ -118,7 +130,16 @@ class TrainingController(MethodView):
         if scenario_str:
             scenario = Scenarios[scenario_str]
 
-        train_history, total_number = self.training_business.get_history(scenario, train_model, start, length)
+        date_string = request.args.get('date')
+
+        if date_string:
+            date = datetime.strptime(date_string, '%Y-%m-%d')
+        else:
+            date = None
+
+        min_sample_count = int(request.args.get('min_sample_count') or "0")
+
+        train_history, total_number = self.training_business.get_history(scenario, train_model, date, min_sample_count, start, length)
 
         # if train_history:
         return jsonify({'draw': draw, 'recordsTotal': total_number,
@@ -239,6 +260,66 @@ class TrainingController(MethodView):
 
         if result_details:
             return jsonify({'columns': columns, 'data': result_details, 'status': True})
+        else:
+            return jsonify({'message': "No enzyme found!", 'status': False})
+
+    @route('get_train_data_report', methods=['GET'])
+    def get_train_data_report(self):
+
+        train_ids = request.args.get('trainHistoryIds')
+
+        if not train_ids:
+            return jsonify({'message': "No images found!", 'status': False})
+
+        columns, data = self.training_business.get_data_report([int(train_id) for train_id in train_ids.split(',')], 'train_interaction_ids')
+
+        if data:
+            return jsonify({'columns': columns, 'data': data, 'status': True})
+        else:
+            return jsonify({'message': "No enzyme found!", 'status': False})
+
+    @route('get_validation_data_report', methods=['GET'])
+    def get_validation_data_report(self):
+
+        train_ids = request.args.get('trainHistoryIds')
+
+        if not train_ids:
+            return jsonify({'message': "No images found!", 'status': False})
+
+        columns, data = self.training_business.get_data_report([int(train_id) for train_id in train_ids.split(',')], 'val_interaction_ids')
+
+        if data:
+            return jsonify({'columns': columns, 'data': data, 'status': True})
+        else:
+            return jsonify({'message': "No enzyme found!", 'status': False})
+
+    @route('get_test_data_report', methods=['GET'])
+    def get_test_data_report(self):
+
+        train_ids = request.args.get('trainHistoryIds')
+
+        if not train_ids:
+            return jsonify({'message': "No images found!", 'status': False})
+
+        columns, data = self.training_business.get_data_report([int(train_id) for train_id in train_ids.split(',')], 'test_interaction_ids')
+
+        if data:
+            return jsonify({'columns': columns, 'data': data, 'status': True})
+        else:
+            return jsonify({'message': "No enzyme found!", 'status': False})
+
+    @route('get_data_summary', methods=['GET'])
+    def get_data_summary(self):
+
+        train_ids = request.args.get('trainHistoryIds')
+
+        if not train_ids:
+            return jsonify({'message': "No images found!", 'status': False})
+
+        columns, data = self.training_business.get_data_summary([int(train_id) for train_id in train_ids.split(',')])
+
+        if data:
+            return jsonify({'columns': columns, 'data': data, 'status': True})
         else:
             return jsonify({'message': "No enzyme found!", 'status': False})
 

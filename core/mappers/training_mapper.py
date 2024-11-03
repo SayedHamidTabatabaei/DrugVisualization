@@ -9,7 +9,7 @@ from core.repository_models.training_result_report_dto import TrainingResultRepo
 
 def map_training(query_results) -> Training:
     (id, name, description, train_model, loss_function, class_weight, is_test_algorithm, training_conditions, model_parameters, data_report,
-     fold_result_details, execute_time) = query_results[0][0]
+     fold_result_details, execute_time, min_sample_count) = query_results[0][0]
     return Training(id=id,
                     name=name,
                     description=description,
@@ -21,13 +21,37 @@ def map_training(query_results) -> Training:
                     model_parameters=model_parameters,
                     data_report=data_report,
                     fold_result_details=fold_result_details,
-                    execute_time=execute_time)
+                    execute_time=execute_time,
+                    min_sample_count=min_sample_count)
+
+
+def map_training_list(query_results) -> list[Training]:
+    training_results = []
+    for result in query_results[0]:
+        (id, name, description, train_model, loss_function, class_weight, is_test_algorithm, training_conditions, model_parameters, data_report,
+         fold_result_details, execute_time, min_sample_count) = result
+        training_results.append(Training(id=id,
+                                         name=name,
+                                         description=description,
+                                         train_model=train_model,
+                                         loss_function=LossFunctions.from_value(loss_function) if loss_function is not None else None,
+                                         is_test_algorithm=bool(is_test_algorithm),
+                                         class_weight=bool(class_weight),
+                                         training_conditions=training_conditions,
+                                         model_parameters=model_parameters,
+                                         data_report=data_report,
+                                         fold_result_details=fold_result_details,
+                                         execute_time=execute_time,
+                                         min_sample_count=min_sample_count))
+
+    return training_results
 
 
 def map_trainings(query_results) -> list[TrainingResultDTO]:
     training_results = []
     for result in query_results:
-        (id, name, description, train_model, loss_function, class_weight, is_test_algorithm, training_conditions, model_parameters, data_report, execute_time,
+        (id, name, description, train_model, loss_function, class_weight, is_test_algorithm, training_conditions, model_parameters, data_report,
+         execute_time, min_sample_count,
          accuracy, loss, f1_score_weighted, f1_score_micro, f1_score_macro,
          auc_weighted, auc_micro, auc_macro,
          aupr_weighted, aupr_micro, aupr_macro,
@@ -60,7 +84,8 @@ def map_trainings(query_results) -> list[TrainingResultDTO]:
                                                   precision_weighted=precision_weighted,
                                                   precision_micro=precision_micro,
                                                   precision_macro=precision_macro,
-                                                  execute_time=execute_time))
+                                                  execute_time=execute_time,
+                                                  min_sample_count=min_sample_count))
     return training_results
 
 

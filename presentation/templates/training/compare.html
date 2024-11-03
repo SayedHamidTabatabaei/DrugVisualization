@@ -20,6 +20,7 @@
 <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 <script src="{{ url_for('static', filename='js/fill_train_model_dropdown.js') }}"></script>
 <script src="{{ url_for('static', filename='js/fill_scenario_dropdown.js') }}"></script>
+<script src="{{ url_for('static', filename='js/fill_min_sample_count_dropdown.js') }}"></script>
 <script src="{{ url_for('static', filename='js/compare.js') }}"></script>
 <script src="{{ url_for('static', filename='js/image_modal.js') }}"></script>
 <script src="{{ url_for('static', filename='js/condition_modal.js') }}"></script>
@@ -31,21 +32,43 @@
 {% block content %}
 <h2>Comparing Training data</h2>
 
+<style>
+    #data-grid .dataTables_scrollHeadInner {
+      width: auto !important;
+      padding-right: 0 !important;
+    }
+
+    #data-grid .dataTables_scrollHeadInner table {
+      width: 100% !important;
+    }
+
+    #data-grid .dataTables_scrollBody table {
+      width: 100% !important;
+    }
+
+</style>
+
 <!-- Dropdown and button -->
 <div>
     <div class="property-container">
         <label for="scenarioSelect" class="label-for">Choose a Scenario:</label>
-
-        <select id="scenarioSelect" style="margin-right: 50px;" onchange="fill_train_model_dropdown('All');">
+        <select id="scenarioSelect" onchange="fill_train_model_dropdown('All');">
             <option value="">All</option>
             <!-- Add more options as needed -->
         </select>
-        <label for="trainModelSelect" class="label-for">Choose a Model:</label>
 
+        <label for="trainModelSelect" class="label-for">Choose a Model:</label>
         <select id="trainModelSelect">
             <option value="">All</option>
             <!-- Add more options as needed -->
         </select>
+
+        <label for="minSampleCountSelect" class="label-for">Choose "Min sample":</label>
+        <select id="minSampleCountSelect" style="width: 70px;">0</select>
+
+        <label for="dateFilter">Find after:</label>
+        <input type="date" id="dateFilter" name="dateFilter">
+
         <button id="submitBtn" onclick="get_history()">Submit</button>
 
         <label class="checkbox-label" style="position: absolute;right: 20px;line-height:0"><strong><i>Filter Checked</i></strong>
@@ -122,11 +145,13 @@
 
 <div class="tab-container">
     <div class="tab-row">
-        <div class="tab-label" style="flex-basis: 54%;">Main results</div>
-        <div class="tab-label" style="flex-basis: 46%;">Per Category results</div>
+        <div class="tab-label" style="flex-basis: 7%;">Data results</div>
+        <div class="tab-label" style="flex-basis: 50%;">Main results</div>
+        <div class="tab-label" style="flex-basis: 43%;">Per Category results</div>
     </div>
 
     <div class="tab-row">
+        <div id="data-report" class="tab" onclick="openTab(event, 'data-tab');fill_data_report();">Data</div>
         <div id="accuracy" class="tab active" onclick="openTab(event, 'accuracy-tab');fill_comparing_plot('accuracy');fill_accuracy_plots();">Accuracy</div>
         <div id="loss" class="tab" onclick="openTab(event, 'loss-tab');fill_comparing_plot('loss');fill_loss_plots();">Loss</div>
         <div id="f1_score" class="tab" onclick="openTab(event, 'f1_score-tab');fill_comparing_plot('f1_score', 'f1_score_radio_group');">F1 Score</div>
@@ -146,6 +171,21 @@
             Recall</div>
         <div id="details_precision" class="tab"
              onclick="openTab(event, 'details_precision-tab');fill_comparing_plot('details_precision');fill_grid('details_precision');">Precision</div>
+    </div>
+    <div id="data-tab" class="tab-content">
+        <div id="data-container" style="display: inline-table;">
+            <div id="dataContainer" class="radioButtonsContainer">
+                <input type="radio" id="data-summary" name="data_radio_group" value="data-summary" checked onclick="fill_data_summary_grid();">
+                <label for="data-summary">Data Summary</label><br>
+                <input type="radio" id="train-data" name="data_radio_group" value="train-data" onclick="fill_train_data_report();">
+                <label for="train-data">Train Data</label><br>
+                <input type="radio" id="validation-data" name="data_radio_group" value="validation-data" onclick="fill_validation_data_report();">
+                <label for="validation-data">Validation Data</label><br>
+                <input type="radio" id="test-data" name="data_radio_group" value="test-data" onclick="fill_test_data_report()">
+                <label for="test-data">Test Data</label><br>
+            </div>
+            <div id="data-grid"></div>
+        </div>
     </div>
     <div id="accuracy-tab" class="tab-content active">
         <div id="accuracy-container" style="display: flex;">

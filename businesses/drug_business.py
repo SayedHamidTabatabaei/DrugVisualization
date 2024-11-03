@@ -4,6 +4,7 @@ from businesses.base_business import BaseBusiness
 from businesses.similarity_business import SimilarityBusiness
 from common.enums.category import Category
 from common.enums.similarity_type import SimilarityType
+from common.helpers import smiles_helper
 from infrastructure.repositories.drug_repository import DrugRepository
 from infrastructure.repositories.enzyme_repository import EnzymeRepository
 from infrastructure.repositories.pathway_repository import PathwayRepository
@@ -25,21 +26,23 @@ class DrugBusiness(BaseBusiness):
     def get_information(self, drugbank_id):
         drug_information = self.drug_repository.get_drug_information_by_drugbank_id(drugbank_id)
 
-        columns = ['id', 'drugbank_drug_id', 'drug_name', 'drugbank_id', 'smiles', 'drug_type', 'description',
-                   'average_mass', 'monoisotopic_mass', 'state', 'indication', 'pharmacodynamics',
-                   'mechanism_of_action', 'toxicity', 'metabolism', 'absorption', 'half_life', 'protein_binding',
-                   'route_of_elimination', 'volume_of_distribution', 'clearance', 'classification_description',
-                   'classification_direct_parent', 'classification_kingdom', 'classification_superclass',
-                   'classification_class_category', 'classification_subclass', 'bioavailability', 'ghose_filter',
-                   'h_bond_acceptor_count', 'h_bond_donor_count', 'log_p', 'log_s', 'mddr_like_rule',
-                   'molecular_formula', 'molecular_weight', 'monoisotopic_weight', 'number_of_rings',
-                   'physiological_charge', 'pka_strongest_acidic', 'pka_strongest_basic', 'polar_surface_area',
-                   'polarizability', 'refractivity', 'rotatable_bond_count', 'rule_of_five', 'water_solubility',
-                   'has_enzyme', 'has_pathway', 'has_target', 'rdkit_3d', 'rdkit_2d']
+        return drug_information
 
-        data = [dict(zip(columns, row)) for row in drug_information[0]]
+    def get_adjacency_matrix(self, drugbank_id):
+        drug_information = self.drug_repository.get_drug_information_by_drugbank_id(drugbank_id)
 
-        return data
+        atom_names, adjacency_matrix = smiles_helper.smiles_to_adjacency_matrix_atoms(drug_information.smiles)
+
+        adjacency_matrix_with_names = []
+
+        for idx, row in enumerate(adjacency_matrix):
+            adjacency_matrix_with_names.append([atom_names[idx]] + list(map(int, row)))
+
+        column_names = ['Atom Name'] + [f"{i}({atom_names[i]})" for i in range(len(atom_names))]
+
+        result = [{column_names[i]: item[i] for i in range(len(column_names))} for item in adjacency_matrix_with_names]
+
+        return column_names, result
 
     def get_enzymes(self, drugbank_id):
         drug_id = self.drug_repository.get_id_by_drugbank_id(drugbank_id)

@@ -13,8 +13,9 @@ class DrugInteractionRepository(MySqlRepository):
         result, _ = self.call_procedure('FindAllDrugInteractionDescription')
         return map_drug_text(result[0])
 
-    def find_training_interactions(self, has_enzyme: bool, has_pathway: bool, has_target: bool, has_smiles: bool) -> list[TrainingDrugInteractionDTO]:
+    def find_training_interactions(self, min_sample_count: int, has_enzyme: bool, has_pathway: bool, has_target: bool, has_smiles: bool) \
+            -> list[TrainingDrugInteractionDTO]:
         result, _ = self.call_procedure('FindInteractions',
-                                        [has_enzyme, has_pathway, has_target, has_smiles])
+                                        [min_sample_count, has_enzyme, has_pathway, has_target, has_smiles])
 
         return map_training_drug_interactions(result[0])

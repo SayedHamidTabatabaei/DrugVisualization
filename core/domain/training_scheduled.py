@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Enum as SqlEnum, DateTime, TEXT, NVARCHAR, BOOLEAN
+from sqlalchemy import Column, Enum as SqlEnum, DateTime, TEXT, NVARCHAR, BOOLEAN, INT
 
 from common.enums.loss_functions import LossFunctions
 from common.enums.train_models import TrainModel
@@ -16,3 +16,4 @@ class TrainingScheduled(BaseModel):
     class_weight = Column(BOOLEAN, nullable=False)
     training_conditions = Column(TEXT, nullable=False)
     schedule_date = Column(DateTime, nullable=False)
+    min_sample_count = Column(INT, nullable=False)

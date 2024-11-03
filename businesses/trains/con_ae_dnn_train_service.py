@@ -25,7 +25,7 @@ class ConAeDnnTrainService(TrainBaseService):
 
     def train(self, parameters: SplitInteractionSimilaritiesTrainingParameterModel) -> TrainingSummaryDTO:
 
-        x_train, x_test, y_train, y_test = super().split_train_test(parameters.drug_data, parameters.interaction_data, padding=True, flat=True)
+        x_train, x_test, y_train, y_test = super().split_train_test(parameters.drug_data, parameters.interaction_data, train_id=parameters.train_id, padding=True, flat=True)
 
         input_dim = x_train.shape[1]  # Number of features per sample
         input_layer, encoded_model = self.create_autoencoder(input_shape=(input_dim,))

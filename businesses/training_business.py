@@ -46,7 +46,10 @@ from core.view_models.training_scheduled_view_model import TrainingScheduledView
 from infrastructure.repositories.drug_embedding_repository import DrugEmbeddingRepository
 from infrastructure.repositories.drug_interaction_repository import DrugInteractionRepository
 from infrastructure.repositories.drug_repository import DrugRepository
+from infrastructure.repositories.enzyme_repository import EnzymeRepository
+from infrastructure.repositories.pathway_repository import PathwayRepository
 from infrastructure.repositories.similarity_repository import SimilarityRepository
+from infrastructure.repositories.target_repository import TargetRepository
 from infrastructure.repositories.training_repository import TrainingRepository
 from infrastructure.repositories.training_result_detail_repository import TrainingResultDetailRepository
 from infrastructure.repositories.training_result_repository import TrainingResultRepository
@@ -79,7 +82,8 @@ def map_training_history_view_model(results: list[TrainingResultDTO]) -> list[Tr
         precision_weighted=item.precision_weighted,
         precision_micro=item.precision_micro,
         precision_macro=item.precision_macro,
-        execute_time=item.execute_time
+        execute_time=item.execute_time,
+        min_sample_count=item.min_sample_count
     ) for item in results]
 
 
@@ -90,7 +94,8 @@ def map_training_scheduled_view_model(results: list[TrainingScheduledDTO]) -> li
         description=item.description,
         train_model=item.train_model.name,
         training_conditions=item.training_conditions,
-        schedule_date=item.schedule_date
+        schedule_date=item.schedule_date,
+        min_sample_count=item.min_sample_count
     ) for item in results]
 
 
@@ -111,7 +116,11 @@ colors = list(mcolors.TABLEAU_COLORS.values())
 
 class TrainingBusiness(BaseBusiness):
     @inject
-    def __init__(self, drug_repository: DrugRepository,
+    def __init__(self,
+                 target_repository: TargetRepository,
+                 enzyme_repository: EnzymeRepository,
+                 pathway_repository: PathwayRepository,
+                 drug_repository: DrugRepository,
                  training_repository: TrainingRepository,
                  training_result_repository: TrainingResultRepository,
                  training_result_detail_repository: TrainingResultDetailRepository,
@@ -120,6 +129,9 @@ class TrainingBusiness(BaseBusiness):
                  drug_embedding_repository: DrugEmbeddingRepository,
                  drug_interaction_repository: DrugInteractionRepository):
         BaseBusiness.__init__(self)
+        self.target_repository = target_repository
+        self.enzyme_repository = enzyme_repository
+        self.pathway_repository = pathway_repository
         self.drug_repository = drug_repository
         self.training_repository = training_repository
         self.training_result_repository = training_result_repository
@@ -134,7 +146,7 @@ class TrainingBusiness(BaseBusiness):
 
         self.training_scheduled_repository.insert(train_request.name, train_request.description, train_request.train_model, train_request.loss_function,
                                                   train_request.class_weight, train_request.is_test_algorithm, train_request.to_json(),
-                                                  datetime.now(timezone.utc))
+                                                  datetime.now(timezone.utc), train_request.min_sample_count)
 
     def run_trainings(self, training_id: int = None):
 
@@ -156,7 +168,7 @@ class TrainingBusiness(BaseBusiness):
 
         train_id = self.training_repository.insert(train_schedule.name, train_schedule.description,
                                                    train_schedule.train_model, train_schedule.loss_function, train_schedule.class_weight,
-                                                   train_schedule.is_test_algorithm, train_schedule.training_conditions)
+                                                   train_schedule.is_test_algorithm, train_schedule.min_sample_count, train_schedule.training_conditions)
 
         print('Start training...')
         instance = train_instances.get_instance(train_schedule.train_model)
@@ -199,15 +211,17 @@ class TrainingBusiness(BaseBusiness):
 
     def build_training_parameter_model(self, train_id, train_schedule) -> TrainingParameterBaseModel:
 
+        train_request = TrainRequestViewModel.from_json(train_schedule.training_conditions)
+
+        drug_data = self.prepare_drug_data(train_request)
+
+        interaction_data = self.prepare_interaction_data(train_request, train_schedule.min_sample_count)
+
         match train_schedule.train_model.scenario:
             case Scenarios.SplitInteractionSimilarities:
-                drug_data = self.prepare_drug_data(TrainRequestViewModel.from_json(train_schedule.training_conditions))
 
-                print("Fetching Interactions!")
-                interaction_data = self.drug_interaction_repository.find_training_interactions(True, True, True, True)
-
-                if train_schedule.is_test_algorithm:
-                    interaction_data = self.stratified_sample(interaction_data, test_size=0.01, min_samples_per_category=5)
+                # if train_schedule.is_test_algorithm:
+                #     interaction_data = self.stratified_sample(interaction_data, test_size=0.01, min_samples_per_category=5)
 
                 return SplitInteractionSimilaritiesTrainingParameterModel(train_id=train_id,
                                                                           loss_function=train_schedule.loss_function,
@@ -217,10 +231,6 @@ class TrainingBusiness(BaseBusiness):
                                                                           interaction_data=interaction_data)
 
             case Scenarios.SplitDrugsTestWithTrain:
-                drug_data = self.prepare_drug_data(TrainRequestViewModel.from_json(train_schedule.training_conditions))
-
-                print("Fetching Interactions!")
-                interaction_data = self.drug_interaction_repository.find_training_interactions(True, True, True, True)
 
                 return SplitDrugsTestWithTrainTrainingParameterModel(train_id=train_id,
                                                                      loss_function=train_schedule.loss_function,
@@ -229,10 +239,6 @@ class TrainingBusiness(BaseBusiness):
                                                                      drug_data=drug_data,
                                                                      interaction_data=interaction_data)
             case Scenarios.SplitDrugsTestWithTest:
-                drug_data = self.prepare_drug_data(TrainRequestViewModel.from_json(train_schedule.training_conditions))
-
-                print("Fetching Interactions!")
-                interaction_data = self.drug_interaction_repository.find_training_interactions(True, True, True, True)
 
                 return SplitDrugsTestWithTestTrainingParameterModel(train_id=train_id,
                                                                     loss_function=train_schedule.loss_function,
@@ -247,7 +253,7 @@ class TrainingBusiness(BaseBusiness):
 
         return map_training_scheduled_view_model(results)
 
-    def get_history(self, scenario: Scenarios, train_model: TrainModel, start: int, length: int):
+    def get_history(self, scenario: Scenarios, train_model: TrainModel, create_date: datetime, min_sample_count: int, start: int, length: int):
         if train_model:
             train_models = [train_model]
         elif scenario:
@@ -255,9 +261,10 @@ class TrainingBusiness(BaseBusiness):
         else:
             train_models = None
 
-        total_number = self.training_repository.get_training_count(train_models)
+        total_number = self.training_repository.get_training_count(train_models, create_date=create_date, min_sample_count=min_sample_count)
 
-        results = self.training_repository.find_all_training(train_models, start, length)
+        results = self.training_repository.find_all_training(train_models, create_date=create_date, min_sample_count=min_sample_count,
+                                                             start=start, length=length)
 
         return map_training_history_view_model(results), total_number[0]
 
@@ -358,6 +365,86 @@ class TrainingBusiness(BaseBusiness):
         data = [dict(zip(column_names, row)) for row in result]
 
         return column_names, data
+
+    def get_data_report(self, train_result_ids: list[int], data_set_name: str):
+        results = self.training_repository.get_training_by_ids(train_result_ids)
+
+        combined_train_interaction_ids = []
+
+        columns = [f"{r.name}({r.id})" for r in results]
+
+        for result in results:
+            with open(f'seeds/{result.id}.json', 'r') as file:
+                data = json.load(file)
+
+                combined_train_interaction_ids.append(data.get(data_set_name, []))
+
+        return columns, self.full_join_multiple_lists(columns, combined_train_interaction_ids)
+
+    def get_data_summary(self, train_result_ids: list[int]):
+        results = self.training_repository.get_training_by_ids(train_result_ids)
+
+        training_names = list({f'{result.name}({result.id})' for result in results})
+
+        column_names = [f'Total {name}' for name in training_names] + [f'Train {name}' for name in training_names] + [f'Test {name}' for name in training_names]
+
+        column_names = ['level'] + column_names
+
+        data_dict = {'level': []}
+
+        for result in results:
+            # Create column names
+            total_col_name = f'Total {result.name}({result.id})'
+            train_col_name = f'Train {result.name}({result.id})'
+            test_col_name = f'Test {result.name}({result.id})'
+
+            data_report = json.loads(result.data_report)
+
+            total_report = {list(d.keys())[0]: list(d.values())[0] for d in data_report['total_report']}
+            train_report = {list(d.keys())[0]: list(d.values())[0] for d in data_report['train_report']}
+            test_report = {list(d.keys())[0]: list(d.values())[0] for d in data_report['test_report']}
+
+            if not data_dict['level']:
+                data_dict['level'] = ['Total'] + list(total_report.keys())
+
+            data_dict[total_col_name] = [data_report['total_count']] + list(total_report.values())
+            data_dict[train_col_name] = [data_report['train_count']] + list(train_report.values())
+            data_dict[test_col_name] = [data_report['test_count']] + list(test_report.values())
+
+        return column_names, self.convert_data_to_structured_format(data_dict)
+
+    @staticmethod
+    def full_join_multiple_lists(trains, lists):
+
+        full_set = sorted(set().union(*lists))
+        sets = [set(lst) for lst in lists]
+
+        result = []
+        for item in full_set:
+            item_dict = {trains[i]: item if item in sets[i] else None for i in range(len(sets))}
+            result.append(item_dict)
+
+        return result
+
+    @staticmethod
+    def convert_data_to_structured_format(data):
+
+        levels = data['level']
+        reordered_levels = ['Total'] + sorted([level for level in levels if level != 'Total'], key=int)
+
+        rows = []
+
+        for level in reordered_levels:
+
+            row = {'level': level}
+
+            for key in data.keys():
+                if key != 'level':
+                    row[key] = data[key][reordered_levels.index(level)]
+
+            rows.append(row)
+
+        return rows
 
     def generate_plot(self, plot: ComparePlotDTO):
         match plot.compare_plot_type.plot_name:
@@ -727,13 +814,15 @@ class TrainingBusiness(BaseBusiness):
             similarities = self.get_original_data(category)
             for d in tqdm(drugs, f'Updating {category.name} data...'):
                 if category != Category.Substructure:
-                    d.train_values.append(TrainingDrugTrainValuesDTO(category=category,
-                                                                     values=[float(value) for key, value in similarities.items() if key == d.drug_id]))
+                    d.train_values.append(TrainingDrugTrainValuesDTO(category=category, values=(similarities[d.drug_id] or [])))
                 else:
                     value = next((s for k, s in similarities.items() if k == d.drug_id), None)
 
                     d.train_values.append(TrainingDrugTrainValuesDTO(category=category,
                                                                      values=smiles_helper.smiles_to_feature_matrix(value)))
+
+                    d.train_values.append(TrainingDrugTrainValuesDTO(category=category,
+                                                                     values=smiles_helper.smiles_to_adjacency_matrix(value)))
 
         return drugs
 
@@ -743,12 +832,22 @@ class TrainingBusiness(BaseBusiness):
                 results = self.drug_repository.get_all_drug_smiles()
 
                 return {r.id: r.smiles for r in results}
+
             case Category.Target:
-                pass
+                results = self.target_repository.get_drug_target_as_feature()
+
+                return {r.drug_id: r.features for r in results}
+
             case Category.Pathway:
-                pass
+                results = self.pathway_repository.get_drug_pathway_as_feature()
+
+                return {r.drug_id: r.features for r in results}
+
             case Category.Enzyme:
-                pass
+                results = self.enzyme_repository.get_drug_enzyme_as_feature()
+
+                return {r.drug_id: r.features for r in results}
+
             case _:
                 raise Exception(f'Unexpected category {category}')
 
@@ -763,6 +862,24 @@ class TrainingBusiness(BaseBusiness):
                                                              values=embeddings.get(d.drug_id, [])))
 
         return drugs
+
+    def prepare_interaction_data(self, train_request: TrainRequestViewModel, min_sample_count: int) -> list[TrainingDrugInteractionDTO]:
+
+        print("Fetching Interactions!")
+        interaction_data = self.drug_interaction_repository.find_training_interactions(min_sample_count, True, True, True, True)
+
+        if train_request.interaction_description_embedding:
+
+            embeddings = self.drug_embedding_repository.find_all_interaction_embedding_dict(embedding_type=train_request.interaction_description_embedding,
+                                                                                            text_type=TextType.InteractionDescription)
+
+            embeddings = {k: self.validate_and_reshape(json.loads(v)) for k, v in tqdm(embeddings.items(), "Converting string to array...")}
+
+            for interaction in tqdm(interaction_data,
+                                    f"Fetching {TextType.InteractionDescription.name}-{train_request.interaction_description_embedding.name}...."):
+                interaction.interaction_description = embeddings.get(interaction.id, [])
+
+        return interaction_data
 
     @staticmethod
     def validate_and_reshape(array):

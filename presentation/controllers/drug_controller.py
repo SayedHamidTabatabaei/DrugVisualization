@@ -42,6 +42,15 @@ class DrugController(MethodView):
         else:
             return jsonify({'message': "No drug found for the provided DrugBank ID!", 'status': False})
 
+    @route('adjacency_matrix/<drugbank_id>', methods=['GET'])
+    def get_adjacency_matrix(self, drugbank_id: str):
+        columns, adjacency_matrix = self.drug_business.get_adjacency_matrix(drugbank_id)
+
+        if adjacency_matrix:
+            return jsonify({'columns': columns, 'data': adjacency_matrix, 'status': True})
+        else:
+            return jsonify({'message': "No drug found for the provided DrugBank ID!", 'status': False})
+
     @route('interactions/<drugbank_id>', methods=['GET'])
     def get_interactions(self, drugbank_id: str):
         interactions = self.drug_business.get_interactions(drugbank_id)

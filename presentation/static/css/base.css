@@ -101,11 +101,54 @@ footer p {
 .property-container {
     display: flex;
     align-items: center;
+    gap: 20px;
+    flex-wrap: wrap;
     /*justify-content: space-between;*/
     margin-top: 10px;
+}
+
+.property-container label {
+    font-weight: bold;
+    margin-right: 10px;
+}
+
+.property-container select,
+.property-container input[type="date"],
+.property-container button {
+    padding: 8px 12px;
+    font-size: 14px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
 }
 
 .label-for {
     margin-right: 20px;
     min-width: 120px;
+}
+
+input[type="date"] {
+    padding: 10px 12px;
+    font-size: 14px;
+    border: 2px solid #007bff; /* Match the border color with your button */
+    border-radius: 5px;
+    color: #333; /* Dark text */
+    background-color: #fff;
+    cursor: pointer;
+    width: 180px; /* Make it a little wider for better UX */
+}
+
+input[type="date"]::-webkit-calendar-picker-indicator:hover {
+    background-color: #ffe8a17b;
+    color: white;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+input[type="date"]:hover {
+    border-color: #0056b3;
+}
+
+input[type="date"]:focus {
+    outline: none;
+    border-color: #0056b3; /* Focus state to make it more interactive */
 }
