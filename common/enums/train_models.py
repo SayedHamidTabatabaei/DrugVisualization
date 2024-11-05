@@ -25,6 +25,11 @@ class TrainModel(Enum):
     Drug_Deep_DDI = (210, Scenarios.SplitDrugsTestWithTrain, 'The Old Base Algorithm, just use SMILES code.')
     Drug_DDIMDL = (211, Scenarios.SplitDrugsTestWithTrain, 'The Old Base Algorithm, just use SMILES code.')
 
+    Drug_AE_Con_DNN_Test = (304, Scenarios.SplitDrugsTestWithTest, 'Reduce data dimension, join them and send to DNN')
+    Drug_GAT_Enc_Con_DNN_Test = (305, Scenarios.SplitDrugsTestWithTest, 'GAT On SMILES, AutoEncoder, Concat AutoEncoders and then DNN')
+    Drug_Deep_DDI_Test = (310, Scenarios.SplitDrugsTestWithTest, 'The Old Base Algorithm, just use SMILES code.')
+    Drug_DDIMDL_Test = (311, Scenarios.SplitDrugsTestWithTest, 'The Old Base Algorithm, just use SMILES code.')
+
     Deep_DDI = (501, Scenarios.SplitInteractionSimilarities, 'The Old Base Algorithm, just use SMILES code.')
     DDIMDL = (502, Scenarios.SplitInteractionSimilarities, 'The Old Base Algorithm, just use SMILES code.')
 

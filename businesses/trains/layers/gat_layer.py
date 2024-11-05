@@ -14,7 +14,7 @@ class GATLayer(Layer):
             Dense(1) for _ in range(num_heads)
         ]
 
-    def call(self, inputs, adjacency_matrix=None, **kwargs):
+    def call(self, inputs, **kwargs):
         # inputs: (batch_size, num_nodes, feature_dim)
 
         feature_matrix, adjacency_matrix = inputs

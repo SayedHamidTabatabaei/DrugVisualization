@@ -15,9 +15,10 @@ train_model = TrainModel.Drug_AE_Con_DNN
 
 class DrugAeConDnnTrainService(TrainBaseService):
 
-    def __init__(self, category: TrainModel):
+    def __init__(self, category: TrainModel, compare_train_test: bool = True):
         super().__init__(category)
         self.encoding_dim = 128
+        self.compare_train_test = compare_train_test
 
     def create_autoencoder(self, input_shape):
         input_layer = Input(input_shape)
@@ -28,7 +29,8 @@ class DrugAeConDnnTrainService(TrainBaseService):
 
         results = []
 
-        for x_train, x_test, y_train, y_test in super().manual_k_fold_train_test_data(parameters.drug_data, parameters.interaction_data, padding=True):
+        for x_train, x_test, y_train, y_test in super().manual_k_fold_train_test_data(parameters.drug_data, parameters.interaction_data,
+                                                                                      padding=True, compare_train_test=self.compare_train_test):
 
             input_layers = []
             encoded_models = []

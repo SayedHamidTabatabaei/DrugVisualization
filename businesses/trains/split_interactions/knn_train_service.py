@@ -12,11 +12,12 @@ class KnnTrainService(TrainBaseService):
 
     def train(self, parameters: SplitInteractionSimilaritiesTrainingParameterModel) -> TrainingSummaryDTO:
 
-        x_train, x_test, y_train, y_test = super().split_train_test(parameters.drug_data, parameters.interaction_data, train_id=parameters.train_id, padding=True, flat=True)
+        x_train, x_test, y_train, y_test = super().split_train_test(parameters.drug_data, parameters.interaction_data,
+                                                                    train_id=parameters.train_id, padding=True, flat=True)
 
         knn = KNeighborsClassifier(n_neighbors=5)
         knn.fit(x_train, y_train)
 
-        evaluations = super().calculate_evaluation_metrics(knn, x_test, y_test)
+        evaluations = self.calculate_evaluation_metrics(knn, x_test, y_test)
 
         return evaluations

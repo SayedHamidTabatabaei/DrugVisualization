@@ -27,6 +27,7 @@ from tensorflow.keras.utils import to_categorical
 from tensorflow.keras.callbacks import EarlyStopping
 from tqdm import tqdm
 
+from common.enums.category import Category
 from common.enums.train_models import TrainModel
 from common.enums.training_result_type import TrainingResultType
 from common.helpers import loss_helper
@@ -35,6 +36,7 @@ from core.models.training_parameter_base_model import TrainingParameterBaseModel
 from core.models.training_params import TrainingParams
 from core.repository_models.training_drug_data_dto import TrainingDrugDataDTO
 from core.repository_models.training_drug_interaction_dto import TrainingDrugInteractionDTO
+from core.repository_models.training_drug_train_values_dto import TrainingDrugTrainValuesDTO
 from core.repository_models.training_result_detail_summary_dto import TrainingResultDetailSummaryDTO
 from core.repository_models.training_result_summary_dto import TrainingResultSummaryDTO
 from core.repository_models.training_summary_dto import TrainingSummaryDTO
@@ -379,11 +381,18 @@ class TrainBaseService:
         return tf.keras.preprocessing.sequence.pad_sequences(data, maxlen=maxlen, padding='post', value=padding_value)
 
     @staticmethod
-    def create_tf_dataset(x_train, y_train, batch_size=256):
-        dataset = tf.data.Dataset.from_tensor_slices((x_train, y_train))
-        dataset = dataset.batch(batch_size)
-        dataset = dataset.prefetch(tf.data.experimental.AUTOTUNE)
-        return dataset
+    def unique_category(train_values: list[TrainingDrugTrainValuesDTO]):
+        unique_categories = {}
+        index = 0
+
+        for c in train_values:
+            if c.category not in unique_categories.values():
+                unique_categories[index] = c.category
+                if c.category == Category.Substructure:
+                    index += 1
+                index += 1
+
+        return unique_categories
 
     def fit_dnn_model(self, data_params: DataParams, training_params: TrainingParams, model, interactions: (list[TrainingDrugInteractionDTO] | None) = None) \
             -> TrainingSummaryDTO:
@@ -558,7 +567,8 @@ class TrainBaseService:
     # region split data
     def manual_k_fold_train_test_data(self, drug_data: list[TrainingDrugDataDTO], interaction_data: list[TrainingDrugInteractionDTO],
                                       categorical_labels: bool = True, padding: bool = False, flat: bool = False,
-                                      pca_generating: bool = False, pca_components: int = None, is_deep_face: bool = False):
+                                      pca_generating: bool = False, pca_components: int = None, is_deep_face: bool = False,
+                                      compare_train_test: bool = True):
 
         self.num_classes = len(set(item.interaction_type for item in interaction_data))
 
@@ -612,10 +622,16 @@ class TrainBaseService:
                 if interaction.drug_1 in train_drug_ids and interaction.drug_2 in train_drug_ids
             ]
 
-            test_interactions = [
-                interaction for interaction in interaction_data
-                if interaction.drug_1 in test_drug_ids or interaction.drug_2 in test_drug_ids
-            ]
+            if compare_train_test:
+                test_interactions = [
+                    interaction for interaction in interaction_data
+                    if interaction.drug_1 in test_drug_ids or interaction.drug_2 in test_drug_ids
+                ]
+            else:
+                test_interactions = [
+                    interaction for interaction in interaction_data
+                    if interaction.drug_1 in test_drug_ids and interaction.drug_2 in test_drug_ids
+                ]
 
             y_train = [i.interaction_type for i in train_interactions]
             y_test = [i.interaction_type for i in test_interactions]
