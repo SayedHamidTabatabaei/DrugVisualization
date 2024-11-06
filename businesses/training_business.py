@@ -28,6 +28,7 @@ from common.helpers import math_helper, embedding_helper, json_helper, smiles_he
 from core.domain.training_result import TrainingResult
 from core.domain.training_result_detail import TrainingResultDetail
 from core.models.training_parameter_base_model import TrainingParameterBaseModel
+from core.models.training_parameter_models.fold_interaction_training_parameter_model import FoldInteractionTrainingParameterModel
 from core.models.training_parameter_models.split_drugs_test_with_test_training_parameter_model import SplitDrugsTestWithTestTrainingParameterModel
 from core.models.training_parameter_models.split_drugs_test_with_train_training_parameter_model import SplitDrugsTestWithTrainTrainingParameterModel
 from core.models.training_parameter_models.split_interaction_similarities_training_parameter_model import SplitInteractionSimilaritiesTrainingParameterModel
@@ -246,6 +247,22 @@ class TrainingBusiness(BaseBusiness):
                                                                     is_test_algorithm=train_schedule.is_test_algorithm,
                                                                     drug_data=drug_data,
                                                                     interaction_data=interaction_data)
+            case Scenarios.SplitDrugsTestWithTest:
+
+                return SplitDrugsTestWithTestTrainingParameterModel(train_id=train_id,
+                                                                    loss_function=train_schedule.loss_function,
+                                                                    class_weight=train_schedule.class_weight,
+                                                                    is_test_algorithm=train_schedule.is_test_algorithm,
+                                                                    drug_data=drug_data,
+                                                                    interaction_data=interaction_data)
+            case Scenarios.FoldInteractionSimilarities:
+
+                return FoldInteractionTrainingParameterModel(train_id=train_id,
+                                                             loss_function=train_schedule.loss_function,
+                                                             class_weight=train_schedule.class_weight,
+                                                             is_test_algorithm=train_schedule.is_test_algorithm,
+                                                             drug_data=drug_data,
+                                                             interaction_data=interaction_data)
 
     def get_training_scheduled(self, train_model: TrainModel):
 

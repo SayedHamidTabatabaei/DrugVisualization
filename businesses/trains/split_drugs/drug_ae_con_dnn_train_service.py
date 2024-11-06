@@ -10,7 +10,7 @@ from core.models.training_parameter_models.split_drugs_test_with_train_training_
 from core.models.training_params import TrainingParams
 from core.repository_models.training_summary_dto import TrainingSummaryDTO
 
-train_model = TrainModel.Drug_AE_Con_DNN
+train_model = TrainModel.Drug_AE_Con_DNN or TrainModel.Drug_AE_Con_DNN_Test
 
 
 class DrugAeConDnnTrainService(TrainBaseService):

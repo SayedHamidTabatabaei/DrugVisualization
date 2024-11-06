@@ -6,6 +6,6 @@ from core.repository_models.training_drug_interaction_dto import TrainingDrugInt
 
 
 @dataclass
-class SplitInteractionOriginalsTrainingParameterModel(TrainingParameterBaseModel):
+class FoldInteractionTrainingParameterModel(TrainingParameterBaseModel):
     drug_data: list[TrainingDrugDataDTO]
     interaction_data: list[TrainingDrugInteractionDTO]

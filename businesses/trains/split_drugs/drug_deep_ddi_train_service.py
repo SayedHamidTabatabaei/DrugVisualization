@@ -4,7 +4,7 @@ from common.enums.train_models import TrainModel
 from core.models.training_parameter_models.split_drugs_test_with_train_training_parameter_model import SplitDrugsTestWithTrainTrainingParameterModel
 from core.repository_models.training_summary_dto import TrainingSummaryDTO
 
-train_model = TrainModel.Drug_Deep_DDI
+train_model = TrainModel.Drug_Deep_DDI or TrainModel.Drug_Deep_DDI_Test
 
 
 class DrugDeepDDITrainService(TrainBaseService):

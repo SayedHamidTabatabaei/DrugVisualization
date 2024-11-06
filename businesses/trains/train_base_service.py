@@ -3,7 +3,6 @@ import io
 import json
 import math
 import os
-import pickle
 import random
 import time
 from collections import defaultdict
@@ -15,16 +14,16 @@ import tensorflow as tf
 from sklearn.decomposition import PCA
 from sklearn.metrics import accuracy_score, f1_score, roc_auc_score, average_precision_score, precision_score, \
     recall_score, log_loss
-from sklearn.model_selection import StratifiedShuffleSplit
+from sklearn.model_selection import StratifiedShuffleSplit, StratifiedKFold
 from sklearn.preprocessing import label_binarize
+# noinspection PyUnresolvedReferences
+from tensorflow.keras.callbacks import EarlyStopping
 # noinspection PyUnresolvedReferences
 from tensorflow.keras.preprocessing.sequence import pad_sequences
 # noinspection PyUnresolvedReferences
 from tensorflow.keras.preprocessing.text import Tokenizer
 # noinspection PyUnresolvedReferences
 from tensorflow.keras.utils import to_categorical
-# noinspection PyUnresolvedReferences
-from tensorflow.keras.callbacks import EarlyStopping
 from tqdm import tqdm
 
 from common.enums.category import Category
@@ -567,7 +566,8 @@ class TrainBaseService:
     # region split data
     def manual_k_fold_train_test_data(self, drug_data: list[TrainingDrugDataDTO], interaction_data: list[TrainingDrugInteractionDTO],
                                       categorical_labels: bool = True, padding: bool = False, flat: bool = False,
-                                      pca_generating: bool = False, pca_components: int = None, is_deep_face: bool = False,
+                                      pca_generating: bool = False, pca_components: int = None,
+                                      is_deep_face: bool = False, is_cnn: bool = False,
                                       compare_train_test: bool = True):
 
         self.num_classes = len(set(item.interaction_type for item in interaction_data))
@@ -639,6 +639,9 @@ class TrainBaseService:
             if is_deep_face:
                 x_train = self.generate_deepface_x_values(drug_data, train_interactions, train_drug_ids, pca_generating=pca_generating)
                 x_test = self.generate_deepface_x_values(drug_data, test_interactions, train_drug_ids, pca_generating=pca_generating)
+            elif is_cnn:
+                x_train = self.generate_cnn_x_values(drug_data, train_interactions, train_drug_ids)
+                x_test = self.generate_cnn_x_values(drug_data, test_interactions, train_drug_ids)
             else:
                 x_train = self.generate_x_values(drug_data, train_interactions, train_drug_ids, pca_generating=pca_generating, pca_components=pca_components)
                 x_test = self.generate_x_values(drug_data, test_interactions, train_drug_ids, pca_generating=pca_generating, pca_components=pca_components)
@@ -712,7 +715,91 @@ class TrainBaseService:
         if flat:
             x_train, x_val, x_test = self.create_input_tensors_flat_with_validation(x_train, x_val, x_test)
 
-        return x_train, x_val, x_test, y_train, y_val, y_test
+        return [np.array(x) for x in x_train], [np.array(x) for x in x_val], [np.array(x) for x in x_test], y_train, y_val, y_test
+
+    def split_deepface_train_val_test(self, drug_data: list[TrainingDrugDataDTO], interaction_data: list[TrainingDrugInteractionDTO], train_id: int,
+                                      categorical_labels: bool = True, mean_of_text_embeddings: bool = True,
+                                      pca_generating: bool = False, as_ndarray: bool = True):
+
+        self.num_classes = len(set(item.interaction_type for item in interaction_data))
+
+        drug_ids = [drug.drug_id for drug in drug_data]
+
+        x = self.generate_deepface_x_values(drug_data, interaction_data, drug_ids, mean_of_text_embeddings=mean_of_text_embeddings,
+                                            pca_generating=pca_generating)
+        y = np.array([item.interaction_type for item in interaction_data])  # Extract labels
+
+        x_train, x_val, x_test, y_train, y_val, y_test = self.split_on_interactions_with_validation(x, y, interactions=interaction_data, train_id=train_id)
+
+        if categorical_labels:
+            y_train = to_categorical(y_train, num_classes=self.num_classes).astype(np.int16)
+            y_val = to_categorical(y_val, num_classes=self.num_classes).astype(np.int16)
+            y_test = to_categorical(y_test, num_classes=self.num_classes).astype(np.int16)
+
+        if as_ndarray:
+            return [np.array(x) for x in x_train], [np.array(x) for x in x_val], [np.array(x) for x in x_test], y_train, y_val, y_test
+            # return [np.array(x, dtype=np.float16) for x in x_train], [np.array(x, dtype=np.float16) for x in x_test], y_train, y_test
+        else:
+            return x_train, x_val, x_test, y_train, y_val, y_test
+
+    def fold_on_interaction(self, drug_data: list[TrainingDrugDataDTO], interaction_data: list[TrainingDrugInteractionDTO], train_id: int,
+                            categorical_labels: bool = True, padding: bool = False, flat: bool = False, mean_of_text_embeddings: bool = True,
+                            pca_generating: bool = False, pca_components: int = None):
+
+        self.num_classes = len(set(item.interaction_type for item in interaction_data))
+
+        drug_ids = [drug.drug_id for drug in drug_data]
+
+        x = self.generate_x_values(drug_data, interaction_data, drug_ids, mean_of_text_embeddings=mean_of_text_embeddings, pca_generating=pca_generating,
+                                   pca_components=pca_components)
+        y = np.array([item.interaction_type for item in interaction_data])  # Extract labels
+
+        for data in self.fold_on_interactions(x, y, interactions=interaction_data, train_id=train_id):
+
+            x_train = data["x_train"]
+            x_test = data["x_test"]
+            y_train = data["y_train"]
+            y_test = data["y_test"]
+
+            if categorical_labels:
+                y_train = to_categorical(y_train, num_classes=self.num_classes)
+                y_test = to_categorical(y_test, num_classes=self.num_classes)
+
+            if padding:
+                x_train, x_test = self.create_input_tensors_pad(x_train, x_test)
+
+            if flat:
+                x_train, x_test = self.create_input_tensors_flat(x_train, x_test)
+
+            yield x_train, x_test, y_train, y_test
+
+    def fold_on_interaction_deepface(self, drug_data: list[TrainingDrugDataDTO], interaction_data: list[TrainingDrugInteractionDTO], train_id: int,
+                                     categorical_labels: bool = True, mean_of_text_embeddings: bool = True,
+                                     pca_generating: bool = False, as_ndarray: bool = True):
+
+        self.num_classes = len(set(item.interaction_type for item in interaction_data))
+
+        drug_ids = [drug.drug_id for drug in drug_data]
+
+        x = self.generate_deepface_x_values(drug_data, interaction_data, drug_ids, mean_of_text_embeddings=mean_of_text_embeddings,
+                                            pca_generating=pca_generating)
+        y = np.array([item.interaction_type for item in interaction_data])  # Extract labels
+
+        for data in self.fold_on_interactions(x, y, interactions=interaction_data, train_id=train_id):
+            x_train = data["x_train"]
+            x_test = data["x_test"]
+            y_train = data["y_train"]
+            y_test = data["y_test"]
+
+            if categorical_labels:
+                y_train = to_categorical(y_train, num_classes=self.num_classes).astype(np.int16)
+                y_test = to_categorical(y_test, num_classes=self.num_classes).astype(np.int16)
+
+            if as_ndarray:
+                yield [np.array(x) for x in x_train], [np.array(x) for x in x_test], y_train, y_test
+                # return [np.array(x, dtype=np.float16) for x in x_train], [np.array(x, dtype=np.float16) for x in x_test], y_train, y_test
+            else:
+                yield x_train, x_test, y_train, y_test
 
     def generate_x_values(self, drug_data: list[TrainingDrugDataDTO], interactions: list[TrainingDrugInteractionDTO], train_drug_ids: list[int],
                           mean_of_text_embeddings: bool = True, pca_generating: bool = False, pca_components: int = None):
@@ -758,54 +845,71 @@ class TrainBaseService:
 
         return x_output
 
-    def split_deepface_train_test(self, drug_data: list[TrainingDrugDataDTO], interaction_data: list[TrainingDrugInteractionDTO], train_id: int,
-                                  categorical_labels: bool = True, mean_of_text_embeddings: bool = True,
-                                  pca_generating: bool = False, as_ndarray: bool = True):
+    def split_cnn_train_test(self, drug_data: list[TrainingDrugDataDTO], interaction_data: list[TrainingDrugInteractionDTO], train_id: int,
+                             categorical_labels: bool = True):
 
         self.num_classes = len(set(item.interaction_type for item in interaction_data))
-
         drug_ids = [drug.drug_id for drug in drug_data]
 
-        x = self.generate_deepface_x_values(drug_data, interaction_data, drug_ids, mean_of_text_embeddings=mean_of_text_embeddings,
-                                            pca_generating=pca_generating)
+        x = self.generate_cnn_x_values(drug_data, interaction_data, drug_ids)
         y = np.array([item.interaction_type for item in interaction_data])  # Extract labels
 
-        x_train, x_test, y_train, y_test = self.split_on_interactions(x, y, interactions=interaction_data, train_id=train_id)
-
-        if categorical_labels:
-            y_train = to_categorical(y_train, num_classes=self.num_classes).astype(np.int16)
-            y_test = to_categorical(y_test, num_classes=self.num_classes).astype(np.int16)
-
-        if as_ndarray:
-            return [np.array(x) for x in x_train], [np.array(x) for x in x_test], y_train, y_test
-            # return [np.array(x, dtype=np.float16) for x in x_train], [np.array(x, dtype=np.float16) for x in x_test], y_train, y_test
-        else:
-            return x_train, x_test, y_train, y_test
-
-    def split_deepface_train_val_test(self, drug_data: list[TrainingDrugDataDTO], interaction_data: list[TrainingDrugInteractionDTO], train_id: int,
-                                      categorical_labels: bool = True, mean_of_text_embeddings: bool = True,
-                                      pca_generating: bool = False, as_ndarray: bool = True):
-
-        self.num_classes = len(set(item.interaction_type for item in interaction_data))
-
-        drug_ids = [drug.drug_id for drug in drug_data]
-
-        x = self.generate_deepface_x_values(drug_data, interaction_data, drug_ids, mean_of_text_embeddings=mean_of_text_embeddings,
-                                            pca_generating=pca_generating)
-        y = np.array([item.interaction_type for item in interaction_data])  # Extract labels
-
-        x_train, x_val, x_test, y_train, y_val, y_test = self.split_on_interactions_with_validation(x, y, interactions=interaction_data, train_id=train_id)
+        x_train, x_test, x_val, y_val, y_train, y_test = self.split_cnn_data_on_interactions(x, y, interactions=interaction_data, train_id=train_id)
 
         if categorical_labels:
             y_train = to_categorical(y_train, num_classes=self.num_classes).astype(np.int16)
             y_val = to_categorical(y_val, num_classes=self.num_classes).astype(np.int16)
             y_test = to_categorical(y_test, num_classes=self.num_classes).astype(np.int16)
 
-        if as_ndarray:
-            return [np.array(x) for x in x_train], [np.array(x) for x in x_val], [np.array(x) for x in x_test], y_train, y_val, y_test
-            # return [np.array(x, dtype=np.float16) for x in x_train], [np.array(x, dtype=np.float16) for x in x_test], y_train, y_test
-        else:
-            return x_train, x_val, x_test, y_train, y_val, y_test
+        return x_train, x_test, x_val, y_val, y_train, y_test
+
+    def fold_cnn_on_interaction(self, drug_data: list[TrainingDrugDataDTO], interaction_data: list[TrainingDrugInteractionDTO], train_id: int,
+                                categorical_labels: bool = True):
+
+        self.num_classes = len(set(item.interaction_type for item in interaction_data))
+        drug_ids = [drug.drug_id for drug in drug_data]
+
+        x = self.generate_cnn_x_values(drug_data, interaction_data, drug_ids)
+        y = np.array([item.interaction_type for item in interaction_data])  # Extract labels
+
+        for data in self.fold_cnn_on_interactions(x, y, interactions=interaction_data, train_id=train_id):
+
+            x_train = data["x_train"]
+            x_test = data["x_test"]
+            y_train = data["y_train"]
+            y_test = data["y_test"]
+
+            if categorical_labels:
+                y_train = to_categorical(y_train, num_classes=self.num_classes)
+                y_test = to_categorical(y_test, num_classes=self.num_classes)
+
+            yield np.array(x_train), np.array(x_test), y_train, y_test
+
+    @staticmethod
+    def generate_cnn_x_values(drug_data: list[TrainingDrugDataDTO], interactions: list[TrainingDrugInteractionDTO], drug_ids: list):
+        x_output = []
+
+        def process_features(drug: TrainingDrugDataDTO, feature_count: int):
+            output = [[0] * feature_count for _ in range(len(drug_ids))]
+
+            for idx_f, f in enumerate(drug.train_values):
+                values = list([v for k, v in f.values.items() if k in drug_ids])
+                for idx_d in range(len(drug_ids)):
+                    output[idx_d][idx_f] = values[idx_d]
+
+            return output
+
+        num_features = len(drug_data[0].train_values)
+
+        drug_dict = {drug.drug_id: process_features(drug, num_features) for drug in tqdm(drug_data, "Process Drug Features...")}
+
+        for interaction in tqdm(interactions, "Find X values per interactions...."):
+            drug_1 = drug_dict.get(interaction.drug_1)
+            drug_2 = drug_dict.get(interaction.drug_2)
+
+            x_output.append([drug_1, drug_2])
+
+        return x_output
 
     def generate_deepface_x_values(self, drug_data: list[TrainingDrugDataDTO], interactions: list[TrainingDrugInteractionDTO], train_drug_ids: list[int],
                                    mean_of_text_embeddings: bool = True, pca_generating: bool = False):
@@ -914,6 +1018,43 @@ class TrainBaseService:
 
         return x_train, x_test, y_train, y_test
 
+    def split_cnn_data_on_interactions(self, x, y, interactions: list[TrainingDrugInteractionDTO], train_id: int = None):
+        x_train = [[] for _ in range(len(x))]
+        x_temp = [[] for _ in range(len(x))]
+        x_val = [[] for _ in range(len(x))]
+        x_test = [[] for _ in range(len(x))]
+
+        y_train = []
+        y_temp = []
+        y_val = []
+        y_test = []
+
+        train_interaction_ids = []
+        temp_interaction_ids = []
+        val_interaction_ids = []
+        test_interaction_ids = []
+
+        stratified_split = StratifiedShuffleSplit(n_splits=1, test_size=0.4, random_state=42)
+        for train_index, temp_index in stratified_split.split(x, y):
+            x_train = [x[idx] for idx in train_index]
+            x_temp = [x[idx] for idx in temp_index]
+
+            y_train, y_temp = y[train_index], y[temp_index]
+            train_interaction_ids, temp_interaction_ids = [interactions[i].id for i in train_index], [interactions[i].id for i in temp_index]
+
+        stratified_split_temp = StratifiedShuffleSplit(n_splits=1, test_size=0.5, random_state=42)
+        for val_index, test_index in stratified_split_temp.split(x_temp, y_temp):
+            x_val = [x_temp[idx] for idx in val_index]
+            x_test = [x_temp[idx] for idx in test_index]
+
+            y_val, y_test = y_temp[val_index], y_temp[test_index]
+
+            val_interaction_ids, test_interaction_ids = [temp_interaction_ids[i] for i in val_index], [temp_interaction_ids[i] for i in test_index]
+
+        self.save_seed_data(train_id, train_interaction_ids, val_interaction_ids, test_interaction_ids)
+
+        return np.array(x_train), np.array(x_val), np.array(x_test), y_train, y_val, y_test
+
     def split_on_interactions_with_validation(self, x, y, interactions: list[TrainingDrugInteractionDTO], train_id: int = None, base_seed_train_id: int = None):
         x_train = [[] for _ in range(len(x))]
         x_temp = [[] for _ in range(len(x))]
@@ -975,6 +1116,79 @@ class TrainBaseService:
 
         return x_train, x_val, x_test, y_train, y_val, y_test
 
+    def fold_on_interactions(self, x, y, interactions: list, train_id: int = None):
+        # Containers for storing folds
+        fold_data = []
+        interaction_ids = [interaction.id for interaction in interactions]
+
+        # Stratified KFold setup
+        skf = StratifiedKFold(n_splits=self.num_folds, shuffle=True, random_state=42)
+
+        for fold, (train_index, test_index) in enumerate(skf.split(x[0], y)):
+            # Prepare fold-specific data containers
+            x_train = [[] for _ in range(len(x))]
+            x_test = [[] for _ in range(len(x))]
+
+            y_train, y_test = y[train_index], y[test_index]
+
+            train_interaction_ids = [interaction_ids[i] for i in train_index]
+            test_interaction_ids = [interaction_ids[i] for i in test_index]
+
+            # Populate training and validation data for each feature set
+            for i in range(len(x)):
+                x_train[i] = [x[i][idx] for idx in train_index]
+                x_test[i] = [x[i][idx] for idx in test_index]
+
+            # Save fold data to list
+            fold_data.append({
+                'fold': fold + 1,
+                'x_train': x_train,
+                'x_test': x_test,
+                'y_train': y_train,
+                'y_test': y_test,
+                'train_interaction_ids': train_interaction_ids,
+                'test_interaction_ids': test_interaction_ids
+            })
+
+        if train_id:
+            self.save_seed_fold_data(train_id, fold_data)
+
+        return fold_data
+
+    def fold_cnn_on_interactions(self, x, y, interactions: list, train_id: int = None):
+        # Containers for storing folds
+        fold_data = []
+        interaction_ids = [interaction.id for interaction in interactions]
+
+        # Stratified KFold setup
+        skf = StratifiedKFold(n_splits=self.num_folds, shuffle=True, random_state=42)
+
+        for fold, (train_index, test_index) in enumerate(skf.split(x, y)):
+            # Populate training and validation data for each feature set
+            x_train = [x[idx] for idx in train_index]
+            x_test = [x[idx] for idx in test_index]
+
+            y_train, y_test = y[train_index], y[test_index]
+
+            train_interaction_ids = [interaction_ids[i] for i in train_index]
+            test_interaction_ids = [interaction_ids[i] for i in test_index]
+
+            # Save fold data to list
+            fold_data.append({
+                'fold': fold + 1,
+                'x_train': x_train,
+                'x_test': x_test,
+                'y_train': y_train,
+                'y_test': y_test,
+                'train_interaction_ids': train_interaction_ids,
+                'test_interaction_ids': test_interaction_ids
+            })
+
+        if train_id:
+            self.save_seed_fold_data(train_id, fold_data)
+
+        return fold_data
+
     @staticmethod
     def save_seed_data(train_id, train_interaction_ids, val_interaction_ids, test_interaction_ids):
         seed_data = {
@@ -988,11 +1202,17 @@ class TrainBaseService:
         with open(file_path, 'w') as json_file:
             json.dump(seed_data, json_file)
 
+    @staticmethod
+    def save_seed_fold_data(train_id, fold_data):
+        seed_data = [{
+            "fold": f["fold"],
+            "train_interaction_ids": f["train_interaction_ids"],
+            "test_interaction_ids": f["test_interaction_ids"]
+        } for f in fold_data]
+
+        file_path = f'seeds/{train_id}.json'
+
+        with open(file_path, 'w') as json_file:
+            json.dump(seed_data, json_file)
+
     # endregion
-
-
-class PCAFixUnpickler(pickle.Unpickler):
-    def find_class(self, module, name):
-        if module == "sklearn.decomposition.pca" and name == "PCA":
-            return PCA
-        return super().find_class(module, name)

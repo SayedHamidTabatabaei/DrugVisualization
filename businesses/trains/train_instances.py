@@ -1,4 +1,18 @@
+from businesses.trains.split_drugs.drug_cnn_ddi_train_service import DrugCNNDDITrainService
+from businesses.trains.split_drugs.drug_knn_train_service import DrugKnnTrainService
+from businesses.trains.split_drugs.drug_lr_train_service import DrugLrTrainService
+from businesses.trains.split_drugs.drug_rf_train_service import DrugRfTrainService
+from businesses.trains.split_drugs.drug_svm_train_service import DrugSvmTrainService
+from businesses.trains.split_fold_interactions.fold_cnn_ddi_train_service import FoldCNNDDITrainService
+from businesses.trains.split_fold_interactions.fold_ddi_mdl_train_service import FoldDDIMDLTrainService
+from businesses.trains.split_fold_interactions.fold_deep_ddi_train_service import FoldDeepDDITrainService
+from businesses.trains.split_fold_interactions.fold_gat_enc_con_dnn_train_service import FoldGatEncConDnnTrainService
+from businesses.trains.split_fold_interactions.fold_knn_train_service import FoldKnnTrainService
+from businesses.trains.split_fold_interactions.fold_lr_train_service import FoldLrTrainService
+from businesses.trains.split_fold_interactions.fold_rf_train_service import FoldRfTrainService
+from businesses.trains.split_fold_interactions.fold_svm_train_service import FoldSvmTrainService
 from businesses.trains.split_interactions.ae_con_dnn_train_service import AeConDnnTrainService
+from businesses.trains.split_interactions.cnn_ddi_train_service import CNNDDITrainService
 from businesses.trains.split_interactions.con_ae_dnn_train_service import ConAeDnnTrainService
 from businesses.trains.split_interactions.concat_dnn_train_service import ConcatDnnTrainService
 from businesses.trains.split_interactions.ddi_mdl_train_service import DDIMDLTrainService
@@ -46,26 +60,68 @@ def get_instance(category: TrainModel) -> TrainBaseService:
         return GatMhaDnnTrainService(category)
     elif category == TrainModel.GAT_AE_DNN:
         return GatAeDnnTrainService(category)
+
     elif category == TrainModel.Drug_AE_Con_DNN:
         return DrugAeConDnnTrainService(category, True)
-    elif category == TrainModel.Drug_DDIMDL:
-        return DrugDDIMDLTrainService(category, True)
     elif category == TrainModel.Drug_Deep_DDI:
         return DrugDeepDDITrainService(category, True)
+    elif category == TrainModel.Drug_DDIMDL:
+        return DrugDDIMDLTrainService(category, True)
+    elif category == TrainModel.Drug_CNN_DDI:
+        return DrugCNNDDITrainService(category, True)
     elif category == TrainModel.Drug_GAT_Enc_Con_DNN:
         return DrugGatEncConDnnTrainService(category, True)
+    elif category == TrainModel.Drug_KNN:
+        return DrugKnnTrainService(category, True)
+    elif category == TrainModel.Drug_SVM:
+        return DrugSvmTrainService(category, True)
+    elif category == TrainModel.Drug_LR:
+        return DrugLrTrainService(category, True)
+    elif category == TrainModel.Drug_RF:
+        return DrugRfTrainService(category, True)
+
     elif category == TrainModel.Drug_AE_Con_DNN_Test:
         return DrugAeConDnnTrainService(category, False)
-    elif category == TrainModel.Drug_DDIMDL_Test:
-        return DrugDDIMDLTrainService(category, False)
     elif category == TrainModel.Drug_Deep_DDI_Test:
         return DrugDeepDDITrainService(category, False)
+    elif category == TrainModel.Drug_DDIMDL_Test:
+        return DrugDDIMDLTrainService(category, False)
+    elif category == TrainModel.Drug_CNN_DDI_Test:
+        return DrugCNNDDITrainService(category, False)
     elif category == TrainModel.Drug_GAT_Enc_Con_DNN_Test:
         return DrugGatEncConDnnTrainService(category, False)
+    elif category == TrainModel.Drug_KNN_Test:
+        return DrugKnnTrainService(category, False)
+    elif category == TrainModel.Drug_SVM_Test:
+        return DrugSvmTrainService(category, False)
+    elif category == TrainModel.Drug_LR_Test:
+        return DrugLrTrainService(category, False)
+    elif category == TrainModel.Drug_RF_Test:
+        return DrugRfTrainService(category, False)
+
+    elif category == TrainModel.Fold_GAT_Enc_Con_DNN:
+        return FoldGatEncConDnnTrainService(category)
+    elif category == TrainModel.Fold_Deep_DDI:
+        return FoldDeepDDITrainService(category)
+    elif category == TrainModel.Fold_DDIMDL:
+        return FoldDDIMDLTrainService(category)
+    elif category == TrainModel.Fold_CNN_DDI:
+        return FoldCNNDDITrainService(category)
+    elif category == TrainModel.Fold_KNN:
+        return FoldKnnTrainService(category)
+    elif category == TrainModel.Fold_SVM:
+        return FoldSvmTrainService(category)
+    elif category == TrainModel.Fold_LR:
+        return FoldLrTrainService(category)
+    elif category == TrainModel.Fold_RF:
+        return FoldRfTrainService(category)
+
     elif category == TrainModel.Deep_DDI:
         return DeepDDITrainService(category)
     elif category == TrainModel.DDIMDL:
         return DDIMDLTrainService(category)
+    elif category == TrainModel.CNN_DDI:
+        return CNNDDITrainService(category)
     elif category == TrainModel.Test:
         return TrainPlanTest(category)
     else:
