@@ -2,7 +2,10 @@ document.addEventListener('DOMContentLoaded', function() {
     fetch('/enzyme/drugEnzymes?start=0&length=10')
         .then(response => response.json())
         .then(data => {
-            debugger;
+
+            const feature_count = document.getElementById('feature-count');
+            feature_count.innerText = `${data.columns.length - 4}`
+
             const tableHeaders = document.getElementById('tableHeaders');
             data.columns.forEach(col => {
                 const th = document.createElement('th');

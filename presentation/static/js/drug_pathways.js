@@ -3,6 +3,9 @@ document.addEventListener('DOMContentLoaded', function() {
         .then(response => response.json())
         .then(data => {
 
+            const feature_count = document.getElementById('feature-count');
+            feature_count.innerText = `${data.columns.length - 4}`
+
             const tableHeaders = document.getElementById('tableHeaders');
             data.columns.forEach(col => {
                 const th = document.createElement('th');

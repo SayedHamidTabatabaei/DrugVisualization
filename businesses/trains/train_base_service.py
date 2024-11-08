@@ -923,8 +923,8 @@ class TrainBaseService:
             output_interactions_2 = []
 
             if isinstance(drug_data[0].train_values[data_set_index].values, dict):
-                drug_dict = {drug.drug_id: [value for key, value in drug.train_values[data_set_index].values.items() if key in train_drug_ids] for drug in
-                             drug_data}
+                drug_dict = {drug.drug_id: np.array([value for key, value in drug.train_values[data_set_index].values.items() if key in train_drug_ids]) for \
+                        drug in drug_data}
 
                 if pca_generating:
                     drug_dict = self.calculate_pca(drug_dict)
