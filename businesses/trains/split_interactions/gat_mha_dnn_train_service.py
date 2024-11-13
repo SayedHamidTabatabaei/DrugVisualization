@@ -26,15 +26,3 @@ class GatMhaDnnTrainService(TrainBaseService):
         result = model.fit_model(x_train, y_train, x_val, y_val, x_test, y_test)
 
         return result
-
-        # x_train, x_test, y_train, y_test = super().split_deepface_train_val_test(parameters.drug_data, parameters.interaction_data,
-        #                                                                          train_id=parameters.train_id,
-        #                                                                          mean_of_text_embeddings=False)
-        #
-        # model = self.build_model(parameters.drug_data[0], x_train)
-        #
-        # return super().fit_dnn_model(data_params=DataParams(x_train=x_train, y_train=y_train, x_test=x_test, y_test=y_test),
-        #                              training_params=TrainingParams(train_id=parameters.train_id, optimizer='adam', loss=parameters.loss_function,
-        #                                                             class_weight=parameters.class_weight),
-        #                              model=model,
-        #                              interactions=parameters.interaction_data)

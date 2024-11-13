@@ -11,13 +11,13 @@ from businesses.trains.split_fold_interactions.fold_knn_train_service import Fol
 from businesses.trains.split_fold_interactions.fold_lr_train_service import FoldLrTrainService
 from businesses.trains.split_fold_interactions.fold_rf_train_service import FoldRfTrainService
 from businesses.trains.split_fold_interactions.fold_svm_train_service import FoldSvmTrainService
-from businesses.trains.split_interactions.ae_con_dnn_train_service import AeConDnnTrainService
+from businesses.trains.split_interactions.enc_con_dnn_train_service import EncConDnnTrainService
 from businesses.trains.split_interactions.cnn_ddi_train_service import CNNDDITrainService
-from businesses.trains.split_interactions.con_ae_dnn_train_service import ConAeDnnTrainService
+from businesses.trains.split_interactions.con_enc_dnn_train_service import ConEncDnnTrainService
 from businesses.trains.split_interactions.concat_dnn_train_service import ConcatDnnTrainService
 from businesses.trains.split_interactions.ddi_mdl_train_service import DDIMDLTrainService
 from businesses.trains.split_interactions.deep_ddi_train_service import DeepDDITrainService
-from businesses.trains.split_drugs.drug_ae_con_dnn_train_service import DrugAeConDnnTrainService
+from businesses.trains.split_drugs.drug_enc_con_dnn_train_service import DrugEncConDnnTrainService
 from businesses.trains.split_drugs.drug_ddi_mdl_train_service import DrugDDIMDLTrainService
 from businesses.trains.split_drugs.drug_deep_ddi_train_service import DrugDeepDDITrainService
 from businesses.trains.split_drugs.drug_gat_enc_con_dnn_train_service import DrugGatEncConDnnTrainService
@@ -40,8 +40,8 @@ def get_instance(category: TrainModel) -> TrainBaseService:
         return JoinBeforeSoftmaxTrainService(category)
     elif category == TrainModel.SumSoftmaxOutputs:
         return SumSoftmaxOutputsTrainService(category)
-    elif category == TrainModel.AE_Con_DNN:
-        return AeConDnnTrainService(category)
+    elif category == TrainModel.Enc_Con_DNN:
+        return EncConDnnTrainService(category)
     elif category == TrainModel.Contact_DNN:
         return ConcatDnnTrainService(category)
     elif category == TrainModel.KNN:
@@ -49,7 +49,7 @@ def get_instance(category: TrainModel) -> TrainBaseService:
     elif category == TrainModel.SVM:
         return SvmTrainService(category)
     elif category == TrainModel.Con_AE_DNN:
-        return ConAeDnnTrainService(category)
+        return ConEncDnnTrainService(category)
     elif category == TrainModel.LR:
         return LrTrainService(category)
     elif category == TrainModel.RF:
@@ -61,8 +61,8 @@ def get_instance(category: TrainModel) -> TrainBaseService:
     elif category == TrainModel.GAT_AE_DNN:
         return GatAeDnnTrainService(category)
 
-    elif category == TrainModel.Drug_AE_Con_DNN:
-        return DrugAeConDnnTrainService(category, True)
+    elif category == TrainModel.Drug_Enc_Con_DNN:
+        return DrugEncConDnnTrainService(category, True)
     elif category == TrainModel.Drug_Deep_DDI:
         return DrugDeepDDITrainService(category, True)
     elif category == TrainModel.Drug_DDIMDL:
@@ -80,8 +80,8 @@ def get_instance(category: TrainModel) -> TrainBaseService:
     elif category == TrainModel.Drug_RF:
         return DrugRfTrainService(category, True)
 
-    elif category == TrainModel.Drug_AE_Con_DNN_Test:
-        return DrugAeConDnnTrainService(category, False)
+    elif category == TrainModel.Drug_Enc_Con_DNN_Test:
+        return DrugEncConDnnTrainService(category, False)
     elif category == TrainModel.Drug_Deep_DDI_Test:
         return DrugDeepDDITrainService(category, False)
     elif category == TrainModel.Drug_DDIMDL_Test:

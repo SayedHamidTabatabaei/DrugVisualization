@@ -60,8 +60,7 @@ class DeepDDITrainModel(TrainBaseModel):
 
         result = self.calculate_evaluation_metrics(model, x_test, y_test)
 
-        self.plot_accuracy(history, self.train_id)
-        self.plot_loss(history, self.train_id)
+        self.save_plots(history, self.train_id)
 
         result.model_info = self.get_model_info(model)
 

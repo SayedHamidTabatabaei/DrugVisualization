@@ -6,7 +6,7 @@ from common.enums.scenarios import Scenarios
 class TrainModel(Enum):
     JoinBeforeSoftmax = (2, Scenarios.SplitInteractionSimilarities, 'Having n separate network, but before softmax layer, join the last layer.')
     SumSoftmaxOutputs = (3, Scenarios.SplitInteractionSimilarities, 'Have n separate network, and finally sum them.')
-    AE_Con_DNN = (4, Scenarios.SplitInteractionSimilarities, 'Reduce data dimension, join them and send to DNN')
+    Enc_Con_DNN = (4, Scenarios.SplitInteractionSimilarities, 'Reduce data dimension, join them and send to DNN')
     Contact_DNN = (5, Scenarios.SplitInteractionSimilarities, 'Just join all data and send to DNN.')
     KNN = (6, Scenarios.SplitInteractionSimilarities, 'This network learns by KNN.')
     KNNWithAutoEncoder = (7, Scenarios.SplitInteractionSimilarities, 'This network learns by KNN and reduce dimension by AutoEncoder.')
@@ -18,9 +18,8 @@ class TrainModel(Enum):
     GAT_MHA_DNN = (13, Scenarios.SplitInteractionSimilarities, 'GAT On SMILES, Multi-Head-Attention between text fields and other fields (Pathway, Target, '
                                                                'Enzyme) and then DNN.')
     GAT_AE_DNN = (14, Scenarios.SplitInteractionSimilarities, 'GAT On SMILES, AutoEncoder, Concat AutoEncoders and then DNN')
-    MHA = (20, Scenarios.SplitInteractionSimilarities, 'Multi-Head Attention.')
 
-    Drug_AE_Con_DNN = (204, Scenarios.SplitDrugsTestWithTrain, 'Reduce data dimension, join them and send to DNN')
+    Drug_Enc_Con_DNN = (204, Scenarios.SplitDrugsTestWithTrain, 'Reduce data dimension, join them and send to DNN')
     Drug_GAT_Enc_Con_DNN = (205, Scenarios.SplitDrugsTestWithTrain, 'GAT On SMILES, AutoEncoder, Concat AutoEncoders and then DNN')
     Drug_Deep_DDI = (210, Scenarios.SplitDrugsTestWithTrain, 'The Old Base Algorithm, just use SMILES code.')
     Drug_DDIMDL = (211, Scenarios.SplitDrugsTestWithTrain, 'The Old Base Algorithm, just use SMILES code.')
@@ -30,7 +29,7 @@ class TrainModel(Enum):
     Drug_LR = (253, Scenarios.SplitDrugsTestWithTrain, 'Logistic Regression.')
     Drug_RF = (254, Scenarios.SplitDrugsTestWithTrain, 'Random Forest.')
 
-    Drug_AE_Con_DNN_Test = (304, Scenarios.SplitDrugsTestWithTest, 'Reduce data dimension, join them and send to DNN')
+    Drug_Enc_Con_DNN_Test = (304, Scenarios.SplitDrugsTestWithTest, 'Reduce data dimension, join them and send to DNN')
     Drug_GAT_Enc_Con_DNN_Test = (305, Scenarios.SplitDrugsTestWithTest, 'GAT On SMILES, AutoEncoder, Concat AutoEncoders and then DNN')
     Drug_Deep_DDI_Test = (310, Scenarios.SplitDrugsTestWithTest, 'The Old Base Algorithm, just use SMILES code.')
     Drug_DDIMDL_Test = (311, Scenarios.SplitDrugsTestWithTest, 'The Old Base Algorithm, just use SMILES code.')

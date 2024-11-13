@@ -1,11 +1,10 @@
-import numpy as np
 import tensorflow as tf
 from tensorflow.keras import Model, Input
 # noinspection PyUnresolvedReferences
 from tensorflow.keras.callbacks import EarlyStopping
-from tensorflow.keras.layers import Dense, Concatenate, Dropout, Reshape, Flatten, MultiHeadAttention, BatchNormalization, Activation
+from tensorflow.keras.layers import Dense, Concatenate, Dropout, Reshape, Flatten, MultiHeadAttention, BatchNormalization, Activation, Lambda
 
-from businesses.trains.layers.data_generator import DataGenerator
+from businesses.trains.layers.autoencoder_layer import AutoEncoderLayer
 from businesses.trains.layers.gat_layer import GATLayer
 from businesses.trains.layers.reduce_mean_layer import ReduceMeanLayer
 from businesses.trains.models.train_base_model import TrainBaseModel
@@ -14,111 +13,6 @@ from common.helpers import loss_helper
 from core.models.training_params import TrainingParams
 from core.repository_models.training_drug_interaction_dto import TrainingDrugInteractionDTO
 from core.repository_models.training_summary_dto import TrainingSummaryDTO
-
-
-# class GatEncModel(Model):
-#     def __init__(self, categories: dict, num_classes=65, use_interaction_description=False):
-#
-#         super(GatEncModel, self).__init__()
-#
-#         # Initialize parameters
-#         self.encoding_dim = 128
-#         self.gat_units = 64
-#         self.num_heads = 4
-#         self.dense_units = [512, 256]
-#         self.droprate = 0.3
-#         self.num_classes = num_classes
-#         self.use_interaction_description = use_interaction_description
-#
-#         self.encoder_layers = []
-#         for index, category in categories.items():
-#             # Define EncoderLayer instances based on the category dictionary
-#             if category != Category.Substructure:
-#                 self.encoder_layers.append((index, EncoderLayer(encoding_dim=self.encoding_dim)))
-#             else:
-#                 # Define GAT and ReduceMean layers
-#                 self.gat_layer = GATLayer(units=self.gat_units, num_heads=self.num_heads)
-#                 self.reduce_mean_layer = ReduceMeanLayer(axis=1)
-#
-#         # Only create the EncoderLayer for interaction description if needed
-#         if self.use_interaction_description:
-#             self.interaction_encoder_layer = EncoderLayer(encoding_dim=self.encoding_dim)
-#
-#         # Define Dense layers for final prediction
-#         self.dense_layers = []
-#         for units in self.dense_units:
-#             self.dense_layers.append(Dense(units, activation="relu"))
-#             self.dense_layers.append(BatchNormalization())
-#             self.dense_layers.append(Dropout(self.droprate))
-#
-#         # Define output layer
-#         self.output_layer = Dense(self.num_classes, activation='softmax')
-#
-#     def call(self, inputs):
-#         input_layers_1, input_layers_2 = inputs[:len(inputs) // 2], inputs[len(inputs) // 2:]
-#
-#         output_models_1 = []
-#         output_models_2 = []
-#
-#         idx = 0
-#
-#         while idx < len(input_layers_1):
-#             if any(e[0] == idx for e in self.encoder_layers):  # Check if EncoderLayer exists for this index
-#                 # Get the corresponding EncoderLayer instance for this index
-#                 encoder_layer = next(e[1] for e in self.encoder_layers if e[0] == idx)
-#
-#                 # Process Drug 1
-#                 input_layer_1 = input_layers_1[idx]
-#                 encoded_model_1 = encoder_layer(input_layer_1)
-#                 output_models_1.append(encoded_model_1)
-#
-#                 # Process Drug 2
-#                 input_layer_2 = input_layers_2[idx]
-#                 encoded_model_2 = encoder_layer(input_layer_2)
-#                 output_models_2.append(encoded_model_2)
-#
-#                 idx += 1  # Move to the next input
-#
-#             else:
-#                 # GAT processing for Drug 1
-#                 smiles_input_1, adjacency_input_1 = input_layers_1[idx], input_layers_1[idx + 1]
-#                 smiles_input_2, adjacency_input_2 = input_layers_2[idx], input_layers_2[idx + 1]
-#
-#                 gat_output_1 = self.gat_layer((smiles_input_1, adjacency_input_1))
-#                 gat_output_1 = self.reduce_mean_layer(gat_output_1)
-#                 output_models_1.append(gat_output_1)
-#
-#                 gat_output_2 = self.gat_layer((smiles_input_2, adjacency_input_2))
-#                 gat_output_2 = self.reduce_mean_layer(gat_output_2)
-#                 output_models_2.append(gat_output_2)
-#
-#                 idx += 2  # Move to the next pair of inputs
-#
-#         # Concatenate GAT and encoded outputs with their respective feature inputs
-#         combined_drug_1 = Concatenate()(output_models_1)
-#         combined_drug_2 = Concatenate()(output_models_2)
-#
-#         # Combine both drugs' information for interaction prediction
-#         if self.use_interaction_description:
-#             # Process the interaction description input
-#             encoded_model = self.interaction_encoder_layer(inputs[-1])
-#             combined = Concatenate()([combined_drug_1, combined_drug_2, encoded_model])
-#         else:
-#             combined = Concatenate()([combined_drug_1, combined_drug_2])
-#
-#         # Pass through Dense layers for final prediction
-#         x = combined
-#         for dense_layer in self.dense_layers:
-#             x = dense_layer(x)
-#
-#         # Output layer
-#         return self.output_layer(x)
-#
-#     def compile_model(self, optimizer='adam', loss='categorical_crossentropy', metrics=None):
-#         if metrics is None:
-#             metrics = ['accuracy']
-#
-#         self.compile(optimizer=optimizer, loss=loss, metrics=metrics)
 
 
 class GatMhaTrainModel(TrainBaseModel):
@@ -133,47 +27,29 @@ class GatMhaTrainModel(TrainBaseModel):
         self.dense_units = [512, 256]
         self.droprate = 0.3
 
-    def get_output_signature(self, x_train):
-        signature = []
-        for i, dataset in enumerate(x_train):
-            # Get the shape based on the first element in the list (assuming all elements are the same shape within each sub-list)
-            first_element_shape = (None,) + tuple(np.array(dataset[0]).shape)
-            signature.append(tf.TensorSpec(shape=first_element_shape, dtype=tf.float32))
-
-        return tuple(signature), tf.TensorSpec(shape=(None, self.num_classes), dtype=tf.float32)
-
-    @staticmethod
-    def build_gat_layer(gat_layer, reduce_mean_layer, smiles_input_shape, adjacency_input_shape):
-        smiles_input_1 = Input(shape=smiles_input_shape, name="Drug1_SMILES_Input")
-        smiles_input_2 = Input(shape=smiles_input_shape, name="Drug2_SMILES_Input")
-
-        adjacency_input_1 = Input(shape=adjacency_input_shape, name="Drug1_Adjacency_Input")
-        adjacency_input_2 = Input(shape=adjacency_input_shape, name="Drug2_Adjacency_Input")
-
-        gat_output_1 = gat_layer((smiles_input_1, adjacency_input_1))
-        gat_output_1 = reduce_mean_layer(gat_output_1)
-
-        gat_output_2 = gat_layer((smiles_input_2, adjacency_input_2))
-        gat_output_2 = reduce_mean_layer(gat_output_2)
-
-        return smiles_input_1, smiles_input_2, adjacency_input_1, adjacency_input_2, gat_output_1, gat_output_2
-
-    def build_model(self, data_categories: dict, x_train_shapes, has_interaction_description: bool = False):
+    def build_model(self, x_train_shapes, has_interaction_description: bool = False):
 
         input_layers_1 = []
         input_layers_2 = []
+        input_layer_int = None
+        decode_models_1 = []
+        decode_models_2 = []
         output_models_1 = []
         output_models_2 = []
 
         input_layers_str_1 = []
         input_layers_str_2 = []
-        input_layers_other_1 = []
-        input_layers_other_2 = []
+        sim_encoded_models_1 = []
+        sim_encoded_models_2 = []
+
+        str_dim = set([x_train_shapes[idx][1] for idx, c in self.categories.items() if c.data_type == str])
+        assert len(str_dim) <= 1, f"Multiple distinct shapes found: {str_dim}"
+        str_dim = str_dim.pop()
 
         gat_layer = GATLayer(units=self.gat_units, num_heads=self.num_heads)
         reduce_mean_layer = ReduceMeanLayer(axis=1)
 
-        for idx, category in data_categories.items():
+        for idx, category in self.categories.items():
 
             if category == Category.Substructure:
                 smiles_input_shape = x_train_shapes[idx]
@@ -191,7 +67,7 @@ class GatMhaTrainModel(TrainBaseModel):
                 output_models_1.append(gat_output_1)
                 output_models_2.append(gat_output_2)
 
-            elif category.data_type == 'str':
+            elif category.data_type == str:
                 input_layer_str_1 = Input(shape=x_train_shapes[idx], name=f"Str_Input_1_{idx}")
                 input_layers_str_1.append(input_layer_str_1)
 
@@ -203,33 +79,88 @@ class GatMhaTrainModel(TrainBaseModel):
                 input_layers_1.append(input_layer_str_1)
                 input_layers_2.append(input_layer_str_2)
             else:
-                other_input_layer_1 = Input(shape=x_train_shapes[idx], name=f"Other_Input_1_{idx}")
-                input_layers_other_1.append(other_input_layer_1)
-                input_layers_1.append(other_input_layer_1)
+                autoencoder_layer = AutoEncoderLayer(encoding_dim=str_dim, input_dim=x_train_shapes[idx][0])
 
-                other_input_layer_2 = Input(shape=x_train_shapes[idx], name=f"Other_Input_2_{idx}")
-                input_layers_other_2.append(other_input_layer_2)
-                input_layers_2.append(other_input_layer_2)
+                sim_input_layer_1 = Input(shape=x_train_shapes[idx], name=f"AE_Sim_Input_1_{idx}")
+                decoded_output_1, encoded_model_1 = autoencoder_layer(sim_input_layer_1)
+                input_layers_1.append(sim_input_layer_1)
+                sim_encoded_models_1.append(encoded_model_1)
+                decode_models_1.append(decoded_output_1)
 
-        for i, str_layer in enumerate(input_layers_str_1):
-            for j, other_layer in enumerate(input_layers_other_1):
-                attention_layer = MultiHeadAttention(num_heads=8, key_dim=64, name=f"MultiHeadAttention_{i}_{j}")
-                flatten = Flatten(name=f"Flatten_{i}_{j}")
+                sim_input_layer_2 = Input(shape=x_train_shapes[idx], name=f"AE_Sim_Input_2_{idx}")
+                decoded_output_2, encoded_model_2 = autoencoder_layer(sim_input_layer_2)
+                input_layers_2.append(sim_input_layer_2)
+                sim_encoded_models_2.append(encoded_model_2)
+                decode_models_2.append(decoded_output_2)
 
-                reshaped_other_input = Reshape((1, input_layers_other_1[j].shape[-1]))(input_layers_other_1[j])
-                attention_output = attention_layer(query=input_layers_str_1[i], key=reshaped_other_input, value=reshaped_other_input)
-                attention_output = flatten(attention_output)
-                output_models_1.append(attention_output)
+        joint_encoders_1 = Lambda(lambda x: tf.stack(x, axis=1))(sim_encoded_models_1)
+        joint_encoders_2 = Lambda(lambda x: tf.stack(x, axis=1))(sim_encoded_models_2)
 
-                reshaped_other_input = Reshape((1, input_layers_other_2[j].shape[-1]))(input_layers_other_2[j])
-                attention_output = attention_layer(query=input_layers_str_2[i], key=reshaped_other_input, value=reshaped_other_input)
-                attention_output = flatten(attention_output)
-                output_models_2.append(attention_output)
+        text_attentions_1 = []
+        text_attentions_2 = []
+
+        for i in range(len(input_layers_str_1)):
+
+            # sim_attentions_1 = []
+            # sim_attentions_2 = []
+
+            # for j in range(len(sim_encoded_models_1)):
+            attention_layer = MultiHeadAttention(num_heads=8, key_dim=64, name=f"MultiHeadAttention_{i}")
+
+            # reshaped_other_input = Reshape((1, sim_encoded_models_1[j].shape[-1]))(sim_encoded_models_1[j])
+            attention_output_1 = self.generate_multi_head_attention(attention_layer, query_parameter=joint_encoders_1,
+                                                                    key_value_parameter=input_layers_str_1[i])
+            # sim_attentions_1.append(attention_output)
+
+            # reshaped_other_input = Reshape((1, sim_encoded_models_2[j].shape[-1]))(sim_encoded_models_2[j])
+            attention_output_2 = self.generate_multi_head_attention(attention_layer, query_parameter=joint_encoders_2,
+                                                                    key_value_parameter=input_layers_str_2[i])
+            # sim_attentions_2.append(attention_output)
+
+            # final_sim_attention_1, final_sim_attention_2 = self.reduce_multiple_attentions(sim_attentions_1, sim_attentions_2)
+            text_attentions_1.append(attention_output_1)
+            text_attentions_2.append(attention_output_2)
+
+        final_text_attention_1, final_text_attention_2 = self.reduce_multiple_attentions(text_attentions_1, text_attentions_2)
+
+        flatten = Flatten(name=f"Flatten")
+        final_text_attention_1 = flatten(final_text_attention_1)
+        final_text_attention_2 = flatten(final_text_attention_2)
+
+        output_models_1.append(final_text_attention_1)
+        output_models_2.append(final_text_attention_2)
 
         combined_drug_1 = Concatenate(name="CombinedAttentionOutput_1")(output_models_1)
         combined_drug_2 = Concatenate(name="CombinedAttentionOutput_2")(output_models_2)
 
-        combined = Concatenate()([combined_drug_1, combined_drug_2])
+        # Combine both drugs' information for interaction prediction
+        if has_interaction_description:
+            autoencoder_layer = AutoEncoderLayer(encoding_dim=self.encoding_dim, input_dim=x_train_shapes[-1][0])
+
+            input_layer_str = Input(shape=x_train_shapes[-1])
+            decoded_output, encoded_model = autoencoder_layer(input_layer_str)
+            input_layer_int = input_layer_str
+
+            attention_outputs = []
+            for j in range(len(sim_encoded_models_1)):
+                attention_layer = MultiHeadAttention(num_heads=8, key_dim=64, name=f"MultiHeadAttention_Int_{j}")
+                flatten = Flatten(name=f"Flatten_Int_{j}")
+
+                reshaped_other_input = Reshape((1, sim_encoded_models_1[j].shape[-1]))(sim_encoded_models_1[j])
+                attention_output = self.generate_multi_head_attention(attention_layer,
+                                                                      query_parameter=reshaped_other_input,
+                                                                      key_value_parameter=input_layer_str)
+                attention_output = flatten(attention_output)
+                attention_outputs.append(attention_output)
+
+            decodes_output = decode_models_1 + decode_models_2 + [decoded_output]
+
+            combined_drug_int = Concatenate(name="CombinedAttentionOutput_Int")(attention_outputs)
+            combined = Concatenate()([combined_drug_1, combined_drug_2, combined_drug_int])
+
+        else:
+            decodes_output = decode_models_1 + decode_models_2
+            combined = Concatenate()([combined_drug_1, combined_drug_2])
 
         train_in = combined
         for units in self.dense_units:
@@ -238,49 +169,101 @@ class GatMhaTrainModel(TrainBaseModel):
             train_in = Dropout(self.droprate)(train_in)
 
         train_in = Dense(self.num_classes)(train_in)
-        output = Activation('softmax')(train_in)
+        main_output = Activation('softmax')(train_in)
 
-        model_inputs = input_layers_1 + input_layers_2
-        model = Model(inputs=model_inputs, outputs=output, name="GAT_MHA")
+        if input_layer_int:
+            model_inputs = input_layers_1 + input_layers_2 + [input_layer_int]
+        else:
+            model_inputs = input_layers_1 + input_layers_2
+
+        model = Model(inputs=model_inputs, outputs=decodes_output + [main_output], name="GAT_MHA")
 
         return model
 
-    def fit_model(self, x_train, y_train, x_val, y_val, x_test, y_test) -> TrainingSummaryDTO:
+    @staticmethod
+    def generate_multi_head_attention(attention_layer, query_parameter, key_value_parameter):
+        # attention_mask = tf.expand_dims(tf.ones((tf.shape(query_parameter)[0], 1)), axis=-1)  # Shape: (None, 1, 1)
 
-        # if self.training_params.class_weight:
-        #     class_weights = loss_helper.get_class_weights(y_train)
-        # else:
-        #     class_weights = None
+        attention_output = attention_layer(query=query_parameter, key=key_value_parameter, value=key_value_parameter)
+
+        return attention_output
+
+    def reduce_multiple_attentions(self, attentions_1, attentions_2):
+        assert len(attentions_1) == len(attentions_2), "Attention layers must have same number of attention layers"
+
+        if len(attentions_1) == 1:
+            return attentions_1[0], attentions_2[0]
+
+        output_models_1 = []
+        output_models_2 = []
+
+        query_attention_1 = attentions_1[0]
+        query_attention_2 = attentions_2[0]
+
+        for j in range(1, len(attentions_1)):
+            attention_layer = MultiHeadAttention(num_heads=8, key_dim=64, name=f"MultiHeadAttention_{len(attentions_1)}_{j}")
+
+            attention_output = self.generate_multi_head_attention(attention_layer, query_parameter=query_attention_1, key_value_parameter=attentions_1[j])
+            output_models_1.append(attention_output)
+
+            attention_output = self.generate_multi_head_attention(attention_layer, query_parameter=query_attention_2, key_value_parameter=attentions_2[j])
+            output_models_2.append(attention_output)
+
+        return self.reduce_multiple_attentions(output_models_1, output_models_2)
+
+    def compile_model(self, model):
+        # List of loss functions for each output
+        num_autoencoders = len(model.outputs) - 1  # Last output is for classification
+
+        losses = ['mse'] * num_autoencoders + [loss_helper.get_loss_function(self.training_params.loss)]
+
+        # Loss weights: You can adjust these to give more importance to classification vs. autoencoder loss
+        loss_weights = [1.0] * num_autoencoders + [1.0]
+
+        # List of metrics for each output
+        metrics = ['mse'] * num_autoencoders + ['accuracy']
+
+        # Compile the model with separate losses and metrics for each output
+        model.compile(
+            optimizer='adam',
+            loss=losses,
+            loss_weights=loss_weights,
+            metrics=metrics
+        )
+
+        return model
+
+    def generate_y_data_autoencoder(self, x_data, y_data):
+
+        data_type_count = len(x_data) // 2
+        parallel_autoencoder_indexes = [idx for idx, category in self.categories.items() if category != Category.Substructure and category.data_type != str]
+        parallel_autoencoder_indexes = parallel_autoencoder_indexes + [i + data_type_count for i in parallel_autoencoder_indexes]
+
+        y = [x for idx, x in enumerate(x_data) if idx in parallel_autoencoder_indexes] + [y_data]
+
+        return y
+
+    def fit_model(self, x_train, y_train, x_val, y_val, x_test, y_test) -> TrainingSummaryDTO:
 
         x_train_shapes = [x[0].shape for x in x_train]
 
-        train_generator = DataGenerator(x_train, y_train, batch_size=32, drop_remainder=True)
-        val_generator = DataGenerator(x_val, y_val, batch_size=32, drop_remainder=True)
-        test_generator = DataGenerator(x_test, y_test, batch_size=1, drop_remainder=True)
+        train_dataset, val_dataset, test_dataset, train_generator_length, val_generator_length, test_generator_length = (
+            self.big_data_loader(x_train, y_train, x_val, y_val, x_test, y_test))
 
-        model = self.build_model(self.categories, x_train_shapes, bool(self.interaction_data[0].interaction_description))
+        model = self.build_model(x_train_shapes, bool(self.interaction_data[0].interaction_description))
 
-        output_signature = self.get_output_signature(x_train)
-
-        train_dataset = tf.data.Dataset.from_generator(lambda: iter(train_generator), output_signature=output_signature).repeat()
-        val_dataset = tf.data.Dataset.from_generator(lambda: iter(val_generator), output_signature=output_signature).repeat()
-        test_dataset = tf.data.Dataset.from_generator(lambda: iter(test_generator), output_signature=output_signature).repeat()
-
-        model.compile(optimizer='adam', loss=loss_helper.get_loss_function(self.training_params.loss), metrics=['accuracy'])
-
-        steps_per_epoch = len(train_generator)
-        validation_steps = len(val_generator)
+        model = self.compile_model(model)
 
         early_stopping = EarlyStopping(monitor='val_loss', patience=10, verbose=0, mode='auto')
 
         print('Fit data!')
-        history = model.fit(train_dataset, epochs=1, validation_data=val_dataset, callbacks=early_stopping,
-                            steps_per_epoch=steps_per_epoch, validation_steps=validation_steps)
+        history = model.fit(train_dataset, epochs=1, validation_data=val_dataset, callbacks=[early_stopping],
+                            steps_per_epoch=train_generator_length, validation_steps=val_generator_length)
 
-        self.plot_accuracy(history, f"{self.train_id}")
-        self.plot_loss(history, f"{self.train_id}")
+        self.save_plots(history, f"{self.train_id}")
 
-        y_pred = model.predict(test_dataset, steps=len(test_generator))
+        y_pred = model.predict(test_dataset, steps=test_generator_length)
+        y_pred = y_pred[-1]
 
         result = self.calculate_evaluation_metrics(model, x_test, y_test, y_pred=y_pred)
 

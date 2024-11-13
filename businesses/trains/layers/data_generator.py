@@ -4,12 +4,13 @@ from tensorflow.keras.utils import Sequence
 
 
 class DataGenerator(Sequence):
-    def __init__(self, x_data, y_data, batch_size=32, drop_remainder=False, padding=False):
+    def __init__(self, x_data, y_data, batch_size=32, drop_remainder=False, padding=False, is_test=False):
         self.x_data = x_data
         self.y_data = y_data
         self.batch_size = batch_size
         self.drop_remainder = drop_remainder
         self.padding = padding
+        self.is_test = is_test
 
     def __len__(self):
         if self.drop_remainder:
@@ -18,6 +19,7 @@ class DataGenerator(Sequence):
             return int(np.ceil(len(self.x_data[0]) / self.batch_size))
 
     def __getitem__(self, index):
+
         start_idx = index * self.batch_size
 
         if self.padding:
@@ -29,11 +31,14 @@ class DataGenerator(Sequence):
             raise IndexError
 
         batch_x = [data[start_idx:end_idx] for data in self.x_data]
-        batch_y = self.y_data[start_idx:end_idx]
+        batch_y = [data[start_idx:end_idx] for data in self.y_data]
 
         if end_idx - start_idx < self.batch_size:
             padding_size = self.batch_size - (end_idx - start_idx)
             batch_x = [np.pad(x, ((0, padding_size),) + ((0, 0),) * (x.ndim - 1), mode='constant') for x in batch_x]
-            batch_y = np.pad(batch_y, ((0, padding_size), (0, 0)), mode='constant')
+            batch_y = [np.pad(y, ((0, padding_size), (0, 0)), mode='constant') for y in batch_y]
 
-        return tuple([np.array(x) for x in batch_x]), np.array(batch_y)
+        if self.is_test:
+            return tuple([np.array(x) for x in batch_x]), np.array(batch_y[-1])
+
+        return tuple([np.array(x) for x in batch_x]), tuple([np.array(y) for y in batch_y])

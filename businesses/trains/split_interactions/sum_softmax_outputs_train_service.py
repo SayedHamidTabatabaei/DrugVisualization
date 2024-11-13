@@ -1,6 +1,7 @@
 import tensorflow as tf
 from tensorflow.keras import layers, models
 
+from businesses.trains.models.sum_softmaxes_model import SumSoftmaxesModel
 from businesses.trains.train_base_service import TrainBaseService
 from common.enums.train_models import TrainModel
 from core.models.data_params import DataParams
@@ -25,18 +26,9 @@ class SumSoftmaxOutputsTrainService(TrainBaseService):
 
         x_train, x_test, y_train, y_test = super().split_train_test(parameters.drug_data, parameters.interaction_data, train_id=parameters.train_id, padding=True)
 
-        models_list = [self.create_model(d.shape[1:]) for d in x_train]
+        training_params = TrainingParams(train_id=parameters.train_id, optimizer='adam', loss=parameters.loss_function, class_weight=parameters.class_weight)
 
-        inputs = [tf.keras.Input(shape=d.shape[1:]) for d in x_train]
+        model = SumSoftmaxesModel(parameters.train_id, self.num_classes, parameters.interaction_data, training_params=training_params)
+        result = model.fit_model(x_train, y_train, x_test, y_test, x_test, y_test)
 
-        softmax_outputs = [model(input_layer) for model, input_layer in zip(models_list, inputs)]
-
-        summed_output = tf.keras.layers.Add()(softmax_outputs)
-
-        final_model = tf.keras.Model(inputs=inputs, outputs=summed_output)
-
-        return super().fit_dnn_model(data_params=DataParams(x_train=x_train, y_train=y_train, x_test=x_test, y_test=y_test),
-                                     training_params=TrainingParams(train_id=parameters.train_id, optimizer='adam', loss=parameters.loss_function,
-                                                                    class_weight=parameters.class_weight),
-                                     model=final_model,
-                                     interactions=parameters.interaction_data)
+        return result

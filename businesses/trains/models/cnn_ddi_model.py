@@ -61,8 +61,7 @@ class CNNDDITrainModel(TrainBaseModel):
 
         history = model.fit(x_train, y_train, epochs=100, batch_size=128, validation_data=(x_val, y_val))
 
-        self.plot_accuracy(history, f"{self.train_id}")
-        self.plot_loss(history, f"{self.train_id}")
+        self.save_plots(history, f"{self.train_id}")
 
         y_pred = model.predict(x_test)
 

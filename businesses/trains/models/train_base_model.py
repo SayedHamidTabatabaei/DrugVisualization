@@ -1,14 +1,22 @@
 import contextlib
 import io
 import os
+
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-from sklearn.preprocessing import label_binarize
+import tensorflow as tf
 from sklearn.metrics import accuracy_score, f1_score, roc_auc_score, average_precision_score, precision_score, \
     recall_score, log_loss
+from sklearn.preprocessing import label_binarize
+from tensorflow.keras import Input
+# noinspection PyUnresolvedReferences
+from tensorflow.keras.callbacks import EarlyStopping
 
+from businesses.trains.layers.data_generator import DataGenerator
 from common.enums.training_result_type import TrainingResultType
+from common.helpers import loss_helper
+from core.models.training_params import TrainingParams
 from core.repository_models.training_drug_interaction_dto import TrainingDrugInteractionDTO
 from core.repository_models.training_result_detail_summary_dto import TrainingResultDetailSummaryDTO
 from core.repository_models.training_result_summary_dto import TrainingResultSummaryDTO
@@ -23,6 +31,35 @@ class TrainBaseModel:
     def fit_train(self, x_train, y_train, x_val, y_val, x_test, y_test):
         pass
 
+    def base_fit_model(self, model, training_params: TrainingParams, interaction_data: list[TrainingDrugInteractionDTO],
+                       x_train, y_train, x_val, y_val, x_test, y_test) -> TrainingSummaryDTO:
+
+        if training_params.class_weight:
+            class_weights = loss_helper.get_class_weights(y_train)
+        else:
+            class_weights = None
+
+        model.compile(optimizer=training_params.optimizer,
+                      loss=loss_helper.get_loss_function(training_params.loss, class_weights),
+                      metrics=training_params.metrics)
+
+        early_stopping = EarlyStopping(monitor='val_loss', patience=10, verbose=0, mode='auto')
+
+        history = model.fit(x_train, y_train, epochs=training_params.epoch_num, batch_size=128, validation_data=(x_val, y_val), callbacks=early_stopping)
+
+        self.save_plots(history, f"{self.train_id}")
+
+        y_pred = model.predict(x_test)
+
+        result = self.calculate_evaluation_metrics(model, x_test, y_test, y_pred=y_pred)
+
+        result.model_info = self.get_model_info(model)
+
+        if interaction_data is not None:
+            result.data_report = self.get_data_report_split(interaction_data, y_train, y_test)
+
+        return result
+
     @staticmethod
     def get_image_folder_name(train_id: int) -> str:
         folder_name = f"training_plots/{train_id}"
@@ -31,41 +68,29 @@ class TrainBaseModel:
 
         return folder_name
 
-    def plot_accuracy(self, history, train_id):
+    def save_plots(self, history, train_id):
 
         folder_name = self.get_image_folder_name(train_id)
+        os.makedirs(folder_name, exist_ok=True)
 
-        plt.figure(figsize=(12, 4))
+        def design_save_plot(plot_name):
+            plt.figure(figsize=(12, 4))
 
-        plt.plot(history.history['accuracy'], label='Training Accuracy')
-        plt.plot(history.history['val_accuracy'], label='Validation Accuracy')
-        plt.title('Accuracy over Epochs')
-        plt.xlabel('Epochs')
-        plt.ylabel('Accuracy')
-        plt.legend()
+            plot_title = plot_name.replace('_', ' ')
 
-        plot_path = os.path.join(folder_name, 'accuracy_plot.png')
-        plt.savefig(plot_path)
+            plt.plot(history.history[plot_name], label=f'Training {plot_title}')
+            plt.plot(history.history[f'val_{plot_name}'], label=f'Validation {plot_title}')
+            plt.title(f'{plot_title} over Epochs')
+            plt.xlabel('Epochs')
+            plt.ylabel(f'{plot_title}')
+            plt.legend()
 
-        plt.close()
+            plot_path = os.path.join(folder_name, f'{plot_name}_plot.png')
+            plt.savefig(plot_path)
 
-    def plot_loss(self, history, train_id):
+            plt.close()
 
-        folder_name = self.get_image_folder_name(train_id)
-
-        plt.figure(figsize=(12, 4))
-
-        plt.plot(history.history['loss'], label='Training Loss')
-        plt.plot(history.history['val_loss'], label='Validation Loss')
-        plt.title('Loss over Epochs')
-        plt.xlabel('Epochs')
-        plt.ylabel('Loss')
-        plt.legend()
-
-        plot_path = os.path.join(folder_name, 'loss_plot.png')
-        plt.savefig(plot_path)
-
-        plt.close()
+        [design_save_plot(k) for k in history.history.keys() if not k.startswith('val_')]
 
     def calculate_evaluation_metrics(self, model, x_test, y_test, y_pred=None, is_labels_categorical: bool = False) -> TrainingSummaryDTO:
 
@@ -217,3 +242,56 @@ class TrainBaseModel:
         x_train_shapes = [x.shape for x in x_train]
 
         return x_train_shapes
+
+    @staticmethod
+    def get_output_signature(x_train, y_train):
+        x_signature = []
+        for i, dataset in enumerate(x_train):
+            # Get the shape based on the first element in the list (assuming all elements are the same shape within each sub-list)
+            first_element_shape = (None,) + tuple(np.array(dataset[0]).shape)
+            x_signature.append(tf.TensorSpec(shape=first_element_shape, dtype=tf.float32))
+
+        y_signature = []
+        for i, dataset in enumerate(y_train):
+            # Get the shape based on the first element in the list (assuming all elements are the same shape within each sub-list)
+            first_element_shape = (None,) + tuple(np.array(dataset[0]).shape)
+            y_signature.append(tf.TensorSpec(shape=first_element_shape, dtype=tf.float32))
+
+        return tuple(x_signature), tuple(y_signature)
+
+    @staticmethod
+    def build_gat_layer(gat_layer, reduce_mean_layer, smiles_input_shape, adjacency_input_shape):
+        smiles_input_1 = Input(shape=smiles_input_shape, name="Drug1_SMILES_Input")
+        smiles_input_2 = Input(shape=smiles_input_shape, name="Drug2_SMILES_Input")
+
+        adjacency_input_1 = Input(shape=adjacency_input_shape, name="Drug1_Adjacency_Input")
+        adjacency_input_2 = Input(shape=adjacency_input_shape, name="Drug2_Adjacency_Input")
+
+        gat_output_1 = gat_layer((smiles_input_1, adjacency_input_1))
+        gat_output_1 = reduce_mean_layer(gat_output_1)
+
+        gat_output_2 = gat_layer((smiles_input_2, adjacency_input_2))
+        gat_output_2 = reduce_mean_layer(gat_output_2)
+
+        return smiles_input_1, smiles_input_2, adjacency_input_1, adjacency_input_2, gat_output_1, gat_output_2
+
+    def big_data_loader(self, x_train, y_train, x_val, y_val, x_test, y_test):
+
+        y_train = self.generate_y_data_autoencoder(x_train, y_train)
+        y_val = self.generate_y_data_autoencoder(x_val, y_val)
+        y_test = self.generate_y_data_autoencoder(x_test, y_test)
+
+        train_generator = DataGenerator(x_train, y_train, batch_size=32, drop_remainder=True)
+        val_generator = DataGenerator(x_val, y_val, batch_size=32, drop_remainder=True)
+        test_generator = DataGenerator(x_test, y_test, batch_size=1, drop_remainder=True)
+
+        output_signature = self.get_output_signature(x_train, y_train)
+
+        train_dataset = tf.data.Dataset.from_generator(lambda: iter(train_generator), output_signature=output_signature).repeat()
+        val_dataset = tf.data.Dataset.from_generator(lambda: iter(val_generator), output_signature=output_signature).repeat()
+        test_dataset = tf.data.Dataset.from_generator(lambda: iter(test_generator), output_signature=output_signature).repeat()
+
+        return train_dataset, val_dataset, test_dataset, len(train_generator), len(val_generator), len(test_generator)
+
+    def generate_y_data_autoencoder(self, x_data, y_data):
+        return y_data
