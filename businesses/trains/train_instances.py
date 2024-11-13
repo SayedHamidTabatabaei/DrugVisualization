@@ -1,4 +1,6 @@
 from businesses.trains.split_drugs.drug_cnn_ddi_train_service import DrugCNNDDITrainService
+from businesses.trains.split_drugs.drug_gat_ae_dnn_train_service import DrugGatAeDnnTrainService
+from businesses.trains.split_drugs.drug_gat_mha_dnn_train_service import DrugGatMhaDnnTrainService
 from businesses.trains.split_drugs.drug_knn_train_service import DrugKnnTrainService
 from businesses.trains.split_drugs.drug_lr_train_service import DrugLrTrainService
 from businesses.trains.split_drugs.drug_rf_train_service import DrugRfTrainService
@@ -6,7 +8,9 @@ from businesses.trains.split_drugs.drug_svm_train_service import DrugSvmTrainSer
 from businesses.trains.split_fold_interactions.fold_cnn_ddi_train_service import FoldCNNDDITrainService
 from businesses.trains.split_fold_interactions.fold_ddi_mdl_train_service import FoldDDIMDLTrainService
 from businesses.trains.split_fold_interactions.fold_deep_ddi_train_service import FoldDeepDDITrainService
+from businesses.trains.split_fold_interactions.fold_gat_ae_dnn_train_service import FoldGatAeDnnTrainService
 from businesses.trains.split_fold_interactions.fold_gat_enc_con_dnn_train_service import FoldGatEncConDnnTrainService
+from businesses.trains.split_fold_interactions.fold_gat_mha_dnn_train_service import FoldGatMhaDnnTrainService
 from businesses.trains.split_fold_interactions.fold_knn_train_service import FoldKnnTrainService
 from businesses.trains.split_fold_interactions.fold_lr_train_service import FoldLrTrainService
 from businesses.trains.split_fold_interactions.fold_rf_train_service import FoldRfTrainService
@@ -31,7 +35,6 @@ from businesses.trains.split_interactions.rf_train_service import RfTrainService
 from businesses.trains.split_interactions.sum_softmax_outputs_train_service import SumSoftmaxOutputsTrainService
 from businesses.trains.split_interactions.svm_train_service import SvmTrainService
 from businesses.trains.train_base_service import TrainBaseService
-from businesses.trains.train_plan_test import TrainPlanTest
 from common.enums.train_models import TrainModel
 
 
@@ -71,6 +74,10 @@ def get_instance(category: TrainModel) -> TrainBaseService:
         return DrugCNNDDITrainService(category, True)
     elif category == TrainModel.Drug_GAT_Enc_Con_DNN:
         return DrugGatEncConDnnTrainService(category, True)
+    elif category == TrainModel.Drug_GAT_MHA_DNN:
+        return DrugGatMhaDnnTrainService(category, True)
+    elif category == TrainModel.Drug_GAT_AE_DNN:
+        return DrugGatAeDnnTrainService(category, True)
     elif category == TrainModel.Drug_KNN:
         return DrugKnnTrainService(category, True)
     elif category == TrainModel.Drug_SVM:
@@ -90,6 +97,10 @@ def get_instance(category: TrainModel) -> TrainBaseService:
         return DrugCNNDDITrainService(category, False)
     elif category == TrainModel.Drug_GAT_Enc_Con_DNN_Test:
         return DrugGatEncConDnnTrainService(category, False)
+    elif category == TrainModel.Drug_GAT_MHA_DNN_Test:
+        return DrugGatMhaDnnTrainService(category, False)
+    elif category == TrainModel.Drug_GAT_AE_DNN_Test:
+        return DrugGatAeDnnTrainService(category, False)
     elif category == TrainModel.Drug_KNN_Test:
         return DrugKnnTrainService(category, False)
     elif category == TrainModel.Drug_SVM_Test:
@@ -101,6 +112,10 @@ def get_instance(category: TrainModel) -> TrainBaseService:
 
     elif category == TrainModel.Fold_GAT_Enc_Con_DNN:
         return FoldGatEncConDnnTrainService(category)
+    elif category == TrainModel.Fold_GAT_MHA_DNN:
+        return FoldGatMhaDnnTrainService(category)
+    elif category == TrainModel.Fold_GAT_AE_DNN:
+        return FoldGatAeDnnTrainService(category)
     elif category == TrainModel.Fold_Deep_DDI:
         return FoldDeepDDITrainService(category)
     elif category == TrainModel.Fold_DDIMDL:
@@ -122,7 +137,5 @@ def get_instance(category: TrainModel) -> TrainBaseService:
         return DDIMDLTrainService(category)
     elif category == TrainModel.CNN_DDI:
         return CNNDDITrainService(category)
-    elif category == TrainModel.Test:
-        return TrainPlanTest(category)
     else:
         raise ValueError("No suitable subclass found")

@@ -9,13 +9,8 @@ train_model = TrainModel.Fold_Deep_DDI
 
 class FoldDeepDDITrainService(TrainBaseService):
 
-    def __init__(self, category, compare_train_test: bool = True):
+    def __init__(self, category):
         super().__init__(category)
-        self.drug_channels: int = 256
-        self.hidden_channels: int = 2048
-        self.hidden_layers_num: int = 9
-        self.dropout_prob: float = 0.2
-        self.compare_train_test = compare_train_test
 
     def train(self, parameters: SplitDrugsTestWithTrainTrainingParameterModel) -> TrainingSummaryDTO:
 

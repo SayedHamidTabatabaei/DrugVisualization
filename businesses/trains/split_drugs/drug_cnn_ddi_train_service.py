@@ -15,7 +15,6 @@ class DrugCNNDDITrainService(TrainBaseService):
 
     def __init__(self, category, compare_train_test: bool = True):
         super().__init__(category)
-        self.droprate: float = 0.3
         self.compare_train_test = compare_train_test
 
     def train(self, parameters: SplitDrugsTestWithTrainTrainingParameterModel) -> TrainingSummaryDTO:

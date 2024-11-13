@@ -3,17 +3,17 @@ from tensorflow.keras.callbacks import EarlyStopping
 # noinspection PyUnresolvedReferences
 from tensorflow.keras.models import Model
 
-from businesses.trains.models.gat_enc_model import GatEncTrainModel
+from businesses.trains.models.gat_mha_model import GatMhaTrainModel
 from businesses.trains.train_base_service import TrainBaseService
 from common.enums.train_models import TrainModel
 from core.models.training_parameter_models.split_drugs_test_with_train_training_parameter_model import SplitDrugsTestWithTrainTrainingParameterModel
 from core.models.training_params import TrainingParams
 from core.repository_models.training_summary_dto import TrainingSummaryDTO
 
-train_model = TrainModel.Fold_GAT_Enc_Con_DNN
+train_model = TrainModel.Fold_GAT_MHA_DNN
 
 
-class FoldGatEncConDnnTrainService(TrainBaseService):
+class FoldGatMhaDnnTrainService(TrainBaseService):
 
     def __init__(self, category):
         super().__init__(category)
@@ -29,7 +29,7 @@ class FoldGatEncConDnnTrainService(TrainBaseService):
         for x_train, x_test, y_train, y_test in super().fold_on_interaction_deepface(parameters.drug_data, parameters.interaction_data,
                                                                                      train_id=parameters.train_id):
 
-            model = GatEncTrainModel(parameters.train_id, categories, self.num_classes, parameters.interaction_data, training_params=training_params)
+            model = GatMhaTrainModel(parameters.train_id, categories, self.num_classes, parameters.interaction_data, training_params=training_params)
             result = model.fit_model(x_train, y_train, x_test, y_test, x_test, y_test)
 
             results.append(result)

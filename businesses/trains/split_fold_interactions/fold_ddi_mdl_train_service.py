@@ -12,10 +12,8 @@ train_model = TrainModel.Fold_DDIMDL
 
 class FoldDDIMDLTrainService(TrainBaseService):
 
-    def __init__(self, category, compare_train_test: bool = True):
+    def __init__(self, category):
         super().__init__(category)
-        self.droprate: float = 0.3
-        self.compare_train_test = compare_train_test
 
     def train(self, parameters: SplitDrugsTestWithTrainTrainingParameterModel) -> TrainingSummaryDTO:
         results = []

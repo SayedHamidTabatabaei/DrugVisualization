@@ -1,10 +1,8 @@
-import tensorflow as tf
 from tensorflow.keras import layers, models
 
 from businesses.trains.models.sum_softmaxes_model import SumSoftmaxesModel
 from businesses.trains.train_base_service import TrainBaseService
 from common.enums.train_models import TrainModel
-from core.models.data_params import DataParams
 from core.models.training_parameter_models.split_interaction_similarities_training_parameter_model import SplitInteractionSimilaritiesTrainingParameterModel
 from core.models.training_params import TrainingParams
 from core.repository_models.training_summary_dto import TrainingSummaryDTO
@@ -24,7 +22,8 @@ class SumSoftmaxOutputsTrainService(TrainBaseService):
 
     def train(self, parameters: SplitInteractionSimilaritiesTrainingParameterModel) -> TrainingSummaryDTO:
 
-        x_train, x_test, y_train, y_test = super().split_train_test(parameters.drug_data, parameters.interaction_data, train_id=parameters.train_id, padding=True)
+        x_train, x_test, y_train, y_test = super().split_train_test(parameters.drug_data, parameters.interaction_data, train_id=parameters.train_id,
+                                                                    padding=True)
 
         training_params = TrainingParams(train_id=parameters.train_id, optimizer='adam', loss=parameters.loss_function, class_weight=parameters.class_weight)
 
