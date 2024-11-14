@@ -160,7 +160,7 @@ class GatAeTrainModel(TrainBaseModel):
         history = model.fit(train_dataset, epochs=10, validation_data=val_dataset, callbacks=[early_stopping],
                             steps_per_epoch=train_generator_length, validation_steps=val_generator_length)
 
-        self.save_plots(history, f"{self.train_id}")
+        self.save_plots(history, self.train_id)
 
         y_pred = model.predict(test_dataset, steps=test_generator_length)
         y_pred = y_pred[-1]

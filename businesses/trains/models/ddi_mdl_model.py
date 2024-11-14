@@ -58,7 +58,7 @@ class DDIMDLTrainModel(TrainBaseModel):
 
             history = model.fit(x_train[idx], y_train, epochs=100, batch_size=128, validation_data=(x_val[idx], y_val), callbacks=early_stopping)
 
-            self.save_plots(history, f"{self.train_id}_{idx}")
+            self.save_plots(history, self.train_id, idx)
 
             if y_pred is None:
                 y_pred = model.predict(x_test[idx])

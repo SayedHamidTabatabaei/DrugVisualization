@@ -47,7 +47,7 @@ class TrainBaseModel:
 
         history = model.fit(x_train, y_train, epochs=training_params.epoch_num, batch_size=128, validation_data=(x_val, y_val), callbacks=early_stopping)
 
-        self.save_plots(history, f"{self.train_id}")
+        self.save_plots(history, self.train_id)
 
         y_pred = model.predict(x_test)
 
@@ -68,7 +68,7 @@ class TrainBaseModel:
 
         return folder_name
 
-    def save_plots(self, history, train_id):
+    def save_plots(self, history, train_id: int, number: int = None):
 
         folder_name = self.get_image_folder_name(train_id)
         os.makedirs(folder_name, exist_ok=True)
@@ -85,7 +85,9 @@ class TrainBaseModel:
             plt.ylabel(f'{plot_title}')
             plt.legend()
 
-            plot_path = os.path.join(folder_name, f'{plot_name}_plot.png')
+            plot_name = f'{plot_name}_plot_{number}.png' if number else f'{plot_name}_plot.png'
+
+            plot_path = os.path.join(folder_name, f'{plot_name}')
             plt.savefig(plot_path)
 
             plt.close()

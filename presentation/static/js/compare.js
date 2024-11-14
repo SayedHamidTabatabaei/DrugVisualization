@@ -3,6 +3,8 @@ document.addEventListener('DOMContentLoaded', function() {
     get_history();
 });
 
+let imageGroups = {}
+
 function get_history()
 {
     const scenario = document.getElementById('scenarioSelect').value;
@@ -436,60 +438,7 @@ function fill_comparing_plot(comparing_plot_type, radio_group){
 }
 
 function fill_accuracy_plots(){
-
-    let selectedItems = new Map();
-    $('input.row-checkbox:checked').each(function() {
-
-        const [id, name] = $(this).val().split('|'); // Get the value of the checked checkbox
-
-        selectedItems.set(id, name);
-    });
-
-    const plotsGridContainer = document.getElementById('accuracyPlotsGridContainer');
-    plotsGridContainer.innerHTML = '';
-
-    selectedItems.forEach((value, key) => {
-        let multiple_images = false;
-
-        const basePath = `/training/training_history_plots/training_plots/${key}`;
-        let imagePath = `${basePath}/accuracy_plot.png`;
-
-        // Function to handle the image loading and fallback mechanism
-        const loadImage = (imgElement, basePath, initialPath, final_value) => {
-            let attempt = 0;
-
-            const getFallbackPath = (base, attempt) => `${base}_${attempt}`;
-
-            imgElement.src = initialPath;
-            imgElement.onload = () => {
-                create_plot_image(plotsGridContainer, initialPath, final_value)
-
-                return true;
-            }
-
-            imgElement.onerror = () => {
-                if (multiple_images){
-                    return false;
-                }
-
-                multiple_images = true
-
-                while (attempt <= 10){
-                    const fallbackBasePath = getFallbackPath(basePath, attempt);
-
-                    const fallbackPath = `${fallbackBasePath}/accuracy_plot.png`;
-
-                    const insidePlotImage = document.createElement('img');
-                    loadImage(insidePlotImage, fallbackBasePath, fallbackPath, `${value} ${attempt}`);
-
-                    attempt++;
-                }
-            }
-        };
-
-        const plotImage = document.createElement('img');
-        loadImage(plotImage, basePath, imagePath, value);
-    });
+    fill_saved_plots('accuracy', 'accuracyPlotsGridContainer')
 }
 
 function create_plot_image(container, src, value) {
@@ -511,7 +460,12 @@ function create_plot_image(container, src, value) {
     container.appendChild(plotBox);
 }
 
-function fill_loss_plots(){
+function fill_loss_plots() {
+
+    fill_saved_plots('loss', 'lossPlotsGridContainer')
+
+}
+function fill_saved_plots(plotType, containerName){
 
     let selectedItems = new Map();
     $('input.row-checkbox:checked').each(function() {
@@ -521,29 +475,58 @@ function fill_loss_plots(){
         selectedItems.set(id, name);
     });
 
-    const plotsGridContainer = document.getElementById('lossPlotsGridContainer');
+    const plotsGridContainer = document.getElementById(containerName);
     plotsGridContainer.innerHTML = '';
 
     selectedItems.forEach((value, key) => {
 
-        const plotBox = document.createElement('div');
-        plotBox.classList.add('plot-box');
+        fetch(`/training/get_saved_plots?trainId=${key}&plotType=${plotType}`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status) {
+                const plotBox = document.createElement('div');
+                const plotImage = document.createElement('img');
 
-        const plotImage = document.createElement('img');
-        plotImage.src = `/training/training_history_plots/training_plots/${key}/loss_plot.png`;
-        plotImage.alt = `Line Plot ${value}`;
-        plotImage.onclick = () => openImageModal(plotImage);
+                if (data.data.length > 1) {
+                    plotBox.classList.add('image-group');
 
-        const caption = document.createElement('p');
-        caption.classList.add('plot-caption');
-        caption.textContent =value;
+                    plotImage.src = `/training/training_history_plots/training_plots/${key}/${data.data[0]}`;
+                    plotImage.alt = `Gallery - Line Plot ${value}`;
+                    plotImage.classList.add('thumbnail')
+                    plotImage.onclick = () => openSlideshow(key);
 
-        // Append image to the plot box
-        plotBox.appendChild(plotImage);
-        plotBox.appendChild(caption);
+                    imageGroups[key] = data.data;
+                } else{
+                    plotBox.classList.add('plot-box');
 
-        // Append plot box to the grid container
-        plotsGridContainer.appendChild(plotBox);
+                    plotImage.src = `/training/training_history_plots/training_plots/${key}/loss_plot.png`;
+                    plotImage.alt = `Line Plot ${value}`;
+                    plotImage.onclick = () => openImageModal(plotImage);
+
+                }
+
+                const caption = document.createElement('p');
+                caption.classList.add('plot-caption');
+                caption.textContent =value;
+
+                plotBox.appendChild(plotImage);
+                plotBox.appendChild(caption);
+
+                plotsGridContainer.appendChild(plotBox);
+            } else {
+                console.log('Error: No data found.');
+            }
+            hideSpinner(true);
+        })
+        .catch(error => {
+            console.log('Error:', error)
+            hideSpinner(false);
+        });
     });
 }
 
@@ -971,4 +954,37 @@ function fill_test_data_report(){
 
         });
     }, 1000); // Delay of 1000 milliseconds (1 second)
+}
+
+let currentGroupIndex = 0;
+let currentSlideIndex = 0;
+
+function openSlideshow(current_id) {
+    currentGroupIndex = current_id;
+    currentSlideIndex = 0;
+    document.getElementById('slideshowModal').style.display = 'block';
+    showSlides();
+}
+
+function closeSlideshow() {
+    document.getElementById('slideshowModal').style.display = 'none';
+}
+
+function showSlides() {
+    const container = document.getElementById('slideshowContainer');
+    container.innerHTML = '';
+    const images = imageGroups[currentGroupIndex];
+    debugger;
+    images.forEach((src, index) => {
+        const slide = document.createElement('img');
+        slide.src = `/training/training_history_plots/training_plots/${currentGroupIndex}/${src}`;
+        slide.style.display = (index === currentSlideIndex) ? 'block' : 'none';
+        container.appendChild(slide);
+    });
+}
+
+function changeSlide(n) {
+    const totalSlides = imageGroups[currentGroupIndex].length;
+    currentSlideIndex = (currentSlideIndex + n + totalSlides) % totalSlides;
+    showSlides();
 }

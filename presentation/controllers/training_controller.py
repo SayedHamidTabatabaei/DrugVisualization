@@ -1,3 +1,4 @@
+import os
 from datetime import datetime
 
 from flask import Blueprint, jsonify, request
@@ -245,6 +246,23 @@ class TrainingController(MethodView):
             return jsonify({'image': image, 'status': True})
         else:
             return jsonify({'image': image, 'message': "No images found!", 'status': False})
+
+    @route('get_saved_plots', methods=['GET'])
+    def get_saved_plots(self):
+        train_id = request.args.get('trainId')
+        plot_type = request.args.get('plotType')
+
+        images = [f for f in os.listdir(f"training_plots/{train_id}") if f.lower().endswith(('.png', '.jpg', '.jpeg', '.gif', '.bmp'))]
+
+        if plot_type == 'loss':
+            images = [i for i in images if i.find('loss') != -1]
+        else:
+            images = [i for i in images if i.find('loss') == -1]
+
+        if images:
+            return jsonify({'data': images, 'status': True})
+        else:
+            return jsonify({'data': images, 'message': "No images found!", 'status': False})
 
     @route('get_per_category_result_details', methods=['GET'])
     def get_per_category_result_details(self):
