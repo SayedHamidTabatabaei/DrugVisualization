@@ -16,11 +16,13 @@ from core.repository_models.training_summary_dto import TrainingSummaryDTO
 
 
 class GatMhaTrainModel(TrainBaseModel):
-    def __init__(self, train_id: int, categories: dict, num_classes: int, interaction_data: list[TrainingDrugInteractionDTO], training_params: TrainingParams):
+    def __init__(self, train_id: int, categories: dict, num_classes: int, interaction_data: list[TrainingDrugInteractionDTO],
+                 training_params: TrainingParams, reverse: bool = False):
         super().__init__(train_id, num_classes)
         self.categories = categories
         self.interaction_data = interaction_data
         self.training_params = training_params
+        self.reverse = reverse
         self.encoding_dim = 128
         self.gat_units = 64
         self.num_heads = 4
@@ -109,12 +111,12 @@ class GatMhaTrainModel(TrainBaseModel):
 
             # reshaped_other_input = Reshape((1, sim_encoded_models_1[j].shape[-1]))(sim_encoded_models_1[j])
             attention_output_1 = self.generate_multi_head_attention(attention_layer, query_parameter=joint_encoders_1,
-                                                                    key_value_parameter=input_layers_str_1[i])
+                                                                    key_value_parameter=input_layers_str_1[i], reverse=self.reverse)
             # sim_attentions_1.append(attention_output)
 
             # reshaped_other_input = Reshape((1, sim_encoded_models_2[j].shape[-1]))(sim_encoded_models_2[j])
             attention_output_2 = self.generate_multi_head_attention(attention_layer, query_parameter=joint_encoders_2,
-                                                                    key_value_parameter=input_layers_str_2[i])
+                                                                    key_value_parameter=input_layers_str_2[i], reverse=self.reverse)
             # sim_attentions_2.append(attention_output)
 
             # final_sim_attention_1, final_sim_attention_2 = self.reduce_multiple_attentions(sim_attentions_1, sim_attentions_2)
@@ -149,7 +151,8 @@ class GatMhaTrainModel(TrainBaseModel):
                 reshaped_other_input = Reshape((1, sim_encoded_models_1[j].shape[-1]))(sim_encoded_models_1[j])
                 attention_output = self.generate_multi_head_attention(attention_layer,
                                                                       query_parameter=reshaped_other_input,
-                                                                      key_value_parameter=input_layer_str)
+                                                                      key_value_parameter=input_layer_str,
+                                                                      reverse=self.reverse)
                 attention_output = flatten(attention_output)
                 attention_outputs.append(attention_output)
 
@@ -181,8 +184,12 @@ class GatMhaTrainModel(TrainBaseModel):
         return model
 
     @staticmethod
-    def generate_multi_head_attention(attention_layer, query_parameter, key_value_parameter):
+    def generate_multi_head_attention(attention_layer, query_parameter, key_value_parameter, reverse: bool = False):
         # attention_mask = tf.expand_dims(tf.ones((tf.shape(query_parameter)[0], 1)), axis=-1)  # Shape: (None, 1, 1)
+        if reverse:
+            item = query_parameter
+            query_parameter = key_value_parameter
+            key_value_parameter = item
 
         attention_output = attention_layer(query=query_parameter, key=key_value_parameter, value=key_value_parameter)
 
@@ -257,7 +264,7 @@ class GatMhaTrainModel(TrainBaseModel):
         early_stopping = EarlyStopping(monitor='val_loss', patience=10, verbose=0, mode='auto')
 
         print('Fit data!')
-        history = model.fit(train_dataset, epochs=1, validation_data=val_dataset, callbacks=[early_stopping],
+        history = model.fit(train_dataset, epochs=10, validation_data=val_dataset, callbacks=[early_stopping],
                             steps_per_epoch=train_generator_length, validation_steps=val_generator_length)
 
         self.save_plots(history, self.train_id)

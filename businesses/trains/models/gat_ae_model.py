@@ -157,7 +157,7 @@ class GatAeTrainModel(TrainBaseModel):
         early_stopping = EarlyStopping(monitor='val_loss', patience=10, verbose=0, mode='auto')
 
         print('Fit data!')
-        history = model.fit(train_dataset, epochs=10, validation_data=val_dataset, callbacks=[early_stopping],
+        history = model.fit(train_dataset, epochs=100, validation_data=val_dataset, callbacks=[early_stopping],
                             steps_per_epoch=train_generator_length, validation_steps=val_generator_length)
 
         self.save_plots(history, self.train_id)
