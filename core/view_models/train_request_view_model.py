@@ -1,5 +1,5 @@
 import json
-from dataclasses import dataclass, field, asdict
+from dataclasses import dataclass, field, fields, asdict
 from enum import Enum
 from typing import Optional
 
@@ -85,9 +85,21 @@ class TrainRequestViewModel:
         )
 
     def to_json(self):
-        return json.dumps(asdict(self),
-                          default=lambda o: o.name if isinstance(o, Enum) else str(o),
-                          indent=4)
+        # Custom conversion to dictionary
+        def custom_asdict(obj):
+            result = {}
+            for f in fields(obj):
+                value = getattr(obj, f.name)
+                if isinstance(value, Enum):
+                    result[f.name] = value.name  # Use the enum's name
+                elif isinstance(value, tuple):
+                    result[f.name] = value  # Keep the tuple as-is
+                else:
+                    result[f.name] = value
+            return result
+
+        # Convert the dataclass to a dictionary and then to JSON
+        return json.dumps(custom_asdict(self), indent=4)
 
     @classmethod
     def from_json(cls, json_str: str):
