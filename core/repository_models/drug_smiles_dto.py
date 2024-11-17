@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 
-from numpy import ndarray
+from typing import Union
+from numpy.typing import NDArray
 
 
 @dataclass
@@ -12,4 +13,4 @@ class DrugSmilesDTO:
     has_pathway: bool
     has_target: bool
     has_smiles: bool
-    fingerprint: str | list[ndarray]
+    fingerprint: Union[str, list[NDArray]]

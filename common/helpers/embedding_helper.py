@@ -4,84 +4,69 @@ from common.enums.text_type import TextType
 
 
 def find_category(embedding_type: EmbeddingType, text_type: TextType) -> Category:
-    match (embedding_type, text_type):
-        case ((EmbeddingType.PubMedBERT | EmbeddingType.PubMedBERT_32 | EmbeddingType.PubMedBERT_64 | EmbeddingType.PubMedBERT_128 |
-               EmbeddingType.PubMedBERT_256 | EmbeddingType.PubMedBERT_512), TextType.Description):
+    pubmed_bert_types = {
+        EmbeddingType.PubMedBERT, EmbeddingType.PubMedBERT_32, EmbeddingType.PubMedBERT_64,
+        EmbeddingType.PubMedBERT_128, EmbeddingType.PubMedBERT_256, EmbeddingType.PubMedBERT_512
+    }
+    scibert_types = {
+        EmbeddingType.SciBERT, EmbeddingType.SciBERT_32, EmbeddingType.SciBERT_64,
+        EmbeddingType.SciBERT_128, EmbeddingType.SciBERT_256, EmbeddingType.SciBERT_512
+    }
+
+    if embedding_type in pubmed_bert_types:
+        if text_type == TextType.Description:
             return Category.PubmedBertDescription
-        case ((EmbeddingType.PubMedBERT | EmbeddingType.PubMedBERT_32 | EmbeddingType.PubMedBERT_64 | EmbeddingType.PubMedBERT_128 |
-               EmbeddingType.PubMedBERT_256 | EmbeddingType.PubMedBERT_512), TextType.Indication):
+        elif text_type == TextType.Indication:
             return Category.PubmedBertIndication
-        case ((EmbeddingType.PubMedBERT | EmbeddingType.PubMedBERT_32 | EmbeddingType.PubMedBERT_64 | EmbeddingType.PubMedBERT_128 |
-               EmbeddingType.PubMedBERT_256 | EmbeddingType.PubMedBERT_512), TextType.Pharmacodynamics):
+        elif text_type == TextType.Pharmacodynamics:
             return Category.PubmedBertPharmacodynamics
-        case ((EmbeddingType.PubMedBERT | EmbeddingType.PubMedBERT_32 | EmbeddingType.PubMedBERT_64 | EmbeddingType.PubMedBERT_128 |
-               EmbeddingType.PubMedBERT_256 | EmbeddingType.PubMedBERT_512), TextType.MechanismOfAction):
+        elif text_type == TextType.MechanismOfAction:
             return Category.PubmedBertMechanismOfAction
-        case ((EmbeddingType.PubMedBERT | EmbeddingType.PubMedBERT_32 | EmbeddingType.PubMedBERT_64 | EmbeddingType.PubMedBERT_128 |
-               EmbeddingType.PubMedBERT_256 | EmbeddingType.PubMedBERT_512), TextType.Toxicity):
+        elif text_type == TextType.Toxicity:
             return Category.PubmedBertToxicity
-        case ((EmbeddingType.PubMedBERT | EmbeddingType.PubMedBERT_32 | EmbeddingType.PubMedBERT_64 | EmbeddingType.PubMedBERT_128 |
-               EmbeddingType.PubMedBERT_256 | EmbeddingType.PubMedBERT_512), TextType.Metabolism):
+        elif text_type == TextType.Metabolism:
             return Category.PubmedBertMetabolism
-        case ((EmbeddingType.PubMedBERT | EmbeddingType.PubMedBERT_32 | EmbeddingType.PubMedBERT_64 | EmbeddingType.PubMedBERT_128 |
-               EmbeddingType.PubMedBERT_256 | EmbeddingType.PubMedBERT_512), TextType.Absorption):
+        elif text_type == TextType.Absorption:
             return Category.PubmedBertAbsorption
-        case ((EmbeddingType.PubMedBERT | EmbeddingType.PubMedBERT_32 | EmbeddingType.PubMedBERT_64 | EmbeddingType.PubMedBERT_128 |
-               EmbeddingType.PubMedBERT_256 | EmbeddingType.PubMedBERT_512), TextType.HalfLife):
+        elif text_type == TextType.HalfLife:
             return Category.PubmedBertHalfLife
-        case ((EmbeddingType.PubMedBERT | EmbeddingType.PubMedBERT_32 | EmbeddingType.PubMedBERT_64 | EmbeddingType.PubMedBERT_128 |
-               EmbeddingType.PubMedBERT_256 | EmbeddingType.PubMedBERT_512), TextType.ProteinBinding):
+        elif text_type == TextType.ProteinBinding:
             return Category.PubmedBertProteinBinding
-        case ((EmbeddingType.PubMedBERT | EmbeddingType.PubMedBERT_32 | EmbeddingType.PubMedBERT_64 | EmbeddingType.PubMedBERT_128 |
-               EmbeddingType.PubMedBERT_256 | EmbeddingType.PubMedBERT_512), TextType.RouteOfElimination):
+        elif text_type == TextType.RouteOfElimination:
             return Category.PubmedBertRouteOfElimination
-        case ((EmbeddingType.PubMedBERT | EmbeddingType.PubMedBERT_32 | EmbeddingType.PubMedBERT_64 | EmbeddingType.PubMedBERT_128 |
-               EmbeddingType.PubMedBERT_256 | EmbeddingType.PubMedBERT_512), TextType.VolumeOfDistribution):
+        elif text_type == TextType.VolumeOfDistribution:
             return Category.PubmedBertVolumeOfDistribution
-        case ((EmbeddingType.PubMedBERT | EmbeddingType.PubMedBERT_32 | EmbeddingType.PubMedBERT_64 | EmbeddingType.PubMedBERT_128 |
-               EmbeddingType.PubMedBERT_256 | EmbeddingType.PubMedBERT_512), TextType.Clearance):
+        elif text_type == TextType.Clearance:
             return Category.PubmedBertClearance
-        case ((EmbeddingType.PubMedBERT | EmbeddingType.PubMedBERT_32 | EmbeddingType.PubMedBERT_64 | EmbeddingType.PubMedBERT_128 |
-               EmbeddingType.PubMedBERT_256 | EmbeddingType.PubMedBERT_512), TextType.ClassificationDescription):
+        elif text_type == TextType.ClassificationDescription:
             return Category.PubmedBertClassificationDescription
-        case ((EmbeddingType.SciBERT | EmbeddingType.SciBERT_32 | EmbeddingType.SciBERT_64 | EmbeddingType.SciBERT_128 | EmbeddingType.SciBERT_256 |
-               EmbeddingType.SciBERT_512), TextType.Description):
+
+    elif embedding_type in scibert_types:
+        if text_type == TextType.Description:
             return Category.SciBertDescription
-        case ((EmbeddingType.SciBERT | EmbeddingType.SciBERT_32 | EmbeddingType.SciBERT_64 | EmbeddingType.SciBERT_128 | EmbeddingType.SciBERT_256 |
-               EmbeddingType.SciBERT_512), TextType.Indication):
+        elif text_type == TextType.Indication:
             return Category.SciBertIndication
-        case ((EmbeddingType.SciBERT | EmbeddingType.SciBERT_32 | EmbeddingType.SciBERT_64 | EmbeddingType.SciBERT_128 | EmbeddingType.SciBERT_256 |
-               EmbeddingType.SciBERT_512), TextType.Pharmacodynamics):
+        elif text_type == TextType.Pharmacodynamics:
             return Category.SciBertPharmacodynamics
-        case ((EmbeddingType.SciBERT | EmbeddingType.SciBERT_32 | EmbeddingType.SciBERT_64 | EmbeddingType.SciBERT_128 | EmbeddingType.SciBERT_256 |
-               EmbeddingType.SciBERT_512), TextType.MechanismOfAction):
+        elif text_type == TextType.MechanismOfAction:
             return Category.SciBertMechanismOfAction
-        case ((EmbeddingType.SciBERT | EmbeddingType.SciBERT_32 | EmbeddingType.SciBERT_64 | EmbeddingType.SciBERT_128 | EmbeddingType.SciBERT_256 |
-               EmbeddingType.SciBERT_512), TextType.Toxicity):
+        elif text_type == TextType.Toxicity:
             return Category.SciBertToxicity
-        case ((EmbeddingType.SciBERT | EmbeddingType.SciBERT_32 | EmbeddingType.SciBERT_64 | EmbeddingType.SciBERT_128 | EmbeddingType.SciBERT_256 |
-               EmbeddingType.SciBERT_512), TextType.Metabolism):
+        elif text_type == TextType.Metabolism:
             return Category.SciBertMetabolism
-        case ((EmbeddingType.SciBERT | EmbeddingType.SciBERT_32 | EmbeddingType.SciBERT_64 | EmbeddingType.SciBERT_128 | EmbeddingType.SciBERT_256 |
-               EmbeddingType.SciBERT_512), TextType.Absorption):
+        elif text_type == TextType.Absorption:
             return Category.SciBertAbsorption
-        case ((EmbeddingType.SciBERT | EmbeddingType.SciBERT_32 | EmbeddingType.SciBERT_64 | EmbeddingType.SciBERT_128 | EmbeddingType.SciBERT_256 |
-               EmbeddingType.SciBERT_512), TextType.HalfLife):
+        elif text_type == TextType.HalfLife:
             return Category.SciBertHalfLife
-        case ((EmbeddingType.SciBERT | EmbeddingType.SciBERT_32 | EmbeddingType.SciBERT_64 | EmbeddingType.SciBERT_128 | EmbeddingType.SciBERT_256 |
-               EmbeddingType.SciBERT_512), TextType.ProteinBinding):
+        elif text_type == TextType.ProteinBinding:
             return Category.SciBertProteinBinding
-        case ((EmbeddingType.SciBERT | EmbeddingType.SciBERT_32 | EmbeddingType.SciBERT_64 | EmbeddingType.SciBERT_128 | EmbeddingType.SciBERT_256 |
-               EmbeddingType.SciBERT_512), TextType.RouteOfElimination):
+        elif text_type == TextType.RouteOfElimination:
             return Category.SciBertRouteOfElimination
-        case ((EmbeddingType.SciBERT | EmbeddingType.SciBERT_32 | EmbeddingType.SciBERT_64 | EmbeddingType.SciBERT_128 | EmbeddingType.SciBERT_256 |
-               EmbeddingType.SciBERT_512), TextType.VolumeOfDistribution):
+        elif text_type == TextType.VolumeOfDistribution:
             return Category.SciBertVolumeOfDistribution
-        case ((EmbeddingType.SciBERT | EmbeddingType.SciBERT_32 | EmbeddingType.SciBERT_64 | EmbeddingType.SciBERT_128 | EmbeddingType.SciBERT_256 |
-               EmbeddingType.SciBERT_512), TextType.Clearance):
+        elif text_type == TextType.Clearance:
             return Category.SciBertClearance
-        case ((EmbeddingType.SciBERT | EmbeddingType.SciBERT_32 | EmbeddingType.SciBERT_64 | EmbeddingType.SciBERT_128 | EmbeddingType.SciBERT_256 |
-               EmbeddingType.SciBERT_512), TextType.ClassificationDescription):
+        elif text_type == TextType.ClassificationDescription:
             return Category.SciBertClassificationDescription
-        case _:
-            raise
+
+    raise ValueError(f"Unsupported combination of embedding_type: {embedding_type} and text_type: {text_type}")

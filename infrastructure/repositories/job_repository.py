@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import Optional
 
 from common.enums.job_type import JobType
 from core.domain.job import Job
@@ -39,7 +40,7 @@ class JobRepository(MySqlRepository):
         id, job_type, start, end = result[0][0]
         return Job(id=id, job_type=job_type, start=start, end=end)
 
-    def get_inprogress_job_by_job_type(self, job_type) -> Job | None:
+    def get_inprogress_job_by_job_type(self, job_type) -> Optional[Job]:
         result, _ = self.call_procedure('GetInProgressJobByJobType', [job_type.value])
 
         if not result or not result[0]:

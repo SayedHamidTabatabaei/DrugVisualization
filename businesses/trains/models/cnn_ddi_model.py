@@ -1,6 +1,4 @@
 from tensorflow.keras import layers, Model
-# noinspection PyUnresolvedReferences
-from tensorflow.keras.callbacks import EarlyStopping
 
 from businesses.trains.models.train_base_model import TrainBaseModel
 from core.repository_models.training_drug_interaction_dto import TrainingDrugInteractionDTO
@@ -27,7 +25,7 @@ class CNNDDIModel(Model):
         # Leaky ReLU Activation
         self.leaky_relu = layers.LeakyReLU(alpha=0.2)
 
-    def call(self, inputs):
+    def call(self, inputs, **kwargs):
         # Process each input independently through the convolutional layers
         x = self.leaky_relu(self.conv1(inputs))
         x = self.leaky_relu(self.conv2(x))

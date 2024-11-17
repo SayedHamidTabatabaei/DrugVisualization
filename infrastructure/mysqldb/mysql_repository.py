@@ -20,7 +20,8 @@ class MySqlRepository:
                 host=mysql_host,
                 user=mysql_user,
                 password=mysql_password,
-                database=mysql_database_name
+                database=mysql_database_name,
+                auth_plugin='mysql_native_password'
             )
         except mysql.connector.Error as err:
             raise Exception(err)

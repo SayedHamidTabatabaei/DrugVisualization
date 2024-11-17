@@ -1,8 +1,3 @@
-# noinspection PyUnresolvedReferences
-from tensorflow.keras.callbacks import EarlyStopping
-# noinspection PyUnresolvedReferences
-from tensorflow.keras.models import Model
-
 from businesses.trains.models.gat_enc_model import GatEncTrainModel
 from businesses.trains.train_base_service import TrainBaseService
 from common.enums.train_models import TrainModel

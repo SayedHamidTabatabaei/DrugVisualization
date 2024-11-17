@@ -6,19 +6,18 @@ from common.enums.loss_functions import LossFunctions
 
 
 def get_loss_function(loss_type: LossFunctions, class_weights: dict = None):
-    match loss_type:
-        case LossFunctions.categorical_crossentropy:
-            return "categorical_crossentropy"
-        case LossFunctions.focal:
-            return focal_loss_with_class_weights(gamma=2., class_weights=class_weights)
-        case LossFunctions.focal_tversky:
-            return focal_tversky_loss(alpha=0.7, beta=0.3, gamma=0.75, class_weights=class_weights)
+    if loss_type == LossFunctions.categorical_crossentropy:
+        return "categorical_crossentropy"
+    elif loss_type == LossFunctions.focal:
+        return focal_loss_with_class_weights(gamma=2., class_weights=class_weights)
+    elif loss_type == LossFunctions.focal_tversky:
+        return focal_tversky_loss(alpha=0.7, beta=0.3, gamma=0.75, class_weights=class_weights)
 
-        # Without class weights
-        case LossFunctions.squared_hinge:
-            return "squared_hinge"
-        case LossFunctions.dice_loss:
-            return dice_loss
+    # Without class weights
+    elif loss_type == LossFunctions.squared_hinge:
+        return "squared_hinge"
+    elif loss_type == LossFunctions.dice_loss:
+        return dice_loss
 
 
 def dice_loss(y_true, y_pred):

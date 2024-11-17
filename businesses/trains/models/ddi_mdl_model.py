@@ -1,5 +1,4 @@
 from tensorflow.keras import layers, Model
-# noinspection PyUnresolvedReferences
 from tensorflow.keras.callbacks import EarlyStopping
 
 from businesses.trains.models.train_base_model import TrainBaseModel
@@ -22,7 +21,7 @@ class DDIMDLModel(Model):
 
         self.output_layer = layers.Dense(num_classes, activation='softmax')
 
-    def call(self, inputs):
+    def call(self, inputs, **kwargs):
         x = self.input_layer(inputs)
         x = self.batch_norm1(x)
         x = self.dropout1(x)

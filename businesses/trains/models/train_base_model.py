@@ -10,7 +10,6 @@ from sklearn.metrics import accuracy_score, f1_score, roc_auc_score, average_pre
     recall_score, log_loss
 from sklearn.preprocessing import label_binarize
 from tensorflow.keras import Input
-# noinspection PyUnresolvedReferences
 from tensorflow.keras.callbacks import EarlyStopping
 
 from businesses.trains.layers.data_generator import DataGenerator

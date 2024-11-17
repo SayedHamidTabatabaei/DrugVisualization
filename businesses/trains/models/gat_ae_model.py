@@ -1,6 +1,4 @@
-# noinspection PyUnresolvedReferences
 from tensorflow.keras import Model, Input
-# noinspection PyUnresolvedReferences
 from tensorflow.keras.callbacks import EarlyStopping
 from tensorflow.keras.layers import Dense, Concatenate, Dropout, BatchNormalization, Activation
 

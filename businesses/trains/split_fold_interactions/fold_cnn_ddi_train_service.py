@@ -1,6 +1,3 @@
-# noinspection PyUnresolvedReferences
-from tensorflow.keras.callbacks import EarlyStopping
-
 from businesses.trains.models.cnn_ddi_model import CNNDDITrainModel
 from businesses.trains.train_base_service import TrainBaseService
 from common.enums.train_models import TrainModel

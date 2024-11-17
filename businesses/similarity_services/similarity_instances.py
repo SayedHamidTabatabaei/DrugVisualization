@@ -6,40 +6,39 @@ from common.enums.similarity_type import SimilarityType
 
 
 def get_instance(category: SimilarityType) -> SimilarityBaseService:
-    match category:
-        case SimilarityType.Original:
-            pass
-        case SimilarityType.Jacquard:
-            return JacquardSimilarityService(category)
-        case SimilarityType.Cosine:
-            return CosineSimilarityService(category)
-        case SimilarityType.Euclidean:
-            pass
-        case SimilarityType.Manhattan:
-            pass
-        case SimilarityType.Hamming:
-            pass
-        case SimilarityType.Pearson:
-            pass
-        case SimilarityType.Spearman:
-            pass
-        case SimilarityType.Mahalanobis:
-            pass
-        case SimilarityType.Dice:
-            pass
-        case SimilarityType.Tanimoto:
-            pass
-        case SimilarityType.Kullback:
-            pass
-        case SimilarityType.Bhattacharyya:
-            pass
-        case SimilarityType.Edit:
-            pass
-        case SimilarityType.DynamicTime:
-            pass
-        case SimilarityType.Hausdorff:
-            pass
-        case SimilarityType.DeepDDISmiles:
-            return DrugStructureSimilarityService(category)
-        case _:
-            raise ValueError("No suitable subclass found")
+    if category == SimilarityType.Original:
+        pass
+    elif category == SimilarityType.Jacquard:
+        return JacquardSimilarityService(category)
+    elif category == SimilarityType.Cosine:
+        return CosineSimilarityService(category)
+    elif category == SimilarityType.Euclidean:
+        pass
+    elif category == SimilarityType.Manhattan:
+        pass
+    elif category == SimilarityType.Hamming:
+        pass
+    elif category == SimilarityType.Pearson:
+        pass
+    elif category == SimilarityType.Spearman:
+        pass
+    elif category == SimilarityType.Mahalanobis:
+        pass
+    elif category == SimilarityType.Dice:
+        pass
+    elif category == SimilarityType.Tanimoto:
+        pass
+    elif category == SimilarityType.Kullback:
+        pass
+    elif category == SimilarityType.Bhattacharyya:
+        pass
+    elif category == SimilarityType.Edit:
+        pass
+    elif category == SimilarityType.DynamicTime:
+        pass
+    elif category == SimilarityType.Hausdorff:
+        pass
+    elif category == SimilarityType.DeepDDISmiles:
+        return DrugStructureSimilarityService(category)
+    else:
+        raise ValueError("No suitable subclass found")

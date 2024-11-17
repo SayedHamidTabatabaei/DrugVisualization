@@ -218,51 +218,50 @@ class TrainingBusiness(BaseBusiness):
 
         interaction_data = self.prepare_interaction_data(train_request, train_schedule.min_sample_count)
 
-        match train_schedule.train_model.scenario:
-            case Scenarios.SplitInteractionSimilarities:
+        if train_schedule.train_model.scenario == Scenarios.SplitInteractionSimilarities:
 
-                # if train_schedule.is_test_algorithm:
-                #     interaction_data = self.stratified_sample(interaction_data, test_size=0.01, min_samples_per_category=5)
+            # if train_schedule.is_test_algorithm:
+            #     interaction_data = self.stratified_sample(interaction_data, test_size=0.01, min_samples_per_category=5)
 
-                return SplitInteractionSimilaritiesTrainingParameterModel(train_id=train_id,
-                                                                          loss_function=train_schedule.loss_function,
-                                                                          class_weight=train_schedule.class_weight,
-                                                                          is_test_algorithm=train_schedule.is_test_algorithm,
-                                                                          drug_data=drug_data,
-                                                                          interaction_data=interaction_data)
+            return SplitInteractionSimilaritiesTrainingParameterModel(train_id=train_id,
+                                                                      loss_function=train_schedule.loss_function,
+                                                                      class_weight=train_schedule.class_weight,
+                                                                      is_test_algorithm=train_schedule.is_test_algorithm,
+                                                                      drug_data=drug_data,
+                                                                      interaction_data=interaction_data)
 
-            case Scenarios.SplitDrugsTestWithTrain:
+        elif train_schedule.train_model.scenario == Scenarios.SplitDrugsTestWithTrain:
 
-                return SplitDrugsTestWithTrainTrainingParameterModel(train_id=train_id,
-                                                                     loss_function=train_schedule.loss_function,
-                                                                     class_weight=train_schedule.class_weight,
-                                                                     is_test_algorithm=train_schedule.is_test_algorithm,
-                                                                     drug_data=drug_data,
-                                                                     interaction_data=interaction_data)
-            case Scenarios.SplitDrugsTestWithTest:
+            return SplitDrugsTestWithTrainTrainingParameterModel(train_id=train_id,
+                                                                 loss_function=train_schedule.loss_function,
+                                                                 class_weight=train_schedule.class_weight,
+                                                                 is_test_algorithm=train_schedule.is_test_algorithm,
+                                                                 drug_data=drug_data,
+                                                                 interaction_data=interaction_data)
+        elif train_schedule.train_model.scenario == Scenarios.SplitDrugsTestWithTest:
 
-                return SplitDrugsTestWithTestTrainingParameterModel(train_id=train_id,
-                                                                    loss_function=train_schedule.loss_function,
-                                                                    class_weight=train_schedule.class_weight,
-                                                                    is_test_algorithm=train_schedule.is_test_algorithm,
-                                                                    drug_data=drug_data,
-                                                                    interaction_data=interaction_data)
-            case Scenarios.SplitDrugsTestWithTest:
+            return SplitDrugsTestWithTestTrainingParameterModel(train_id=train_id,
+                                                                loss_function=train_schedule.loss_function,
+                                                                class_weight=train_schedule.class_weight,
+                                                                is_test_algorithm=train_schedule.is_test_algorithm,
+                                                                drug_data=drug_data,
+                                                                interaction_data=interaction_data)
+        elif train_schedule.train_model.scenario == Scenarios.SplitDrugsTestWithTest:
 
-                return SplitDrugsTestWithTestTrainingParameterModel(train_id=train_id,
-                                                                    loss_function=train_schedule.loss_function,
-                                                                    class_weight=train_schedule.class_weight,
-                                                                    is_test_algorithm=train_schedule.is_test_algorithm,
-                                                                    drug_data=drug_data,
-                                                                    interaction_data=interaction_data)
-            case Scenarios.FoldInteractionSimilarities:
+            return SplitDrugsTestWithTestTrainingParameterModel(train_id=train_id,
+                                                                loss_function=train_schedule.loss_function,
+                                                                class_weight=train_schedule.class_weight,
+                                                                is_test_algorithm=train_schedule.is_test_algorithm,
+                                                                drug_data=drug_data,
+                                                                interaction_data=interaction_data)
+        elif train_schedule.train_model.scenario == Scenarios.FoldInteractionSimilarities:
 
-                return FoldInteractionTrainingParameterModel(train_id=train_id,
-                                                             loss_function=train_schedule.loss_function,
-                                                             class_weight=train_schedule.class_weight,
-                                                             is_test_algorithm=train_schedule.is_test_algorithm,
-                                                             drug_data=drug_data,
-                                                             interaction_data=interaction_data)
+            return FoldInteractionTrainingParameterModel(train_id=train_id,
+                                                         loss_function=train_schedule.loss_function,
+                                                         class_weight=train_schedule.class_weight,
+                                                         is_test_algorithm=train_schedule.is_test_algorithm,
+                                                         drug_data=drug_data,
+                                                         interaction_data=interaction_data)
 
     def get_training_scheduled(self, train_model: TrainModel):
 
@@ -358,19 +357,18 @@ class TrainingBusiness(BaseBusiness):
         scores = defaultdict(dict)
 
         for detail in result_details:
-            match compare_plot_type:
-                case ComparePlotType.Details_Accuracy:
-                    scores[detail.training_label][detail.training_id] = detail.accuracy
-                case ComparePlotType.Details_F1_Score:
-                    scores[detail.training_label][detail.training_id] = detail.f1_score
-                case ComparePlotType.Details_AUC:
-                    scores[detail.training_label][detail.training_id] = detail.auc
-                case ComparePlotType.Details_AUPR:
-                    scores[detail.training_label][detail.training_id] = detail.aupr
-                case ComparePlotType.Details_Recall:
-                    scores[detail.training_label][detail.training_id] = detail.recall
-                case ComparePlotType.Details_Precision:
-                    scores[detail.training_label][detail.training_id] = detail.precision
+            if compare_plot_type == ComparePlotType.Details_Accuracy:
+                scores[detail.training_label][detail.training_id] = detail.accuracy
+            elif compare_plot_type == ComparePlotType.Details_F1_Score:
+                scores[detail.training_label][detail.training_id] = detail.f1_score
+            elif compare_plot_type == ComparePlotType.Details_AUC:
+                scores[detail.training_label][detail.training_id] = detail.auc
+            elif compare_plot_type == ComparePlotType.Details_AUPR:
+                scores[detail.training_label][detail.training_id] = detail.aupr
+            elif compare_plot_type == ComparePlotType.Details_Recall:
+                scores[detail.training_label][detail.training_id] = detail.recall
+            elif compare_plot_type == ComparePlotType.Details_Precision:
+                scores[detail.training_label][detail.training_id] = detail.precision
 
         unique_training_ids = sorted({detail.training_id for detail in result_details})
 
@@ -464,11 +462,10 @@ class TrainingBusiness(BaseBusiness):
         return rows
 
     def generate_plot(self, plot: ComparePlotDTO):
-        match plot.compare_plot_type.plot_name:
-            case 'bar':
-                return self.plot_bar(plot)
-            case 'radial':
-                return self.plot_radial(plot)
+        if plot.compare_plot_type.plot_name == 'bar':
+            return self.plot_bar(plot)
+        elif plot.compare_plot_type.plot_name == 'radial':
+            return self.plot_radial(plot)
 
     @staticmethod
     def plot_bar(plot_data: ComparePlotDTO):
@@ -532,202 +529,201 @@ class TrainingBusiness(BaseBusiness):
         return plt
 
     def get_plot_info(self, compare_plot_type: ComparePlotType, train_ids: list[int]) -> ComparePlotDTO:
-        match compare_plot_type:
-            case ComparePlotType.Accuracy:
-                data_result = [self.training_result_repository.get_training_result(train_id, TrainingResultType.accuracy)
-                               for train_id in train_ids]
+        if compare_plot_type == ComparePlotType.Accuracy:
+            data_result = [self.training_result_repository.get_training_result(train_id, TrainingResultType.accuracy)
+                           for train_id in train_ids]
 
-                return ComparePlotDTO(compare_plot_type=compare_plot_type,
-                                      datas=[i.result_value for i in data_result],
-                                      labels=[i.training_name for i in data_result])
+            return ComparePlotDTO(compare_plot_type=compare_plot_type,
+                                  datas=[i.result_value for i in data_result],
+                                  labels=[i.training_name for i in data_result])
 
-            case ComparePlotType.Loss:
-                data_result = [self.training_result_repository.get_training_result(train_id, TrainingResultType.loss)
-                               for train_id in train_ids]
+        elif compare_plot_type == ComparePlotType.Loss:
+            data_result = [self.training_result_repository.get_training_result(train_id, TrainingResultType.loss)
+                           for train_id in train_ids]
 
-                return ComparePlotDTO(compare_plot_type=compare_plot_type,
-                                      datas=[i.result_value for i in data_result],
-                                      labels=[i.training_name for i in data_result])
+            return ComparePlotDTO(compare_plot_type=compare_plot_type,
+                                  datas=[i.result_value for i in data_result],
+                                  labels=[i.training_name for i in data_result])
 
-            case ComparePlotType.F1_Score_Weighted:
-                data_result = [self.training_result_repository.get_training_result(train_id, TrainingResultType.f1_score_weighted)
-                               for train_id in train_ids]
+        elif compare_plot_type == ComparePlotType.F1_Score_Weighted:
+            data_result = [self.training_result_repository.get_training_result(train_id, TrainingResultType.f1_score_weighted)
+                           for train_id in train_ids]
 
-                return ComparePlotDTO(compare_plot_type=compare_plot_type,
-                                      datas=[i.result_value for i in data_result],
-                                      labels=[i.training_name for i in data_result])
+            return ComparePlotDTO(compare_plot_type=compare_plot_type,
+                                  datas=[i.result_value for i in data_result],
+                                  labels=[i.training_name for i in data_result])
 
-            case ComparePlotType.F1_Score_Micro:
-                data_result = [self.training_result_repository.get_training_result(train_id, TrainingResultType.f1_score_micro)
-                               for train_id in train_ids]
+        elif compare_plot_type == ComparePlotType.F1_Score_Micro:
+            data_result = [self.training_result_repository.get_training_result(train_id, TrainingResultType.f1_score_micro)
+                           for train_id in train_ids]
 
-                return ComparePlotDTO(compare_plot_type=compare_plot_type,
-                                      datas=[i.result_value for i in data_result],
-                                      labels=[i.training_name for i in data_result])
+            return ComparePlotDTO(compare_plot_type=compare_plot_type,
+                                  datas=[i.result_value for i in data_result],
+                                  labels=[i.training_name for i in data_result])
 
-            case ComparePlotType.F1_Score_Macro:
-                data_result = [self.training_result_repository.get_training_result(train_id, TrainingResultType.f1_score_macro)
-                               for train_id in train_ids]
+        elif compare_plot_type == ComparePlotType.F1_Score_Macro:
+            data_result = [self.training_result_repository.get_training_result(train_id, TrainingResultType.f1_score_macro)
+                           for train_id in train_ids]
 
-                return ComparePlotDTO(compare_plot_type=compare_plot_type,
-                                      datas=[i.result_value for i in data_result],
-                                      labels=[i.training_name for i in data_result])
+            return ComparePlotDTO(compare_plot_type=compare_plot_type,
+                                  datas=[i.result_value for i in data_result],
+                                  labels=[i.training_name for i in data_result])
 
-            case ComparePlotType.AUC_Weighted:
-                data_result = [self.training_result_repository.get_training_result(train_id, TrainingResultType.auc_weighted)
-                               for train_id in train_ids]
+        elif compare_plot_type == ComparePlotType.AUC_Weighted:
+            data_result = [self.training_result_repository.get_training_result(train_id, TrainingResultType.auc_weighted)
+                           for train_id in train_ids]
 
-                return ComparePlotDTO(compare_plot_type=compare_plot_type,
-                                      datas=[i.result_value for i in data_result],
-                                      labels=[i.training_name for i in data_result])
+            return ComparePlotDTO(compare_plot_type=compare_plot_type,
+                                  datas=[i.result_value for i in data_result],
+                                  labels=[i.training_name for i in data_result])
 
-            case ComparePlotType.AUC_Micro:
-                data_result = [self.training_result_repository.get_training_result(train_id, TrainingResultType.auc_micro)
-                               for train_id in train_ids]
+        elif compare_plot_type == ComparePlotType.AUC_Micro:
+            data_result = [self.training_result_repository.get_training_result(train_id, TrainingResultType.auc_micro)
+                           for train_id in train_ids]
 
-                return ComparePlotDTO(compare_plot_type=compare_plot_type,
-                                      datas=[i.result_value for i in data_result],
-                                      labels=[i.training_name for i in data_result])
+            return ComparePlotDTO(compare_plot_type=compare_plot_type,
+                                  datas=[i.result_value for i in data_result],
+                                  labels=[i.training_name for i in data_result])
 
-            case ComparePlotType.AUC_Macro:
-                data_result = [self.training_result_repository.get_training_result(train_id, TrainingResultType.auc_macro)
-                               for train_id in train_ids]
+        elif compare_plot_type == ComparePlotType.AUC_Macro:
+            data_result = [self.training_result_repository.get_training_result(train_id, TrainingResultType.auc_macro)
+                           for train_id in train_ids]
 
-                return ComparePlotDTO(compare_plot_type=compare_plot_type,
-                                      datas=[i.result_value for i in data_result],
-                                      labels=[i.training_name for i in data_result])
+            return ComparePlotDTO(compare_plot_type=compare_plot_type,
+                                  datas=[i.result_value for i in data_result],
+                                  labels=[i.training_name for i in data_result])
 
-            case ComparePlotType.AUPR_Weighted:
-                data_result = [self.training_result_repository.get_training_result(train_id, TrainingResultType.aupr_weighted)
-                               for train_id in train_ids]
+        elif compare_plot_type == ComparePlotType.AUPR_Weighted:
+            data_result = [self.training_result_repository.get_training_result(train_id, TrainingResultType.aupr_weighted)
+                           for train_id in train_ids]
 
-                return ComparePlotDTO(compare_plot_type=compare_plot_type,
-                                      datas=[i.result_value for i in data_result],
-                                      labels=[i.training_name for i in data_result])
+            return ComparePlotDTO(compare_plot_type=compare_plot_type,
+                                  datas=[i.result_value for i in data_result],
+                                  labels=[i.training_name for i in data_result])
 
-            case ComparePlotType.AUPR_Micro:
-                data_result = [self.training_result_repository.get_training_result(train_id, TrainingResultType.aupr_micro)
-                               for train_id in train_ids]
+        elif compare_plot_type == ComparePlotType.AUPR_Micro:
+            data_result = [self.training_result_repository.get_training_result(train_id, TrainingResultType.aupr_micro)
+                           for train_id in train_ids]
 
-                return ComparePlotDTO(compare_plot_type=compare_plot_type,
-                                      datas=[i.result_value for i in data_result],
-                                      labels=[i.training_name for i in data_result])
+            return ComparePlotDTO(compare_plot_type=compare_plot_type,
+                                  datas=[i.result_value for i in data_result],
+                                  labels=[i.training_name for i in data_result])
 
-            case ComparePlotType.AUPR_Macro:
-                data_result = [self.training_result_repository.get_training_result(train_id, TrainingResultType.aupr_macro)
-                               for train_id in train_ids]
+        elif compare_plot_type == ComparePlotType.AUPR_Macro:
+            data_result = [self.training_result_repository.get_training_result(train_id, TrainingResultType.aupr_macro)
+                           for train_id in train_ids]
 
-                return ComparePlotDTO(compare_plot_type=compare_plot_type,
-                                      datas=[i.result_value for i in data_result],
-                                      labels=[i.training_name for i in data_result])
+            return ComparePlotDTO(compare_plot_type=compare_plot_type,
+                                  datas=[i.result_value for i in data_result],
+                                  labels=[i.training_name for i in data_result])
 
-            case ComparePlotType.Recall_Weighted:
-                data_result = [self.training_result_repository.get_training_result(train_id, TrainingResultType.recall_weighted)
-                               for train_id in train_ids]
+        elif compare_plot_type == ComparePlotType.Recall_Weighted:
+            data_result = [self.training_result_repository.get_training_result(train_id, TrainingResultType.recall_weighted)
+                           for train_id in train_ids]
 
-                return ComparePlotDTO(compare_plot_type=compare_plot_type,
-                                      datas=[i.result_value for i in data_result],
-                                      labels=[i.training_name for i in data_result])
+            return ComparePlotDTO(compare_plot_type=compare_plot_type,
+                                  datas=[i.result_value for i in data_result],
+                                  labels=[i.training_name for i in data_result])
 
-            case ComparePlotType.Recall_Micro:
-                data_result = [self.training_result_repository.get_training_result(train_id, TrainingResultType.recall_micro)
-                               for train_id in train_ids]
+        elif compare_plot_type == ComparePlotType.Recall_Micro:
+            data_result = [self.training_result_repository.get_training_result(train_id, TrainingResultType.recall_micro)
+                           for train_id in train_ids]
 
-                return ComparePlotDTO(compare_plot_type=compare_plot_type,
-                                      datas=[i.result_value for i in data_result],
-                                      labels=[i.training_name for i in data_result])
+            return ComparePlotDTO(compare_plot_type=compare_plot_type,
+                                  datas=[i.result_value for i in data_result],
+                                  labels=[i.training_name for i in data_result])
 
-            case ComparePlotType.Recall_Macro:
-                data_result = [self.training_result_repository.get_training_result(train_id, TrainingResultType.recall_macro)
-                               for train_id in train_ids]
+        elif compare_plot_type == ComparePlotType.Recall_Macro:
+            data_result = [self.training_result_repository.get_training_result(train_id, TrainingResultType.recall_macro)
+                           for train_id in train_ids]
 
-                return ComparePlotDTO(compare_plot_type=compare_plot_type,
-                                      datas=[i.result_value for i in data_result],
-                                      labels=[i.training_name for i in data_result])
+            return ComparePlotDTO(compare_plot_type=compare_plot_type,
+                                  datas=[i.result_value for i in data_result],
+                                  labels=[i.training_name for i in data_result])
 
-            case ComparePlotType.Precision_Weighted:
-                data_result = [self.training_result_repository.get_training_result(train_id, TrainingResultType.precision_weighted)
-                               for train_id in train_ids]
+        elif compare_plot_type == ComparePlotType.Precision_Weighted:
+            data_result = [self.training_result_repository.get_training_result(train_id, TrainingResultType.precision_weighted)
+                           for train_id in train_ids]
 
-                return ComparePlotDTO(compare_plot_type=compare_plot_type,
-                                      datas=[i.result_value for i in data_result],
-                                      labels=[i.training_name for i in data_result])
+            return ComparePlotDTO(compare_plot_type=compare_plot_type,
+                                  datas=[i.result_value for i in data_result],
+                                  labels=[i.training_name for i in data_result])
 
-            case ComparePlotType.Precision_Micro:
-                data_result = [self.training_result_repository.get_training_result(train_id, TrainingResultType.precision_micro)
-                               for train_id in train_ids]
+        elif compare_plot_type == ComparePlotType.Precision_Micro:
+            data_result = [self.training_result_repository.get_training_result(train_id, TrainingResultType.precision_micro)
+                           for train_id in train_ids]
 
-                return ComparePlotDTO(compare_plot_type=compare_plot_type,
-                                      datas=[i.result_value for i in data_result],
-                                      labels=[i.training_name for i in data_result])
+            return ComparePlotDTO(compare_plot_type=compare_plot_type,
+                                  datas=[i.result_value for i in data_result],
+                                  labels=[i.training_name for i in data_result])
 
-            case ComparePlotType.Precision_Macro:
-                data_result = [self.training_result_repository.get_training_result(train_id, TrainingResultType.precision_macro)
-                               for train_id in train_ids]
+        elif compare_plot_type == ComparePlotType.Precision_Macro:
+            data_result = [self.training_result_repository.get_training_result(train_id, TrainingResultType.precision_macro)
+                           for train_id in train_ids]
 
-                return ComparePlotDTO(compare_plot_type=compare_plot_type,
-                                      datas=[i.result_value for i in data_result],
-                                      labels=[i.training_name for i in data_result])
+            return ComparePlotDTO(compare_plot_type=compare_plot_type,
+                                  datas=[i.result_value for i in data_result],
+                                  labels=[i.training_name for i in data_result])
 
-            case ComparePlotType.Details_Accuracy:
+        elif compare_plot_type == ComparePlotType.Details_Accuracy:
 
-                data_result_details = [
-                    self.training_result_detail_repository.find_all_training_result_details(train_id)
-                    for train_id in train_ids]
+            data_result_details = [
+                self.training_result_detail_repository.find_all_training_result_details(train_id)
+                for train_id in train_ids]
 
-                return ComparePlotDTO(compare_plot_type=compare_plot_type,
-                                      datas=[[i.accuracy for i in r] for r in data_result_details],
-                                      labels=[r[0].training_name for r in data_result_details if len(r) > 0])
+            return ComparePlotDTO(compare_plot_type=compare_plot_type,
+                                  datas=[[i.accuracy for i in r] for r in data_result_details],
+                                  labels=[r[0].training_name for r in data_result_details if len(r) > 0])
 
-            case ComparePlotType.Details_F1_Score:
+        elif compare_plot_type == ComparePlotType.Details_F1_Score:
 
-                data_result_details = [
-                    self.training_result_detail_repository.find_all_training_result_details(train_id)
-                    for train_id in train_ids]
+            data_result_details = [
+                self.training_result_detail_repository.find_all_training_result_details(train_id)
+                for train_id in train_ids]
 
-                return ComparePlotDTO(compare_plot_type=compare_plot_type,
-                                      datas=[[i.f1_score for i in r] for r in data_result_details],
-                                      labels=[r[0].training_name for r in data_result_details if len(r) > 0])
+            return ComparePlotDTO(compare_plot_type=compare_plot_type,
+                                  datas=[[i.f1_score for i in r] for r in data_result_details],
+                                  labels=[r[0].training_name for r in data_result_details if len(r) > 0])
 
-            case ComparePlotType.Details_AUC:
+        elif compare_plot_type == ComparePlotType.Details_AUC:
 
-                data_result_details = [
-                    self.training_result_detail_repository.find_all_training_result_details(train_id)
-                    for train_id in train_ids]
+            data_result_details = [
+                self.training_result_detail_repository.find_all_training_result_details(train_id)
+                for train_id in train_ids]
 
-                return ComparePlotDTO(compare_plot_type=compare_plot_type,
-                                      datas=[[i.auc for i in r] for r in data_result_details],
-                                      labels=[r[0].training_name for r in data_result_details if len(r) > 0])
+            return ComparePlotDTO(compare_plot_type=compare_plot_type,
+                                  datas=[[i.auc for i in r] for r in data_result_details],
+                                  labels=[r[0].training_name for r in data_result_details if len(r) > 0])
 
-            case ComparePlotType.Details_AUPR:
+        elif compare_plot_type == ComparePlotType.Details_AUPR:
 
-                data_result_details = [
-                    self.training_result_detail_repository.find_all_training_result_details(train_id)
-                    for train_id in train_ids]
+            data_result_details = [
+                self.training_result_detail_repository.find_all_training_result_details(train_id)
+                for train_id in train_ids]
 
-                return ComparePlotDTO(compare_plot_type=compare_plot_type,
-                                      datas=[[i.aupr for i in r] for r in data_result_details],
-                                      labels=[r[0].training_name for r in data_result_details if len(r) > 0])
+            return ComparePlotDTO(compare_plot_type=compare_plot_type,
+                                  datas=[[i.aupr for i in r] for r in data_result_details],
+                                  labels=[r[0].training_name for r in data_result_details if len(r) > 0])
 
-            case ComparePlotType.Details_Recall:
+        elif compare_plot_type == ComparePlotType.Details_Recall:
 
-                data_result_details = [
-                    self.training_result_detail_repository.find_all_training_result_details(train_id)
-                    for train_id in train_ids]
+            data_result_details = [
+                self.training_result_detail_repository.find_all_training_result_details(train_id)
+                for train_id in train_ids]
 
-                return ComparePlotDTO(compare_plot_type=compare_plot_type,
-                                      datas=[[i.recall for i in r] for r in data_result_details],
-                                      labels=[r[0].training_name for r in data_result_details if len(r) > 0])
+            return ComparePlotDTO(compare_plot_type=compare_plot_type,
+                                  datas=[[i.recall for i in r] for r in data_result_details],
+                                  labels=[r[0].training_name for r in data_result_details if len(r) > 0])
 
-            case ComparePlotType.Details_Precision:
+        elif compare_plot_type == ComparePlotType.Details_Precision:
 
-                data_result_details = [
-                    self.training_result_detail_repository.find_all_training_result_details(train_id)
-                    for train_id in train_ids]
+            data_result_details = [
+                self.training_result_detail_repository.find_all_training_result_details(train_id)
+                for train_id in train_ids]
 
-                return ComparePlotDTO(compare_plot_type=compare_plot_type,
-                                      datas=[[i.precision for i in r] for r in data_result_details],
-                                      labels=[r[0].training_name for r in data_result_details if len(r) > 0])
+            return ComparePlotDTO(compare_plot_type=compare_plot_type,
+                                  datas=[[i.precision for i in r] for r in data_result_details],
+                                  labels=[r[0].training_name for r in data_result_details if len(r) > 0])
 
     @staticmethod
     def group_by_category(data):
@@ -844,29 +840,28 @@ class TrainingBusiness(BaseBusiness):
         return drugs
 
     def get_original_data(self, category: Category):
-        match category:
-            case Category.Substructure:
-                results = self.drug_repository.get_all_drug_smiles()
+        if category == Category.Substructure:
+            results = self.drug_repository.get_all_drug_smiles()
 
-                return {r.id: r.smiles for r in results}
+            return {r.id: r.smiles for r in results}
 
-            case Category.Target:
-                results = self.target_repository.get_drug_target_as_feature()
+        elif category == Category.Target:
+            results = self.target_repository.get_drug_target_as_feature()
 
-                return {r.drug_id: r.features for r in results}
+            return {r.drug_id: r.features for r in results}
 
-            case Category.Pathway:
-                results = self.pathway_repository.get_drug_pathway_as_feature()
+        elif category == Category.Pathway:
+            results = self.pathway_repository.get_drug_pathway_as_feature()
 
-                return {r.drug_id: r.features for r in results}
+            return {r.drug_id: r.features for r in results}
 
-            case Category.Enzyme:
-                results = self.enzyme_repository.get_drug_enzyme_as_feature()
+        elif category == Category.Enzyme:
+            results = self.enzyme_repository.get_drug_enzyme_as_feature()
 
-                return {r.drug_id: r.features for r in results}
+            return {r.drug_id: r.features for r in results}
 
-            case _:
-                raise Exception(f'Unexpected category {category}')
+        else:
+            raise Exception(f'Unexpected category {category}')
 
     def set_drug_embedding_training_values(self, drugs: list[TrainingDrugDataDTO], embedding_type: EmbeddingType, text_type: TextType):
         print(f'Fetching {text_type.name}-{embedding_type.name} data!')

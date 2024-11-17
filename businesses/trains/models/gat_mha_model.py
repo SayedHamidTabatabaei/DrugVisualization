@@ -1,6 +1,5 @@
 import tensorflow as tf
 from tensorflow.keras import Model, Input
-# noinspection PyUnresolvedReferences
 from tensorflow.keras.callbacks import EarlyStopping
 from tensorflow.keras.layers import Dense, Concatenate, Dropout, Reshape, Flatten, MultiHeadAttention, BatchNormalization, Activation, Lambda
 

@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 
-from numpy import ndarray
+from typing import Union, Dict
+from numpy.typing import NDArray
 
 from common.enums.category import Category
 
@@ -8,4 +9,4 @@ from common.enums.category import Category
 @dataclass
 class TrainingDrugTrainValuesDTO:
     category: Category
-    values: ndarray | dict[int, float]
+    values: Union[NDArray, Dict[int, float]]

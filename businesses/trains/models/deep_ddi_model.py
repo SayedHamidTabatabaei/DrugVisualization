@@ -23,7 +23,7 @@ class DeepDDIModel(Model):
 
         self.output_layer = layers.Dense(output_size, activation='sigmoid')
 
-    def call(self, inputs):
+    def call(self, inputs, **kwargs):
         x = tf.concat(inputs, axis=1)
         for model_layer in self.model_layers:
             x = model_layer(x)

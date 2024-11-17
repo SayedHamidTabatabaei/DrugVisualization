@@ -67,53 +67,52 @@ class DrugEmbeddingBusiness(BaseBusiness):
             return self.interaction_embedding_repository.find_interaction_embedding_description(embedding_type, start, length)
 
     def calculate_embeddings(self, embedding_type: EmbeddingType, text_type: TextType):
-        match text_type:
-            case TextType.Description:
-                drugs = self.drug_repository.find_all_drug_description()
+        if text_type == TextType.Description:
+            drugs = self.drug_repository.find_all_drug_description()
 
-            case TextType.Indication:
-                drugs = self.drug_repository.find_all_drug_indication()
+        elif text_type == TextType.Indication:
+            drugs = self.drug_repository.find_all_drug_indication()
 
-            case TextType.Pharmacodynamics:
-                drugs = self.drug_repository.find_all_drug_pharmacodynamics()
+        elif text_type == TextType.Pharmacodynamics:
+            drugs = self.drug_repository.find_all_drug_pharmacodynamics()
 
-            case TextType.MechanismOfAction:
-                drugs = self.drug_repository.find_all_drug_mechanism_of_action()
+        elif text_type == TextType.MechanismOfAction:
+            drugs = self.drug_repository.find_all_drug_mechanism_of_action()
 
-            case TextType.Toxicity:
-                drugs = self.drug_repository.find_all_drug_toxicity()
+        elif text_type == TextType.Toxicity:
+            drugs = self.drug_repository.find_all_drug_toxicity()
 
-            case TextType.Metabolism:
-                drugs = self.drug_repository.find_all_drug_metabolism()
+        elif text_type == TextType.Metabolism:
+            drugs = self.drug_repository.find_all_drug_metabolism()
 
-            case TextType.Absorption:
-                drugs = self.drug_repository.find_all_drug_absorption()
+        elif text_type == TextType.Absorption:
+            drugs = self.drug_repository.find_all_drug_absorption()
 
-            case TextType.HalfLife:
-                drugs = self.drug_repository.find_all_drug_half_life()
+        elif text_type == TextType.HalfLife:
+            drugs = self.drug_repository.find_all_drug_half_life()
 
-            case TextType.ProteinBinding:
-                drugs = self.drug_repository.find_all_drug_protein_binding()
+        elif text_type == TextType.ProteinBinding:
+            drugs = self.drug_repository.find_all_drug_protein_binding()
 
-            case TextType.RouteOfElimination:
-                drugs = self.drug_repository.find_all_drug_route_of_elimination()
+        elif text_type == TextType.RouteOfElimination:
+            drugs = self.drug_repository.find_all_drug_route_of_elimination()
 
-            case TextType.VolumeOfDistribution:
-                drugs = self.drug_repository.find_all_drug_volume_of_distribution()
+        elif text_type == TextType.VolumeOfDistribution:
+            drugs = self.drug_repository.find_all_drug_volume_of_distribution()
 
-            case TextType.Clearance:
-                drugs = self.drug_repository.find_all_drug_clearance()
+        elif text_type == TextType.Clearance:
+            drugs = self.drug_repository.find_all_drug_clearance()
 
-            case TextType.ClassificationDescription:
-                drugs = self.drug_repository.find_all_drug_classification_description()
+        elif text_type == TextType.ClassificationDescription:
+            drugs = self.drug_repository.find_all_drug_classification_description()
 
-            case TextType.InteractionDescription:
-                interactions = self.drug_interaction_repository.find_all_interaction_description()
-                self.generate_interaction_embedding(interactions, embedding_type, text_type)
-                return
+        elif text_type == TextType.InteractionDescription:
+            interactions = self.drug_interaction_repository.find_all_interaction_description()
+            self.generate_interaction_embedding(interactions, embedding_type, text_type)
+            return
 
-            case _:
-                raise
+        else:
+            raise
 
         self.generate_embedding_one_by_one(drugs, embedding_type, text_type)
 
