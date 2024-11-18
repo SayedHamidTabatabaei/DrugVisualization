@@ -329,6 +329,18 @@ function get_history()
                 action: function (e, dt, button, config) {
                     generateLatexCode(data.columns, data.data);
                 }
+            },
+            {
+                text: '<i class="fas fa-file-export"></i>',
+                action: function (e, dt, button, config) {
+                    exportSelected(data.columns, data.data);
+                }
+            },
+            {
+                text: '<i class="fas fa-file-import"></i>',
+                action: function (e, dt, button, config) {
+                    importSelected(data.columns, data.data);
+                }
             }
         ]
             });
@@ -708,6 +720,55 @@ function generateLatexCode(columns, data) {
 
     console.log(latexCode);
     alert("LaTeX Code:\n\n" + latexCode);
+}
+
+function exportSelected(){
+    let selectedIds= [];
+    $('input.row-checkbox:checked').each(function() {
+
+        const [id, name] = $(this).val().split('|'); // Get the value of the checked checkbox
+
+        selectedIds.push(id);
+    });
+
+    fetch(`/training/export_data?trainIds=${selectedIds}`, {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+
+
+
+        hideSpinner(true);
+    })
+    .catch(error => {
+        console.log('Error fetching data:', error)
+        hideSpinner(true);
+    });
+}
+
+function importSelected(){
+
+
+    fetch(`/training/import_data`, {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+
+        hideSpinner(true);
+    })
+    .catch(error => {
+        console.log('Error fetching data:', error)
+        hideSpinner(true);
+    });
+
 }
 
 function fill_train_data_report(){

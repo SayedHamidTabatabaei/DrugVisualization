@@ -66,3 +66,5 @@ class DeepDDITrainModel(TrainBaseModel):
 
         if self.interaction_data is not None:
             result.data_report = self.get_data_report_split(self.interaction_data, y_train, y_test)
+
+        return result

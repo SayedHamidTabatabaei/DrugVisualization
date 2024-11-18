@@ -1,8 +1,10 @@
 import base64
+import glob
 import io
 import json
 import mimetypes
 import os
+import shutil
 import pickle
 import random
 from collections import defaultdict
@@ -27,6 +29,8 @@ from common.enums.training_result_type import TrainingResultType
 from common.helpers import math_helper, embedding_helper, json_helper, smiles_helper
 from core.domain.training_result import TrainingResult
 from core.domain.training_result_detail import TrainingResultDetail
+from core.mappers import training_mapper
+from core.models.training_export_model import TrainingExportModel
 from core.models.training_parameter_base_model import TrainingParameterBaseModel
 from core.models.training_parameter_models.fold_interaction_training_parameter_model import FoldInteractionTrainingParameterModel
 from core.models.training_parameter_models.split_drugs_test_with_test_training_parameter_model import SplitDrugsTestWithTestTrainingParameterModel
@@ -427,6 +431,108 @@ class TrainingBusiness(BaseBusiness):
             data_dict[test_col_name] = [data_report['test_count']] + list(test_report.values())
 
         return column_names, self.convert_data_to_structured_format(data_dict)
+
+    def export_data(self, train_ids):
+        for train_id in train_ids:
+            folder_name = f"exports/{train_id}"
+            if not os.path.exists(folder_name):
+                os.makedirs(folder_name)
+
+            training_export_info = self.get_training_export_info(train_id)
+            file_path = f'exports/{train_id}/training_model_info.json'
+            with open(file_path, 'w') as json_file:
+                json_file.write(training_export_info.to_json(indent=4))
+
+            training_plot_folder = f"training_plots/{train_id}"
+            self.copy_folder(training_plot_folder, folder_name)
+
+            seed_file = f"seeds/{train_id}.json"
+            self.copy_file(seed_file, folder_name)
+
+            for training_model_file in self.find_files(train_id, "training_models"):
+                self.copy_file(training_model_file, folder_name)
+
+    def import_data(self):
+        train_folders = [entry.name for entry in os.scandir("imports") if entry.is_dir()]
+        for train_folder in train_folders:
+            training_id = self.insert_import_entities(train_folder)
+
+            images = glob.glob(os.path.join(f"exports/{train_folder}", f"*.png"))
+
+            folder_name = f"training_plots/{training_id}"
+            if not os.path.exists(folder_name):
+                os.makedirs(folder_name)
+
+            for image in images:
+                self.copy_file(image, folder_name)
+
+            self.copy_file(f"exports/{train_folder}/{train_folder}.pkl", "seeds")
+
+            json_data_reports = self.find_files(train_folder, f"exports/{train_folder}")
+            for j in json_data_reports:
+                self.copy_file(f"exports/{train_folder}/{j}.json", "training_models")
+
+    def insert_import_entities(self, train_folder: str) -> int:
+        with open(f'imports/{train_folder}/training_model_info.json', 'r') as file:
+            json_data = json.load(file)
+
+        training_export_model = TrainingExportModel.from_dict(json_data)
+
+        training_id = self.training_repository.insert(name=training_export_model.name,
+                                                      description=training_export_model.description,
+                                                      train_model=training_export_model.train_model,
+                                                      loss_function=training_export_model.loss_function,
+                                                      class_weight=training_export_model.class_weight,
+                                                      is_test_algorithm=training_export_model.is_test_algorithm,
+                                                      min_sample_count=training_export_model.min_sample_count,
+                                                      training_conditions=training_export_model.training_conditions)
+
+        training_results = [tr.to_training_result(training_id) for tr in training_export_model.training_results]
+        self.training_result_repository.insert_batch(training_results)
+
+        training_result_details = [tr.to_training_result_details(training_id) for tr in training_export_model.training_result_details]
+        self.training_result_repository.insert_batch(training_result_details)
+
+        return training_id
+
+    @staticmethod
+    def find_files(train_id: str, folder_path: str):
+        return glob.glob(os.path.join(folder_path, f"{train_id}_*")) + glob.glob(os.path.join(folder_path, f"{train_id}.*"))
+
+    def get_training_export_info(self, train_id) -> TrainingExportModel:
+        training = self.training_repository.get_training_by_id(train_id)
+
+        training_results = self.training_result_repository.find_all_training_results(train_id)
+
+        training_result_details = self.training_result_detail_repository.find_all_training_result_details(train_id)
+
+        return training_mapper.map_training_export(training, training_results, training_result_details)
+
+    @staticmethod
+    def copy_folder(source_folder, dist_folder_name):
+
+        if os.path.exists(source_folder):
+            try:
+                shutil.copytree(source_folder, dist_folder_name, dirs_exist_ok=True)
+                print(f"Successfully copied '{source_folder}' to '{dist_folder_name}'.")
+            except Exception as e:
+                print(f"Error copying files: {e}")
+        else:
+            print(f"Source folder '{source_folder}' does not exist.")
+
+    @staticmethod
+    def copy_file(file_name, destination_path, new_filename=None):
+        if os.path.exists(file_name):
+            try:
+                if new_filename:
+                    destination_path = os.path.join(destination_path, new_filename)
+
+                shutil.copy(file_name, destination_path)
+                print(f"Successfully copied {file_name} to '{destination_path}'.")
+            except Exception as e:
+                print(f"Error copying files: {e}")
+        else:
+            print(f"Source file '{file_name}' does not exist.")
 
     @staticmethod
     def full_join_multiple_lists(trains, lists):

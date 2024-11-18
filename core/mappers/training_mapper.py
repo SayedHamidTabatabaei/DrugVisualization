@@ -2,6 +2,7 @@ from common.enums.loss_functions import LossFunctions
 from common.enums.train_models import TrainModel
 from core.domain.training import Training
 from core.domain.training_result import TrainingResult
+from core.models.training_export_model import TrainingExportModel, TrainingResultExportModel, TrainingResultDetailExportModel
 from core.repository_models.training_result_detail_dto import TrainingResultDetailDTO
 from core.repository_models.training_result_dto import TrainingResultDTO
 from core.repository_models.training_result_report_dto import TrainingResultReportDTO
@@ -103,7 +104,7 @@ def map_training_results(query_results):
 def map_training_result(query_results):
     id, training_id, name, training_result_type, result_value = query_results
 
-    return TrainingResult(id=id, training_result_type=training_result_type, result_value=result_value)
+    return TrainingResult(id=id, training_id=training_id, training_result_type=training_result_type, result_value=result_value)
 
 
 def map_training_result_report_dto(query_results):
@@ -128,3 +129,34 @@ def map_training_result_details(query_results) -> list[TrainingResultDetailDTO]:
                                                                recall=recall,
                                                                precision=precision))
     return training_result_details
+
+
+def map_training_export(training: Training, training_results: list[TrainingResult], training_result_details: list[TrainingResultDetailDTO]) \
+        -> TrainingExportModel:
+    return TrainingExportModel(training_id=training.id,
+                               name=training.name,
+                               description=training.description,
+                               train_model=training.train_model,
+                               loss_function=training.loss_function,
+                               class_weight=training.class_weight,
+                               is_test_algorithm=training.is_test_algorithm,
+                               training_conditions=training.training_conditions,
+                               model_parameters=training.model_parameters,
+                               data_report=training.data_report,
+                               fold_result_details=training.fold_result_details,
+                               execute_time=training.execute_time,
+                               min_sample_count=training.min_sample_count,
+                               training_results=[TrainingResultExportModel(training_id=tr.training_id,
+                                                                           training_result_type=tr.training_result_type,
+                                                                           result_value=tr.result_value)
+                                                 for tr in training_results],
+                               training_result_details=[TrainingResultDetailExportModel(training_id=trd.training_id,
+                                                                                        training_label=trd.training_label,
+                                                                                        f1_score=trd.f1_score,
+                                                                                        accuracy=trd.accuracy,
+                                                                                        auc=trd.auc,
+                                                                                        aupr=trd.aupr,
+                                                                                        recall=trd.recall,
+                                                                                        precision=trd.precision)
+                                                        for trd in training_result_details]
+                               )

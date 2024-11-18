@@ -151,10 +151,6 @@ class TrainBaseService:
         return x_train_flat, x_val_flat, x_test_flat
 
     @staticmethod
-    def pad_sequences(data, maxlen=None, padding_value='0'):
-        return tf.keras.preprocessing.sequence.pad_sequences(data, maxlen=maxlen, padding='post', value=padding_value)
-
-    @staticmethod
     def unique_category(train_values: list[TrainingDrugTrainValuesDTO]):
         unique_categories = {}
         index = 0

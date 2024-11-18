@@ -47,7 +47,7 @@ class TrainingResultRepository(MySqlRepository):
                  if isinstance(training_result, list)
                  else bool(training_result)))
 
-    def find_all_training_result_details(self, train_id: int) -> list[TrainingResultDetailDTO]:
+    def find_all_training_results(self, train_id: int) -> list[TrainingResult]:
         result, _ = self.call_procedure('FindAllTrainingResults', [train_id])
 
         training_result = result[0]

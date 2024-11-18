@@ -163,6 +163,24 @@ class TrainingController(MethodView):
 
         return jsonify({'data': train_schedules, 'status': True})
 
+    @route('export_data', methods=['GET'])
+    def export_data(self):
+        train_ids = request.args.get('trainIds')
+
+        if not train_ids:
+            return jsonify({'status': False})
+
+        self.training_business.export_data([int(train_id) for train_id in train_ids.split(',')])
+
+        return jsonify({'status': True})
+
+    @route('import_data', methods=['GET'])
+    def import_data(self):
+
+        self.training_business.import_data()
+
+        return jsonify({'status': True})
+
     @route('get_history_details', methods=['GET'])
     def get_history_details(self):
         train_id = request.args.get('trainHistoryId')
