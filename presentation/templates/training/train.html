@@ -341,6 +341,20 @@
                 </select>
             </div>
         </div>
+
+        <div class="checkbox-container">
+            <label class="checkbox-label">
+                <input type="checkbox" id="total-text-check" value="total-text"
+                       onclick="toggleDropdowns(this, 'total-text-details');fillEmbeddingSelect('total-text-embedding-select');updateTrainDescription();">
+                <span class="checkbox-custom"></span>
+                Total Text
+            </label>
+            <div id="total-text-details" class="dropdowns" style="display: none;">
+                <select id="total-text-embedding-select">
+                    <option value="">--Select an embedding</option>
+                </select>
+            </div>
+        </div>
     </div>
     <div class="section column-container">
         <h3>Interaction Texts</h3>

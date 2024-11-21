@@ -909,6 +909,9 @@ class TrainingBusiness(BaseBusiness):
         if train_request.classification_description_embedding:
             drugs = self.set_drug_embedding_training_values(drugs, train_request.classification_description_embedding, TextType.ClassificationDescription)
 
+        if train_request.total_text_embedding:
+            drugs = self.set_drug_embedding_training_values(drugs, train_request.total_text_embedding, TextType.TotalText)
+
         return drugs
 
     def set_drug_similarity_training_values(self, drugs: list[TrainingDrugDataDTO], similarity_type: SimilarityType, category: Category) \

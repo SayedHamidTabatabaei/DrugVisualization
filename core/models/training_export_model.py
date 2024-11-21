@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from datetime import datetime
 
-from dataclasses_json import dataclass_json
+# from dataclasses_json import dataclass_json
 
 from common.enums.loss_functions import LossFunctions
 from common.enums.train_models import TrainModel
@@ -10,7 +10,7 @@ from core.domain.training_result import TrainingResult
 from core.domain.training_result_detail import TrainingResultDetail
 
 
-@dataclass_json
+# @dataclass_json
 @dataclass
 class TrainingResultExportModel:
     training_id: int
@@ -21,7 +21,7 @@ class TrainingResultExportModel:
         return TrainingResult(training_id=training_id, training_result_type=self.training_result_type, result_value=self.result_value)
 
 
-@dataclass_json
+# @dataclass_json
 @dataclass
 class TrainingResultDetailExportModel:
     training_id: int
@@ -38,7 +38,7 @@ class TrainingResultDetailExportModel:
                                     aupr=self.aupr, recall=self.recall, precision=self.precision)
 
 
-@dataclass_json
+# @dataclass_json
 @dataclass
 class TrainingExportModel:
     training_id: int

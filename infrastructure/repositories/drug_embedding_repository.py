@@ -154,6 +154,13 @@ class DrugEmbeddingRepository(MySqlRepository):
 
         return map_text_embedding(result[0])
 
+    def find_drug_embedding_total_text(self, embedding_type: EmbeddingType, start: int, length: int) \
+            -> list[TextEmbeddingDTO]:
+        result, _ = self.call_procedure('FindDrugEmbeddingTotalText',
+                                        [embedding_type.value, start, length])
+
+        return map_text_embedding(result[0])
+
     def get_embedding_count(self, embedding_type: EmbeddingType, text_type: TextType):
 
         result, _ = self.call_procedure('GetEmbeddingCount', [embedding_type.value, text_type.value])

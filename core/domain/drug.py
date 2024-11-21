@@ -27,6 +27,7 @@ class Drug(BaseModel):
     volume_of_distribution = Column(Text, nullable=False)
     clearance = Column(Text, nullable=False)
     classification_description = Column(Text, nullable=False)
+    total_text = Column(Text, nullable=False)
     classification_direct_parent = Column(Text, nullable=False)
     classification_kingdom = Column(Text, nullable=False)
     classification_superclass = Column(Text, nullable=False)

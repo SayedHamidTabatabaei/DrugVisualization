@@ -63,6 +63,8 @@ class DrugEmbeddingBusiness(BaseBusiness):
             return self.drug_embedding_repository.find_drug_embedding_clearance(embedding_type, start, length)
         elif text_type == TextType.ClassificationDescription:
             return self.drug_embedding_repository.find_drug_embedding_classification_description(embedding_type, start, length)
+        elif text_type == TextType.TotalText:
+            return self.drug_embedding_repository.find_drug_embedding_total_text(embedding_type, start, length)
         elif text_type == TextType.InteractionDescription:
             return self.interaction_embedding_repository.find_interaction_embedding_description(embedding_type, start, length)
 
@@ -105,6 +107,9 @@ class DrugEmbeddingBusiness(BaseBusiness):
 
         elif text_type == TextType.ClassificationDescription:
             drugs = self.drug_repository.find_all_drug_classification_description()
+
+        elif text_type == TextType.TotalText:
+            drugs = self.drug_repository.find_all_drug_classification_total_text()
 
         elif text_type == TextType.InteractionDescription:
             interactions = self.drug_interaction_repository.find_all_interaction_description()

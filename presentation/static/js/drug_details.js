@@ -100,6 +100,7 @@ function fillInformationContainer(data)
     <div class="explanation" style="text-indent: -180px; padding-left: 180px;"><b>Volume of distribution:</b> ${data.volume_of_distribution}</div>
     <div><b>Clearance:</b> ${data.clearance}</div>
     <div class="explanation" style="text-indent: -205px; padding-left: 205px;"><b>Classification description:</b> ${data.classification_description}</div>
+    <div class="explanation" style="text-indent: -205px; padding-left: 205px;"><b>Total Text:</b> ${data.total_text}</div>
     <div><b>Classification direct parent:</b> ${data.classification_direct_parent}</div>
     <div><b>Classification kingdom:</b> ${data.classification_kingdom}</div>
     <div><b>Classification superclass:</b> ${data.classification_superclass}</div>

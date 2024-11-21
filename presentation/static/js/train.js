@@ -150,6 +150,11 @@ function find_body(){
         body.classification_description_embedding = find_select_value('classification-description-embedding-select');
     }
 
+    if(document.getElementById('total-text-check').checked)
+    {
+        body.total_text_embedding = find_select_value('total-text-embedding-select');
+    }
+
     return body;
 }
 
@@ -325,6 +330,9 @@ function updateTrainDescription(){
         }
         else if (value === 'classification-description'){
             descriptions.push('CD');
+        }
+        else if (value === 'total-text'){
+            descriptions.push('Total Text');
         }
         else if (value === 'interaction-description'){
             descriptions.push('Int-D');

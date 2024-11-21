@@ -35,6 +35,7 @@ class TrainRequestViewModel:
     volume_of_distribution_embedding: Optional[EmbeddingType] = field(default=None)
     clearance_embedding: Optional[EmbeddingType] = field(default=None)
     classification_description_embedding: Optional[EmbeddingType] = field(default=None)
+    total_text_embedding: Optional[EmbeddingType] = field(default=None)
     interaction_description_embedding: Optional[EmbeddingType] = field(default=None)
 
     @classmethod
@@ -80,6 +81,7 @@ class TrainRequestViewModel:
             classification_description_embedding=EmbeddingType[
                 data['classification_description_embedding']] if 'classification_description_embedding' in data and data[
                 'classification_description_embedding'] else None,
+            total_text_embedding=EmbeddingType[data['total_text_embedding']] if 'total_text_embedding' in data and data['total_text_embedding'] else None,
             interaction_description_embedding=EmbeddingType[data['interaction_description_embedding']] if 'interaction_description_embedding' in data and
                                                                                                           data['interaction_description_embedding'] else None,
         )

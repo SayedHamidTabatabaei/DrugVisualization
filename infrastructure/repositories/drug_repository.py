@@ -96,3 +96,7 @@ class DrugRepository(MySqlRepository):
     def find_all_drug_classification_description(self) -> list[DrugTextPropertyDTO]:
         result, _ = self.call_procedure('FindAllDrugClassificationDescription')
         return map_drug_text(result[0])
+
+    def find_all_drug_classification_total_text(self) -> list[DrugTextPropertyDTO]:
+        result, _ = self.call_procedure('FindAllDrugTotalText')
+        return map_drug_text(result[0])

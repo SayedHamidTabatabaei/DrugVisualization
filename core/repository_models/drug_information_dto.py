@@ -1,7 +1,5 @@
 from dataclasses import dataclass
 
-from numpy import ndarray
-
 
 @dataclass
 class DrugInformationDTO:
@@ -27,6 +25,7 @@ class DrugInformationDTO:
     volume_of_distribution: str
     clearance: str
     classification_description: str
+    total_text: str
     classification_direct_parent: str
     classification_kingdom: str
     classification_superclass: str

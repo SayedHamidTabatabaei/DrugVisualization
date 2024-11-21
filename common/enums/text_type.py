@@ -15,4 +15,5 @@ class TextType(Enum):
     VolumeOfDistribution = 11
     Clearance = 12
     ClassificationDescription = 13
+    TotalText = 14
     InteractionDescription = 20
