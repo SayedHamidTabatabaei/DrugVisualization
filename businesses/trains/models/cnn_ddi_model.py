@@ -57,7 +57,7 @@ class CNNDDITrainModel(TrainBaseModel):
 
         model.compile(optimizer="adam", loss="categorical_crossentropy", metrics=["accuracy"])
 
-        history = model.fit(x_train, y_train, epochs=100, batch_size=128, validation_data=(x_val, y_val))
+        history = model.fit(x_train, y_train, epochs=50, batch_size=32, validation_data=(x_val, y_val))
 
         self.save_plots(history, self.train_id)
 

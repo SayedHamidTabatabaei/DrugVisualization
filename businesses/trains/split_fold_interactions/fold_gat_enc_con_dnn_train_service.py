@@ -1,3 +1,5 @@
+import gc
+
 from businesses.trains.models.gat_enc_model import GatEncTrainModel
 from businesses.trains.train_base_service import TrainBaseService
 from common.enums.train_models import TrainModel
@@ -21,6 +23,8 @@ class FoldGatEncConDnnTrainService(TrainBaseService):
 
         results = []
 
+        fold = 1
+
         for x_train, x_test, y_train, y_test in super().fold_on_interaction_deepface(parameters.drug_data, parameters.interaction_data,
                                                                                      train_id=parameters.train_id):
 
@@ -28,5 +32,11 @@ class FoldGatEncConDnnTrainService(TrainBaseService):
             result = model.fit_model(x_train, y_train, x_test, y_test, x_test, y_test)
 
             results.append(result)
+
+            del x_train, x_test, y_train, y_test
+            gc.collect()
+
+            print(f"Fold {fold} completed. Memory cleared.")
+            fold = fold + 1
 
         return super().calculate_fold_results(results)

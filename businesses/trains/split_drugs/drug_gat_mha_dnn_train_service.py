@@ -1,3 +1,5 @@
+import gc
+
 from businesses.trains.models.gat_mha_model import GatMhaTrainModel
 from businesses.trains.train_base_service import TrainBaseService
 from common.enums.train_models import TrainModel
@@ -22,6 +24,8 @@ class DrugGatMhaDnnTrainService(TrainBaseService):
 
         results = []
 
+        fold = 1
+
         for x_train, x_test, y_train, y_test in super().manual_k_fold_train_test_data(parameters.drug_data, parameters.interaction_data,
                                                                                       is_deep_face=True, compare_train_test=self.compare_train_test):
 
@@ -29,5 +33,11 @@ class DrugGatMhaDnnTrainService(TrainBaseService):
             result = model.fit_model(x_train, y_train, x_test, y_test, x_test, y_test)
 
             results.append(result)
+
+            del x_train, x_test, y_train, y_test
+            gc.collect()
+
+            print(f"Fold {fold} completed. Memory cleared.")
+            fold = fold + 1
 
         return super().calculate_fold_results(results)

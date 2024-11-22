@@ -1,3 +1,5 @@
+import gc
+
 # noinspection PyUnresolvedReferences
 from tensorflow.keras.models import Model
 
@@ -27,5 +29,8 @@ class GatAeDnnTrainService(TrainBaseService):
 
         model = GatAeTrainModel(parameters.train_id, categories, self.num_classes, parameters.interaction_data, training_params=training_params)
         result = model.fit_model(x_train, y_train, x_val, y_val, x_test, y_test)
+
+        del x_train, x_test, y_train, y_test
+        gc.collect()
 
         return result

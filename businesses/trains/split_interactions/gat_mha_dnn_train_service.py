@@ -1,3 +1,5 @@
+import gc
+
 from businesses.trains.models.gat_mha_model import GatMhaTrainModel
 from businesses.trains.train_base_service import TrainBaseService
 from common.enums.train_models import TrainModel
@@ -24,5 +26,8 @@ class GatMhaDnnTrainService(TrainBaseService):
 
         model = GatMhaTrainModel(parameters.train_id, categories, self.num_classes, parameters.interaction_data, training_params=training_params)
         result = model.fit_model(x_train, y_train, x_val, y_val, x_test, y_test)
+
+        del x_train, x_test, y_train, y_test
+        gc.collect()
 
         return result
