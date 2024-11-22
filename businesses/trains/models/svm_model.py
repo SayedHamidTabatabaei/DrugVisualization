@@ -1,4 +1,4 @@
-from sklearn import svm
+from thundersvm import SVC
 
 from businesses.trains.models.train_base_model import TrainBaseModel
 from common.helpers import loss_helper
@@ -22,9 +22,9 @@ class SVMModel(TrainBaseModel):
             print('Class weight!')
             class_weight = loss_helper.get_class_weights(y_train)
 
-            model = svm.SVC(kernel='linear', class_weight=class_weight)
+            model = SVC(kernel='linear', class_weight=class_weight)
         else:
-            model = svm.SVC(kernel='linear')
+            model = SVC(kernel='linear')
 
         model.fit(x_train, y_train)
 
