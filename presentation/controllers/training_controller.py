@@ -71,11 +71,14 @@ class TrainingController(MethodView):
         train_model_str = request.args.get('trainModel')
 
         if not train_model_str:
-            return jsonify({'status': False, 'data': ''})
+            return jsonify({'status': True, 'description': '', 'image_name': 'NotFound.png'})
 
         train_model = TrainModel[train_model_str]
 
-        return jsonify({'status': True, 'data': train_model.description})
+        if not train_model:
+            return jsonify({'status': True, 'description': '', 'image_name': 'NotFound.png'})
+
+        return jsonify({'status': True, 'description': train_model.description, 'image_name': f"{train_model.image_name}.png"})
 
     @route('get_scenario_description', methods=['GET'])
     def get_scenario_description(self):

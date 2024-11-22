@@ -198,7 +198,7 @@ class TrainingBusiness(BaseBusiness):
         elif isinstance(training_result.model, list):
             for idx in range(len(training_result.model)):
                 with open(f'training_models/{train_id}_{idx}.pkl', 'wb') as file:
-                    pickle.dump(training_result.model, file)
+                    pickle.dump(training_result.model[idx], file)
 
         train_result_details = [TrainingResultDetail(training_id=train_id,
                                                      training_label=item.training_label,

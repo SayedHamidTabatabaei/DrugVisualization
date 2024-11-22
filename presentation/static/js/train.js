@@ -191,7 +191,10 @@ function updateTrainModelDescription() {
     .then(response => response.json())
     .then(data => {
         if (data.status) {
-            descriptionElement.textContent = data.data;
+            descriptionElement.textContent = data.description;
+
+            const imageElement = document.getElementById("trainModelImg");
+            imageElement.src = `../training/training_models/training_model_images/${data.image_name}`
         } else {
             console.log('Error: No data found.');
         }
@@ -202,13 +205,8 @@ function updateTrainModelDescription() {
 
 }
 
-function updateTrainModelImage() {
+function updateTrainModelImage(image_name) {
 
-    const selectedModel = document.getElementById("trainModelSelect").value;
-
-    const imageElement = document.getElementById("trainModelImg");
-
-    imageElement.src = `../training/training_models/training_model_images/${selectedModel}.png`
 
 }
 
