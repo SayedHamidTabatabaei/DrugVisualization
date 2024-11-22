@@ -1,4 +1,4 @@
-from thundersvm import SVC
+from sklearn.svm import SVC
 
 from businesses.trains.models.train_base_model import TrainBaseModel
 from common.helpers import loss_helper
