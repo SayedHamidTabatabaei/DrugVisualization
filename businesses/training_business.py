@@ -192,6 +192,7 @@ class TrainingBusiness(BaseBusiness):
                             for item in training_result.training_results]
         self.training_result_repository.insert_batch_check_duplicate(training_results)
 
+        print('Creating model files...')
         if isinstance(training_result.model, bytes):
             with open(f'training_models/{train_id}.pkl', 'wb') as file:
                 pickle.dump(training_result.model, file)
