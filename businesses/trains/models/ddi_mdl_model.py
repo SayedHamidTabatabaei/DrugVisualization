@@ -50,7 +50,7 @@ class DDIMDLTrainModel(TrainBaseModel):
 
         for idx, _ in enumerate(x_train):
 
-            model = DDIMDLModel()
+            model = DDIMDLModel(num_classes=self.num_classes)
             model.compile_model()
 
             early_stopping = EarlyStopping(monitor='val_loss', patience=10, verbose=0, mode='auto')
