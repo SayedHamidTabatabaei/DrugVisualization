@@ -50,4 +50,18 @@ class DrugEmbeddingController(MethodView):
 
         self.drug_embedding_business.calculate_embeddings(EmbeddingType[embedding_type], TextType[text_type])
 
+        # self.drug_embedding_business.calculate_embeddings(EmbeddingType[embedding_type], TextType.Description)
+        # self.drug_embedding_business.calculate_embeddings(EmbeddingType[embedding_type], TextType.Indication)
+        # self.drug_embedding_business.calculate_embeddings(EmbeddingType[embedding_type], TextType.Pharmacodynamics)
+        # self.drug_embedding_business.calculate_embeddings(EmbeddingType[embedding_type], TextType.MechanismOfAction)
+        # self.drug_embedding_business.calculate_embeddings(EmbeddingType[embedding_type], TextType.Toxicity)
+        # self.drug_embedding_business.calculate_embeddings(EmbeddingType[embedding_type], TextType.Metabolism)
+        # self.drug_embedding_business.calculate_embeddings(EmbeddingType[embedding_type], TextType.Absorption)
+        # self.drug_embedding_business.calculate_embeddings(EmbeddingType[embedding_type], TextType.HalfLife)
+        # self.drug_embedding_business.calculate_embeddings(EmbeddingType[embedding_type], TextType.ProteinBinding)
+        # self.drug_embedding_business.calculate_embeddings(EmbeddingType[embedding_type], TextType.RouteOfElimination)
+        # self.drug_embedding_business.calculate_embeddings(EmbeddingType[embedding_type], TextType.VolumeOfDistribution)
+        # self.drug_embedding_business.calculate_embeddings(EmbeddingType[embedding_type], TextType.Clearance)
+        # self.drug_embedding_business.calculate_embeddings(EmbeddingType[embedding_type], TextType.ClassificationDescription)
+
         return jsonify({'status': True})

@@ -18,6 +18,6 @@ class LongFormerEmbeddingService(EmbeddingBaseService):
     def embed(self, text: str) -> (str, bool):
 
         inputs = self.longformer_tokenizer(text, truncation=True, max_length=4096, return_tensors="pt")
-        outputs = self.longformer_model(**inputs)
+        outputs = self.longformer_model(**inputs, output_hidden_states=True)
 
-        return super().parse_string(outputs.last_hidden_state), False
+        return super().parse_string(outputs.hidden_states[-1]), False
