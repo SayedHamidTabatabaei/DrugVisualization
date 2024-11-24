@@ -1,21 +1,21 @@
 import tensorflow as tf
 from tensorflow.keras.callbacks import EarlyStopping
-from tensorflow.keras.layers import Conv1D, BatchNormalization, Dense, ReLU, MaxPooling1D
+from tensorflow.keras.layers import Conv1D, BatchNormalization, Dense, ReLU, MaxPooling1D, GlobalAveragePooling1D
 from tensorflow.keras.models import Model, Sequential
 
+from businesses.trains.loss_function.focal_loss import focal_loss
 from businesses.trains.models.train_base_model import TrainBaseModel
 from core.repository_models.training_drug_interaction_dto import TrainingDrugInteractionDTO
 from core.repository_models.training_summary_dto import TrainingSummaryDTO
 
 
 class CNNSiamModel(Model):
-    def __init__(self, num_classes: int, vector_size: int = 936):
+    def __init__(self, num_classes: int):
         super(CNNSiamModel, self).__init__()
         self.num_classes = num_classes
-        self.vector_size = vector_size
 
-        self.conv1 = Conv1D(64, 3, use_bias=False, padding='valid', name='conv1')
-        self.conv2 = Conv1D(128, 3, use_bias=False, padding='valid', name='conv2')
+        self.conv1 = Conv1D(64, 3, use_bias=False, name='conv1')
+        self.conv2 = Conv1D(128, 3, use_bias=False, name='conv2')
         self.conv3_1 = Conv1D(128, 3, padding='same', use_bias=False, name='conv3_1')
         self.conv3_2 = Conv1D(128, 3, padding='same', use_bias=False, name='conv3_2')
         self.conv4 = Conv1D(256, 3, use_bias=False, name='conv4')
@@ -41,15 +41,14 @@ class CNNSiamModel(Model):
         # Residual connection
         x = res_aft + res_bef
         x = tf.nn.relu(self.bn4(self.conv4(x)))
-        x = MaxPooling1D(pool_size=2)(x)
+        x = MaxPooling1D(pool_size=4)(x)
 
         return x
 
     def call(self, inputs, **kwargs):
         # Split input into two parts
-        x = tf.reshape(inputs, [-1, 3, self.vector_size])
-        x1 = x[:, :, :self.vector_size // 2]
-        x2 = x[:, :, self.vector_size // 2:]
+        x1 = inputs[:, 0, :, :]
+        x2 = inputs[:, 1, :, :]
 
         # Encode both parts
         x1 = self.encode(x1)
@@ -59,7 +58,7 @@ class CNNSiamModel(Model):
         x = x1 + x2
 
         # Flatten for fully connected layers
-        x = tf.reshape(x, [-1, 256 * 283])
+        x = GlobalAveragePooling1D()(x)
 
         # Pass through fully connected layers
         y = self.fc(x)
@@ -74,7 +73,7 @@ class CNNSiamTrainModel(TrainBaseModel):
     def fit_model(self, x_train, y_train, x_val, y_val, x_test, y_test) -> TrainingSummaryDTO:
         model = CNNSiamModel(self.num_classes)
 
-        model.compile(optimizer="adam", loss="focal_loss", metrics=["accuracy"])
+        model.compile(optimizer="adam", loss=focal_loss(gamma=2., alpha=0.25), metrics=["accuracy"])
 
         early_stopping = EarlyStopping(monitor='val_loss', patience=7, verbose=0, mode='auto')
 
