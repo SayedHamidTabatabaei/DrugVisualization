@@ -31,7 +31,7 @@ class TrainModel(Enum):
 
     Drug_Deep_DDI = (210, Scenarios.SplitDrugsTestWithTrain, 'Deep_DDI', 'The Old Base Algorithm, just use SMILES code.')
     Drug_DDIMDL = (211, Scenarios.SplitDrugsTestWithTrain, 'DDIMDL', 'The Old Base Algorithm, just use SMILES code.')
-    Drug_CNN_Siam = (212, Scenarios.SplitDrugsTestWithTrain, 'NotFound', 'The Old Base Algorithm, use CNN.')
+    Drug_CNN_Siam = (212, Scenarios.SplitDrugsTestWithTrain, 'CNN_Siam', 'The Old Base Algorithm, use CNN.')
     Drug_KNN = (251, Scenarios.SplitDrugsTestWithTrain, 'NotFound', 'This network learns by KNN.')
     Drug_SVM = (252, Scenarios.SplitDrugsTestWithTrain, 'NotFound', 'This network learns by SVM.')
     Drug_LR = (253, Scenarios.SplitDrugsTestWithTrain, 'NotFound', 'Logistic Regression.')
@@ -46,7 +46,7 @@ class TrainModel(Enum):
                                                                                     'Pathway, Target, Enzyme) and then DNN.')
     Drug_Deep_DDI_Test = (310, Scenarios.SplitDrugsTestWithTest, 'Deep_DDI', 'The Old Base Algorithm, just use SMILES code.')
     Drug_DDIMDL_Test = (311, Scenarios.SplitDrugsTestWithTest, 'DDIMDL', 'The Old Base Algorithm, just use SMILES code.')
-    Drug_CNN_Siam_Test = (312, Scenarios.SplitDrugsTestWithTest, 'NotFound', 'The Old Base Algorithm, use CNN.')
+    Drug_CNN_Siam_Test = (312, Scenarios.SplitDrugsTestWithTest, 'CNN_Siam', 'The Old Base Algorithm, use CNN.')
     Drug_KNN_Test = (351, Scenarios.SplitDrugsTestWithTest, 'NotFound', 'This network learns by KNN.')
     Drug_SVM_Test = (352, Scenarios.SplitDrugsTestWithTest, 'NotFound', 'This network learns by SVM.')
     Drug_LR_Test = (353, Scenarios.SplitDrugsTestWithTest, 'NotFound', 'Logistic Regression.')
@@ -60,7 +60,7 @@ class TrainModel(Enum):
                                                                                     'Pathway, Target, Enzyme) and then DNN.')
     Fold_Deep_DDI = (410, Scenarios.FoldInteractionSimilarities, 'Deep_DDI', 'The Old Base Algorithm, just use SMILES code.')
     Fold_DDIMDL = (411, Scenarios.FoldInteractionSimilarities, 'DDIMDL', 'The Old Base Algorithm, just use SMILES code.')
-    Fold_CNN_Siam = (412, Scenarios.FoldInteractionSimilarities, 'NotFound', 'The Old Base Algorithm, use CNN.')
+    Fold_CNN_Siam = (412, Scenarios.FoldInteractionSimilarities, 'CNN_Siam', 'The Old Base Algorithm, use CNN.')
     Fold_KNN = (451, Scenarios.FoldInteractionSimilarities, 'NotFound', 'This network learns by KNN.')
     Fold_SVM = (452, Scenarios.FoldInteractionSimilarities, 'NotFound', 'This network learns by SVM.')
     Fold_LR = (453, Scenarios.FoldInteractionSimilarities, 'NotFound', 'Logistic Regression.')
@@ -68,7 +68,7 @@ class TrainModel(Enum):
 
     Deep_DDI = (501, Scenarios.SplitInteractionSimilarities, 'Deep_DDI', 'The Old Base Algorithm, just use SMILES code.')
     DDIMDL = (502, Scenarios.SplitInteractionSimilarities, 'DDIMDL', 'The Old Base Algorithm, just use SMILES code.')
-    CNN_Siam = (503, Scenarios.SplitInteractionSimilarities, 'NotFound', 'The Old Base Algorithm, use CNN.')
+    CNN_Siam = (503, Scenarios.SplitInteractionSimilarities, 'CNN_Siam', 'The Old Base Algorithm, use CNN.')
 
     def __init__(self, value, scenario: Scenarios, image_name, description):
         self._value_ = value

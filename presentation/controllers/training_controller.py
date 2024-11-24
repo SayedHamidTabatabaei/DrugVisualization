@@ -145,13 +145,8 @@ class TrainingController(MethodView):
 
         train_history, total_number = self.training_business.get_history(scenario, train_model, date, min_sample_count, start, length)
 
-        # if train_history:
         return jsonify({'draw': draw, 'recordsTotal': total_number,
                         'recordsFiltered': total_number, 'data': train_history, 'status': True})
-        # else:
-        #     return jsonify({'draw': draw, 'recordsTotal': total_number,
-        #                     'recordsFiltered': total_number, 'data': train_history,
-        #                     'message': "No enzyme found!", 'status': False})
 
     @route('get_schedules', methods=['GET'])
     def get_schedules(self):

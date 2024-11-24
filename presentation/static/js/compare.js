@@ -68,6 +68,10 @@ function get_history()
                         data: 'is_checked'
                     },
                     {
+                        className: 'id-column',
+                        data: 'id'
+                    },
+                    {
                         className: 'total-name-column',
                         render: function(data, type, row) {
                             return `<span title="${row.description}">${row.name}</span><span class="inside-train-model"><br/>(${row.train_model})</span><span class="inside-description"><br/>(${row.description})</span>`;
@@ -342,6 +346,9 @@ function get_history()
                     const descriptionColumn = document.querySelectorAll('.description-column');
                     descriptionColumn.forEach((column) => { column.style.display = 'none'; });
 
+                    const idColumn = document.querySelectorAll('.id-column');
+                    idColumn.forEach((column) => { column.style.display = 'none'; });
+
                 },
         dom: 'Bfrtip',
         buttons: [
@@ -430,6 +437,7 @@ function settingSubmit(){
     const trainingModelValue = document.querySelector('input[name="trainingModel"]:checked')?.value || 'None';
     const descriptionValue = document.querySelector('input[name="description"]:checked')?.value || 'None';
     const lossValue = document.querySelector('input[name="loss"]:checked')?.value || 'None';
+    const idValue = document.querySelector('input[name="id"]:checked')?.value || 'None';
 
     if (trainingModelValue === 'inColumn'){
         const trainingModelColumn = document.querySelectorAll('.train-model-column');
@@ -481,9 +489,16 @@ function settingSubmit(){
         const lossColumn = document.querySelectorAll('.loss-column');
         lossColumn.forEach((column) => { column.style.display = 'table-cell'; });
     } else{
-
         const lossColumn = document.querySelectorAll('.loss-column');
         lossColumn.forEach((column) => { column.style.display = 'none'; });
+    }
+
+    if (idValue === 'show'){
+        const idColumn = document.querySelectorAll('.id-column');
+        idColumn.forEach((column) => { column.style.display = 'table-cell'; });
+    } else{
+        const idColumn = document.querySelectorAll('.id-column');
+        idColumn.forEach((column) => { column.style.display = 'none'; });
     }
 
     if (trainingModelValue !== 'underName' && descriptionValue !== 'underName'){

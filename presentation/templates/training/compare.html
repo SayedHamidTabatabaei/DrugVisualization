@@ -86,6 +86,7 @@
                     </label>
                 </th>
                 <th rowspan="2" class="check-text-column">Checked</th>
+                <th rowspan="2" class="id-column">Id</th>
                 <th rowspan="2" class="total-name-column">Name</th>
                 <th rowspan="2" class="name-column">Name</th>
                 <th rowspan="2" class="train-model-column">Train Model</th>
@@ -420,7 +421,7 @@
     <span onclick="closeModal()" class="close">&times;</span>
 </div>
 
-<div id="settingModal" class="modal" style="display:none;max-width: 900px;max-height: 500px;">
+<div id="settingModal" class="modal" style="display:none;max-width: 900px;max-height: 580px;">
     <div class="modal-content" style="overflow-y: auto;">
         <h3>Setting</h3>
         <hr/>
@@ -431,7 +432,7 @@
                 <h5 style="margin-bottom: 10px;">Training Model</h5>
                 <div style="display: flex; gap: 20px;">
                     <label><input type="radio" name="trainingModel" value="hide" /> Hide</label>
-                    <label><input type="radio" name="trainingModel" value="underName" /> Under the name</label>
+                    <label><input type="radio" name="trainingModel" checked value="underName" /> Under the name</label>
                     <label><input type="radio" name="trainingModel" value="inColumn" /> In Column</label>
                 </div>
             </div>
@@ -441,7 +442,7 @@
                 <h5 style="margin-bottom: 10px;">Description</h5>
                 <div style="display: flex; gap: 20px;">
                     <label><input type="radio" name="description" value="hide" /> Hide</label>
-                    <label><input type="radio" name="description" value="underName" /> Under the name</label>
+                    <label><input type="radio" name="description" checked value="underName" /> Under the name</label>
                     <label><input type="radio" name="description" value="inColumn" /> In Column</label>
                 </div>
             </div>
@@ -451,7 +452,16 @@
                 <h5 style="margin-bottom: 10px;">Loss Function</h5>
                 <div style="display: flex; gap: 20px;">
                     <label><input type="radio" name="loss" value="hide" /> Hide</label>
-                    <label><input type="radio" name="loss" value="show" /> Show</label>
+                    <label><input type="radio" name="loss" checked value="show" /> Show</label>
+                </div>
+            </div>
+            <hr/>
+
+            <div style="gap: 10px;">
+                <h5 style="margin-bottom: 10px;">Id</h5>
+                <div style="display: flex; gap: 20px;">
+                    <label><input type="radio" name="id" checked value="hide" /> Hide</label>
+                    <label><input type="radio" name="id" value="show" /> Show</label>
                 </div>
             </div>
 
