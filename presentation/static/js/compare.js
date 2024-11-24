@@ -24,6 +24,8 @@ function get_history()
     .then(data => {
         if (data.status) {
 
+            data.data.forEach(item => {item.is_checked = false})
+
             const maxAccuracy = Math.max(...data.data.map(item => item.accuracy));
             const minLoss = Math.min(...data.data.map(item => item.loss));
             const maxF1Score_Weighted = Math.max(...data.data.map(item => item.f1_score_weighted));
@@ -49,11 +51,12 @@ function get_history()
                 columns: [
                     {
                         data: null,
-                        render: function(data, type, row) {
+                        render: function(data, type, row, meta) {
                             const checkboxValue = `${row.id}|${row.name}`;
+                            const isChecked = row.is_checked ? 'checked' : '';
 
                             return '<label class="checkbox-label" style="width: 30px;">\n' +
-                                '    <input type="checkbox" id="row-check" class="row-checkbox" onclick="compare_trainings()" value="' + checkboxValue + '">\n' +
+                                `    <input type="checkbox" id="row-check" class="row-checkbox" ${isChecked} onclick="compare_trainings();updateRowState(${meta.row}, this.checked);" value="${checkboxValue}">\n` +
                                 '    <span class="checkbox-custom" style="margin-top: 0;"></span>' +
                                 '</label>'
                         },
@@ -61,11 +64,29 @@ function get_history()
                         searchable: false
                     },
                     {
+                        className: 'check-text-column',
+                        data: 'is_checked'
+                    },
+                    {
+                        className: 'total-name-column',
                         render: function(data, type, row) {
-                            return `<span title="${row.description}">${row.name}</span><br/><span>(${row.train_model})</span>`;
+                            return `<span title="${row.description}">${row.name}</span><span class="inside-train-model"><br/>(${row.train_model})</span><span class="inside-description"><br/>(${row.description})</span>`;
                         }
                     },
                     {
+                        className: 'name-column',
+                        data: 'name'
+                    },
+                    {
+                        className: 'train-model-column',
+                        data: 'train_model'
+                    },
+                    {
+                        className: 'description-column',
+                        data: 'description'
+                    },
+                    {
+                        className: 'loss-column',
                         render: function(data, type, row) {
                             let class_weight = ""
                             if(row.class_weight) {
@@ -311,6 +332,16 @@ function get_history()
                     if (table) {
                         table.removeAttribute('style');
                     }
+
+                    const nameColumn = document.querySelectorAll('.name-column');
+                    nameColumn.forEach((column) => { column.style.display = 'none'; });
+
+                    const trainingModelColumn = document.querySelectorAll('.train-model-column');
+                    trainingModelColumn.forEach((column) => { column.style.display = 'none'; });
+
+                    const descriptionColumn = document.querySelectorAll('.description-column');
+                    descriptionColumn.forEach((column) => { column.style.display = 'none'; });
+
                 },
         dom: 'Bfrtip',
         buttons: [
@@ -319,27 +350,63 @@ function get_history()
                 title: 'Training Results',
                 orientation: 'landscape',
                 pageSize: 'A3',
-                text: '<i class="fas fa-file-pdf"></i>',
+                text: '<i title="PDF" class="fas fa-file-pdf"></i>',
                 exportOptions: {
                     columns: ':visible'
                 }
             },
             {
-                text: '<i class="fas fa-file-code"></i>',
+                extend: 'csvHtml5', // Add the CSV button
+                title: 'Training Results', // Title of the CSV file
+                text: '<i title="CSV" class="fas fa-file-csv"></i>', // Icon for the CSV button
+                exportOptions: {
+                    columns: ':visible' // Export only visible columns
+                }
+            },
+            {
+                text: '<i title="Latex Code" class="fas fa-file-code"></i>',
                 action: function (e, dt, button, config) {
                     generateLatexCode(data.columns, data.data);
                 }
             },
             {
-                text: '<i class="fas fa-file-export"></i>',
+                text: '<i title="Export Selected" class="fas fa-file-export"></i>',
                 action: function (e, dt, button, config) {
                     exportSelected(data.columns, data.data);
                 }
             },
             {
-                text: '<i class="fas fa-file-import"></i>',
+                text: '<i title="Import" class="fas fa-file-import"></i>',
                 action: function (e, dt, button, config) {
                     importSelected(data.columns, data.data);
+                }
+            },
+            {
+                text: '<i title="Filter Checked" class="fas fa-filter"></i>',
+                action: function (e, dt, button, config) {
+
+                    if (button.checked === undefined){
+                        button.checked = true;
+                    }
+                    else{
+                        button.checked = !button.checked;
+                    }
+
+                    filter_checked(button.checked)
+
+                    if (button.checked){
+                        button.addClass('active-filter')
+                    }
+                    else{
+                        button.removeClass('active-filter');
+                    }
+                }
+            },
+            {
+                text: '<i title="Setting" class="fas fa-gear"></i>',
+                action: function (e, dt, button, config) {
+
+                    document.getElementById('settingModal').style.display = 'block';
                 }
             }
         ]
@@ -353,6 +420,89 @@ function get_history()
         console.log('Error:', error)
         hideSpinner(false);
     });
+}
+
+function closeSettingModal() {
+    document.getElementById('settingModal').style.display = 'none';
+}
+
+function settingSubmit(){
+    const trainingModelValue = document.querySelector('input[name="trainingModel"]:checked')?.value || 'None';
+    const descriptionValue = document.querySelector('input[name="description"]:checked')?.value || 'None';
+    const lossValue = document.querySelector('input[name="loss"]:checked')?.value || 'None';
+
+    if (trainingModelValue === 'inColumn'){
+        const trainingModelColumn = document.querySelectorAll('.train-model-column');
+        trainingModelColumn.forEach((column) => { column.style.display = 'table-cell'; });
+
+        const insideTrainingModel = document.querySelectorAll('.inside-train-model');
+        insideTrainingModel.forEach((column) => { column.style.display = 'none'; });
+
+    }else if (trainingModelValue === 'underName'){
+        const trainingModelColumn = document.querySelectorAll('.train-model-column');
+        trainingModelColumn.forEach((column) => { column.style.display = 'none'; });
+
+        const insideTrainingModel = document.querySelectorAll('.inside-train-model');
+        insideTrainingModel.forEach((column) => { column.style.display = 'inline'; });
+
+    }else{
+
+        const trainingModelColumn = document.querySelectorAll('.train-model-column');
+        trainingModelColumn.forEach((column) => { column.style.display = 'none'; });
+
+        const insideTrainingModel = document.querySelectorAll('.inside-train-model');
+        insideTrainingModel.forEach((column) => { column.style.display = 'none'; });
+    }
+
+    if (descriptionValue === 'inColumn'){
+        const descriptionColumn = document.querySelectorAll('.description-column');
+        descriptionColumn.forEach((column) => { column.style.display = 'table-cell'; });
+
+        const insideDescription = document.querySelectorAll('.inside-description');
+        insideDescription.forEach((column) => { column.style.display = 'none'; });
+
+    }else if (descriptionValue === 'underName'){
+        const descriptionColumn = document.querySelectorAll('.description-column');
+        descriptionColumn.forEach((column) => { column.style.display = 'none'; });
+
+        const insideDescription = document.querySelectorAll('.inside-description');
+        insideDescription.forEach((column) => { column.style.display = 'inline'; });
+
+    }else{
+
+        const descriptionColumn = document.querySelectorAll('.description-column');
+        descriptionColumn.forEach((column) => { column.style.display = 'none'; });
+
+        const insideDescription = document.querySelectorAll('.inside-description');
+        insideDescription.forEach((column) => { column.style.display = 'none'; });
+    }
+
+    if (lossValue === 'show'){
+        const lossColumn = document.querySelectorAll('.loss-column');
+        lossColumn.forEach((column) => { column.style.display = 'table-cell'; });
+    } else{
+
+        const lossColumn = document.querySelectorAll('.loss-column');
+        lossColumn.forEach((column) => { column.style.display = 'none'; });
+    }
+
+    if (trainingModelValue !== 'underName' && descriptionValue !== 'underName'){
+        const nameColumn = document.querySelectorAll('.name-column');
+        nameColumn.forEach((column) => { column.style.display = 'table-cell'; });
+
+        const totalNameColumn = document.querySelectorAll('.total-name-column');
+        totalNameColumn.forEach((column) => { column.style.display = 'none'; });
+
+    } else {
+        const nameColumn = document.querySelectorAll('.total-name-column');
+        nameColumn.forEach((column) => { column.style.display = 'table-cell'; });
+
+        const totalNameColumn = document.querySelectorAll('.name-column');
+        totalNameColumn.forEach((column) => { column.style.display = 'none'; });
+
+    }
+
+    document.getElementById('settingModal').style.display = 'none';
 }
 
 function compare_trainings()
@@ -370,9 +520,7 @@ function select_all()
     });
 }
 
-function filter_checked(){
-
-    let isChecked = document.getElementById('filter-check').checked;
+function filter_checked(isChecked){
 
     let rows = document.querySelectorAll('#selectableTrainTable tbody tr'); // Select all rows once
 
@@ -451,6 +599,19 @@ function fill_comparing_plot(comparing_plot_type, radio_group){
 
 function fill_accuracy_plots(){
     fill_saved_plots('accuracy', 'accuracyPlotsGridContainer')
+}
+
+function updateRowState(rowIndex, isChecked){
+    // Access DataTable instance
+    const table = $('#selectableTrainTable').DataTable();
+
+    // Get the row data
+    const rowData = table.row(rowIndex).data();
+
+    rowData.is_checked = isChecked;
+
+    // Update the row in DataTables
+    table.row(rowIndex).data(rowData).draw(false);
 }
 
 function create_plot_image(container, src, value) {
@@ -682,17 +843,22 @@ function fill_data_summary_grid(){
                 ordering: false,
                 searching: false,
                 dom: 'Bfrtip',
-                buttons: [
-                    {
-                        extend: 'pdfHtml5',
-                        title: 'Data Summary Table',
-                        orientation: 'landscape',
-                        pageSize: 'A4',
-                        text: '<i class="fas fa-file-pdf"></i>',
-                        exportOptions: {
-                            columns: ':visible'
+                buttons: [{
+                    extend: 'pdfHtml5',
+                    title: 'Data Summary Table',
+                    orientation: 'landscape',
+                    pageSize: 'A4',
+                    text: '<i class="fas fa-file-pdf"></i>',
+                    exportOptions: {
+                        // Export only visible columns
+                        columns: ':visible',
+
+                        modifier: {
+                            search: 'applied',
+                            order: 'applied',
                         }
-                    },
+                    }
+                },
                     {
                         text: '<i class="fas fa-file-code"></i>',
                         action: function (e, dt, button, config) {

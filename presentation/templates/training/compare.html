@@ -13,6 +13,7 @@
 <link rel="stylesheet" href="{{ url_for('static', filename='css/imagemodal.css') }}">
 <link rel="stylesheet" href="{{ url_for('static', filename='css/modal.css') }}">
 <link rel="stylesheet" href="{{ url_for('static', filename='css/image_gallery.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/compare.css') }}">
 
 {% endblock %}
 
@@ -65,21 +66,16 @@
         </select>
 
         <label for="minSampleCountSelect" class="label-for">Choose "Min sample":</label>
-        <select id="minSampleCountSelect" style="width: 70px;">0</select>
+        <select id="minSampleCountSelect" style="width: 80px;">0</select>
 
         <label for="dateFilter">Find after:</label>
         <input type="date" id="dateFilter" name="dateFilter">
 
         <button id="submitBtn" onclick="get_history()">Submit</button>
-
-        <label class="checkbox-label" style="position: absolute;right: 20px;line-height:0"><strong><i>Filter Checked</i></strong>
-            <input type="checkbox" id="filter-check" onclick="filter_checked()">
-            <span class="checkbox-custom" style="margin-top: 0;"></span>
-        </label>
     </div>
 
 </div>
-<div class="grid-container" style="max-height: 400px;overflow-y: auto;overflow-x: auto;">
+<div class="grid-container" style="max-height: 800px;overflow-y: auto;overflow-x: auto;">
     <table id="selectableTrainTable" class="datagrid-table; display" style="border-collapse: collapse;">
         <thead style="position: sticky;top: 0;z-index: 10;background-color: white;">
             <tr>
@@ -89,8 +85,12 @@
                         <span class="checkbox-custom" style="margin-top: 0;"></span>
                     </label>
                 </th>
-                <th rowspan="2">Name</th>
-                <th rowspan="2">Loss</th>
+                <th rowspan="2" class="check-text-column">Checked</th>
+                <th rowspan="2" class="total-name-column">Name</th>
+                <th rowspan="2" class="name-column">Name</th>
+                <th rowspan="2" class="train-model-column">Train Model</th>
+                <th rowspan="2" class="description-column">Description</th>
+                <th rowspan="2" class="loss-column">Loss</th>
                 <th rowspan="2">Accuracy</th>
                 <th rowspan="2">Loss</th>
 
@@ -418,6 +418,52 @@
         <div id="jsonData"></div>
     </div>
     <span onclick="closeModal()" class="close">&times;</span>
+</div>
+
+<div id="settingModal" class="modal" style="display:none;max-width: 900px;max-height: 500px;">
+    <div class="modal-content" style="overflow-y: auto;">
+        <h3>Setting</h3>
+        <hr/>
+
+        <div style="display: grid; grid-template-columns: repeat(1, 3fr); gap: 5px; align-items: start;">
+
+            <div style="gap: 10px;">
+                <h5 style="margin-bottom: 10px;">Training Model</h5>
+                <div style="display: flex; gap: 20px;">
+                    <label><input type="radio" name="trainingModel" value="hide" /> Hide</label>
+                    <label><input type="radio" name="trainingModel" value="underName" /> Under the name</label>
+                    <label><input type="radio" name="trainingModel" value="inColumn" /> In Column</label>
+                </div>
+            </div>
+            <hr/>
+
+            <div>
+                <h5 style="margin-bottom: 10px;">Description</h5>
+                <div style="display: flex; gap: 20px;">
+                    <label><input type="radio" name="description" value="hide" /> Hide</label>
+                    <label><input type="radio" name="description" value="underName" /> Under the name</label>
+                    <label><input type="radio" name="description" value="inColumn" /> In Column</label>
+                </div>
+            </div>
+            <hr/>
+
+            <div style="gap: 10px;">
+                <h5 style="margin-bottom: 10px;">Loss Function</h5>
+                <div style="display: flex; gap: 20px;">
+                    <label><input type="radio" name="loss" value="hide" /> Hide</label>
+                    <label><input type="radio" name="loss" value="show" /> Show</label>
+                </div>
+            </div>
+
+            <div style="text-align: right;">
+                <button id="settingSubmitButton" onclick="settingSubmit()">
+                    Submit
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <span onclick="closeSettingModal()" class="close">&times;</span>
 </div>
 
 <!-- Modal for Slideshow -->

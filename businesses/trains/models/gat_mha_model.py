@@ -2,6 +2,7 @@ import tensorflow as tf
 from tensorflow.keras import Model, Input
 from tensorflow.keras.callbacks import EarlyStopping
 from tensorflow.keras.layers import Dense, Concatenate, Dropout, Reshape, Flatten, MultiHeadAttention, BatchNormalization, Activation, Lambda
+from tensorflow.keras.metrics import MeanSquaredError, Accuracy
 
 from businesses.trains.layers.autoencoder_layer import AutoEncoderLayer
 from businesses.trains.layers.gat_layer import GATLayer
@@ -227,7 +228,8 @@ class GatMhaTrainModel(TrainBaseModel):
         loss_weights = [1.0] * num_autoencoders + [1.0]
 
         # List of metrics for each output
-        metrics = ['mse'] * num_autoencoders + ['accuracy']
+        metrics = ([MeanSquaredError(name=f'auto_encoder_{i}_mse') for i in range(num_autoencoders)]
+                   + [Accuracy(name='classification_accuracy')])
 
         # Compile the model with separate losses and metrics for each output
         model.compile(

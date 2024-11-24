@@ -27,6 +27,7 @@ function get_schedules()
                     { data: 'train_model' },
                     { data: 'name' },
                     { data: 'description' },
+                    { data: 'min_sample_count' },
                     { data: 'schedule_date' },
                     {
                         data: null,

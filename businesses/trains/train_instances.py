@@ -1,4 +1,4 @@
-from businesses.trains.split_drugs.drug_cnn_ddi_train_service import DrugCNNDDITrainService
+from businesses.trains.split_drugs.drug_cnn_siam_train_service import DrugCNNSiamTrainService
 from businesses.trains.split_drugs.drug_gat_ae_dnn_train_service import DrugGatAeDnnTrainService
 from businesses.trains.split_drugs.drug_gat_mha_dnn_train_service import DrugGatMhaDnnTrainService
 from businesses.trains.split_drugs.drug_gat_mha_reverse_train_service import DrugGatMhaReverseTrainService
@@ -6,7 +6,7 @@ from businesses.trains.split_drugs.drug_knn_train_service import DrugKnnTrainSer
 from businesses.trains.split_drugs.drug_lr_train_service import DrugLrTrainService
 from businesses.trains.split_drugs.drug_rf_train_service import DrugRfTrainService
 from businesses.trains.split_drugs.drug_svm_train_service import DrugSvmTrainService
-from businesses.trains.split_fold_interactions.fold_cnn_ddi_train_service import FoldCNNDDITrainService
+from businesses.trains.split_fold_interactions.fold_cnn_siam_train_service import FoldCNNSiamTrainService
 from businesses.trains.split_fold_interactions.fold_ddi_mdl_train_service import FoldDDIMDLTrainService
 from businesses.trains.split_fold_interactions.fold_deep_ddi_train_service import FoldDeepDDITrainService
 from businesses.trains.split_fold_interactions.fold_gat_ae_dnn_train_service import FoldGatAeDnnTrainService
@@ -18,7 +18,7 @@ from businesses.trains.split_fold_interactions.fold_lr_train_service import Fold
 from businesses.trains.split_fold_interactions.fold_rf_train_service import FoldRfTrainService
 from businesses.trains.split_fold_interactions.fold_svm_train_service import FoldSvmTrainService
 from businesses.trains.split_interactions.enc_con_dnn_train_service import EncConDnnTrainService
-from businesses.trains.split_interactions.cnn_ddi_train_service import CNNDDITrainService
+from businesses.trains.split_interactions.cnn_siam_train_service import CNNSiamTrainService
 from businesses.trains.split_interactions.con_enc_dnn_train_service import ConEncDnnTrainService
 from businesses.trains.split_interactions.concat_dnn_train_service import ConcatDnnTrainService
 from businesses.trains.split_interactions.ddi_mdl_train_service import DDIMDLTrainService
@@ -75,8 +75,8 @@ def get_instance(category: TrainModel) -> TrainBaseService:
         return DrugDeepDDITrainService(category, True)
     elif category == TrainModel.Drug_DDIMDL:
         return DrugDDIMDLTrainService(category, True)
-    elif category == TrainModel.Drug_CNN_DDI:
-        return DrugCNNDDITrainService(category, True)
+    elif category == TrainModel.Drug_CNN_Siam:
+        return DrugCNNSiamTrainService(category, True)
     elif category == TrainModel.Drug_GAT_Enc_Con_DNN:
         return DrugGatEncConDnnTrainService(category, True)
     elif category == TrainModel.Drug_GAT_MHA_DNN:
@@ -100,8 +100,8 @@ def get_instance(category: TrainModel) -> TrainBaseService:
         return DrugDeepDDITrainService(category, False)
     elif category == TrainModel.Drug_DDIMDL_Test:
         return DrugDDIMDLTrainService(category, False)
-    elif category == TrainModel.Drug_CNN_DDI_Test:
-        return DrugCNNDDITrainService(category, False)
+    elif category == TrainModel.Drug_CNN_Siam_Test:
+        return DrugCNNSiamTrainService(category, False)
     elif category == TrainModel.Drug_GAT_Enc_Con_DNN_Test:
         return DrugGatEncConDnnTrainService(category, False)
     elif category == TrainModel.Drug_GAT_MHA_DNN_Test:
@@ -131,8 +131,8 @@ def get_instance(category: TrainModel) -> TrainBaseService:
         return FoldDeepDDITrainService(category)
     elif category == TrainModel.Fold_DDIMDL:
         return FoldDDIMDLTrainService(category)
-    elif category == TrainModel.Fold_CNN_DDI:
-        return FoldCNNDDITrainService(category)
+    elif category == TrainModel.Fold_CNN_Siam:
+        return FoldCNNSiamTrainService(category)
     elif category == TrainModel.Fold_KNN:
         return FoldKnnTrainService(category)
     elif category == TrainModel.Fold_SVM:
@@ -146,7 +146,7 @@ def get_instance(category: TrainModel) -> TrainBaseService:
         return DeepDDITrainService(category)
     elif category == TrainModel.DDIMDL:
         return DDIMDLTrainService(category)
-    elif category == TrainModel.CNN_DDI:
-        return CNNDDITrainService(category)
+    elif category == TrainModel.CNN_Siam:
+        return CNNSiamTrainService(category)
     else:
         raise ValueError("No suitable subclass found")
