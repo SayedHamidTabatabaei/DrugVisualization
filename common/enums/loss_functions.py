@@ -5,29 +5,68 @@ from common.enums.train_models import TrainModel
 
 class LossFunctions(Enum):
     categorical_crossentropy = (1, "categorical_crossentropy", "categorical cross entropy=",
-                                [TrainModel.Enc_Con_DNN, TrainModel.Con_AE_DNN, TrainModel.Contact_DNN, TrainModel.JoinBeforeSoftmax,
-                                 TrainModel.SumSoftmaxOutputs, TrainModel.GAT_Enc_Con_DNN, TrainModel.GAT_MHA_DNN, TrainModel.GAT_AE_DNN,
-                                 TrainModel.Drug_Enc_Con_DNN, TrainModel.Drug_GAT_Enc_Con_DNN, TrainModel.Drug_GAT_Enc_Con_DNN_Test, TrainModel.Fold_GAT_Enc_Con_DNN])
+                                [TrainModel.Enc_Con_DNN, TrainModel.Drug_Enc_Con_DNN, TrainModel.Drug_Enc_Con_DNN_Test,
+                                 TrainModel.Con_AE_DNN,
+                                 TrainModel.Contact_DNN,
+                                 TrainModel.JoinBeforeSoftmax,
+                                 TrainModel.SumSoftmaxOutputs,
+                                 TrainModel.GAT_Enc_Con_DNN, TrainModel.Drug_GAT_Enc_Con_DNN, TrainModel.Drug_GAT_Enc_Con_DNN_Test, TrainModel.Fold_GAT_Enc_Con_DNN,
+                                 TrainModel.GAT_MHA_DNN, TrainModel.Drug_GAT_MHA_DNN, TrainModel.Drug_GAT_MHA_DNN_Test, TrainModel.Fold_GAT_MHA_DNN,
+                                 TrainModel.GAT_AE_DNN, TrainModel.Drug_GAT_AE_DNN, TrainModel.Drug_GAT_AE_DNN_Test, TrainModel.Fold_GAT_AE_DNN,
+                                 TrainModel.GAT_MHA_RD_DNN, TrainModel.Drug_GAT_MHA_RD_DNN, TrainModel.Drug_GAT_MHA_RD_DNN_Test, TrainModel.Fold_GAT_MHA_RD_DNN
+                                 ])
     sparse_categorical_crossentropy = (1, "sparse_categorical_crossentropy", "sparse categorical cross entropy=",
-                                       [TrainModel.Enc_Con_DNN, TrainModel.Con_AE_DNN, TrainModel.Contact_DNN, TrainModel.JoinBeforeSoftmax,
-                                        TrainModel.SumSoftmaxOutputs, TrainModel.GAT_Enc_Con_DNN, TrainModel.GAT_MHA_DNN, TrainModel.GAT_AE_DNN,
-                                        TrainModel.Drug_Enc_Con_DNN, TrainModel.Drug_GAT_Enc_Con_DNN, TrainModel.Drug_GAT_Enc_Con_DNN_Test, TrainModel.Fold_GAT_Enc_Con_DNN])
+                                       [TrainModel.Enc_Con_DNN, TrainModel.Drug_Enc_Con_DNN, TrainModel.Drug_Enc_Con_DNN_Test,
+                                        TrainModel.Con_AE_DNN,
+                                        TrainModel.Contact_DNN,
+                                        TrainModel.JoinBeforeSoftmax,
+                                        TrainModel.SumSoftmaxOutputs,
+                                        TrainModel.GAT_Enc_Con_DNN, TrainModel.Drug_GAT_Enc_Con_DNN, TrainModel.Drug_GAT_Enc_Con_DNN_Test, TrainModel.Fold_GAT_Enc_Con_DNN,
+                                        TrainModel.GAT_MHA_DNN, TrainModel.Drug_GAT_MHA_DNN, TrainModel.Drug_GAT_MHA_DNN_Test, TrainModel.Fold_GAT_MHA_DNN,
+                                        TrainModel.GAT_AE_DNN, TrainModel.Drug_GAT_AE_DNN, TrainModel.Drug_GAT_AE_DNN_Test, TrainModel.Fold_GAT_AE_DNN,
+                                        TrainModel.GAT_MHA_RD_DNN, TrainModel.Drug_GAT_MHA_RD_DNN, TrainModel.Drug_GAT_MHA_RD_DNN_Test, TrainModel.Fold_GAT_MHA_RD_DNN
+                                        ])
     focal = (3, "Focal Loss", "Focal Loss=",
-             [TrainModel.Enc_Con_DNN, TrainModel.Con_AE_DNN, TrainModel.Contact_DNN, TrainModel.JoinBeforeSoftmax,
-              TrainModel.SumSoftmaxOutputs, TrainModel.GAT_Enc_Con_DNN, TrainModel.GAT_MHA_DNN, TrainModel.GAT_AE_DNN,
-              TrainModel.Drug_Enc_Con_DNN, TrainModel.Drug_GAT_Enc_Con_DNN, TrainModel.Drug_GAT_Enc_Con_DNN_Test, TrainModel.Fold_GAT_Enc_Con_DNN])
+             [TrainModel.Enc_Con_DNN, TrainModel.Drug_Enc_Con_DNN, TrainModel.Drug_Enc_Con_DNN_Test,
+              TrainModel.Con_AE_DNN,
+              TrainModel.Contact_DNN,
+              TrainModel.JoinBeforeSoftmax,
+              TrainModel.SumSoftmaxOutputs,
+              TrainModel.GAT_Enc_Con_DNN, TrainModel.Drug_GAT_Enc_Con_DNN, TrainModel.Drug_GAT_Enc_Con_DNN_Test, TrainModel.Fold_GAT_Enc_Con_DNN,
+              TrainModel.GAT_MHA_DNN, TrainModel.Drug_GAT_MHA_DNN, TrainModel.Drug_GAT_MHA_DNN_Test, TrainModel.Fold_GAT_MHA_DNN,
+              TrainModel.GAT_AE_DNN, TrainModel.Drug_GAT_AE_DNN, TrainModel.Drug_GAT_AE_DNN_Test, TrainModel.Fold_GAT_AE_DNN,
+              TrainModel.GAT_MHA_RD_DNN, TrainModel.Drug_GAT_MHA_RD_DNN, TrainModel.Drug_GAT_MHA_RD_DNN_Test, TrainModel.Fold_GAT_MHA_RD_DNN])
     focal_tversky = (4, "Focal Tversky Loss", "Focal Tversky Loss=",
-                     [TrainModel.Enc_Con_DNN, TrainModel.Con_AE_DNN, TrainModel.Contact_DNN, TrainModel.JoinBeforeSoftmax,
-                      TrainModel.SumSoftmaxOutputs, TrainModel.GAT_Enc_Con_DNN, TrainModel.GAT_MHA_DNN, TrainModel.GAT_AE_DNN,
-                      TrainModel.Drug_Enc_Con_DNN, TrainModel.Drug_GAT_Enc_Con_DNN, TrainModel.Drug_GAT_Enc_Con_DNN_Test, TrainModel.Fold_GAT_Enc_Con_DNN])
+                     [TrainModel.Enc_Con_DNN, TrainModel.Drug_Enc_Con_DNN, TrainModel.Drug_Enc_Con_DNN_Test,
+                      TrainModel.Con_AE_DNN,
+                      TrainModel.Contact_DNN,
+                      TrainModel.JoinBeforeSoftmax,
+                      TrainModel.SumSoftmaxOutputs,
+                      TrainModel.GAT_Enc_Con_DNN, TrainModel.Drug_GAT_Enc_Con_DNN, TrainModel.Drug_GAT_Enc_Con_DNN_Test, TrainModel.Fold_GAT_Enc_Con_DNN,
+                      TrainModel.GAT_MHA_DNN, TrainModel.Drug_GAT_MHA_DNN, TrainModel.Drug_GAT_MHA_DNN_Test, TrainModel.Fold_GAT_MHA_DNN,
+                      TrainModel.GAT_AE_DNN, TrainModel.Drug_GAT_AE_DNN, TrainModel.Drug_GAT_AE_DNN_Test, TrainModel.Fold_GAT_AE_DNN,
+                      TrainModel.GAT_MHA_RD_DNN, TrainModel.Drug_GAT_MHA_RD_DNN, TrainModel.Drug_GAT_MHA_RD_DNN_Test, TrainModel.Fold_GAT_MHA_RD_DNN])
     squared_hinge = (5, "squared_hinge", "squared hinge=",
-                     [TrainModel.Enc_Con_DNN, TrainModel.Con_AE_DNN, TrainModel.Contact_DNN, TrainModel.JoinBeforeSoftmax,
-                      TrainModel.SumSoftmaxOutputs, TrainModel.GAT_Enc_Con_DNN, TrainModel.GAT_MHA_DNN, TrainModel.GAT_AE_DNN,
-                      TrainModel.Drug_Enc_Con_DNN, TrainModel.Drug_GAT_Enc_Con_DNN, TrainModel.Drug_GAT_Enc_Con_DNN_Test, TrainModel.Fold_GAT_Enc_Con_DNN])
+                     [TrainModel.Enc_Con_DNN, TrainModel.Drug_Enc_Con_DNN, TrainModel.Drug_Enc_Con_DNN_Test,
+                      TrainModel.Con_AE_DNN,
+                      TrainModel.Contact_DNN,
+                      TrainModel.JoinBeforeSoftmax,
+                      TrainModel.SumSoftmaxOutputs,
+                      TrainModel.GAT_Enc_Con_DNN, TrainModel.Drug_GAT_Enc_Con_DNN, TrainModel.Drug_GAT_Enc_Con_DNN_Test, TrainModel.Fold_GAT_Enc_Con_DNN,
+                      TrainModel.GAT_MHA_DNN, TrainModel.Drug_GAT_MHA_DNN, TrainModel.Drug_GAT_MHA_DNN_Test, TrainModel.Fold_GAT_MHA_DNN,
+                      TrainModel.GAT_AE_DNN, TrainModel.Drug_GAT_AE_DNN, TrainModel.Drug_GAT_AE_DNN_Test, TrainModel.Fold_GAT_AE_DNN,
+                      TrainModel.GAT_MHA_RD_DNN, TrainModel.Drug_GAT_MHA_RD_DNN, TrainModel.Drug_GAT_MHA_RD_DNN_Test, TrainModel.Fold_GAT_MHA_RD_DNN])
     dice_loss = (6, "dice", "dice=",
-                 [TrainModel.Enc_Con_DNN, TrainModel.Con_AE_DNN, TrainModel.Contact_DNN, TrainModel.JoinBeforeSoftmax,
-                  TrainModel.SumSoftmaxOutputs, TrainModel.GAT_Enc_Con_DNN, TrainModel.GAT_MHA_DNN, TrainModel.GAT_AE_DNN,
-                  TrainModel.Drug_Enc_Con_DNN, TrainModel.Drug_GAT_Enc_Con_DNN, TrainModel.Drug_GAT_Enc_Con_DNN_Test, TrainModel.Fold_GAT_Enc_Con_DNN])
+                 [TrainModel.Enc_Con_DNN, TrainModel.Drug_Enc_Con_DNN, TrainModel.Drug_Enc_Con_DNN_Test,
+                  TrainModel.Con_AE_DNN,
+                  TrainModel.Contact_DNN,
+                  TrainModel.JoinBeforeSoftmax,
+                  TrainModel.SumSoftmaxOutputs,
+                  TrainModel.GAT_Enc_Con_DNN, TrainModel.Drug_GAT_Enc_Con_DNN, TrainModel.Drug_GAT_Enc_Con_DNN_Test, TrainModel.Fold_GAT_Enc_Con_DNN,
+                  TrainModel.GAT_MHA_DNN, TrainModel.Drug_GAT_MHA_DNN, TrainModel.Drug_GAT_MHA_DNN_Test, TrainModel.Fold_GAT_MHA_DNN,
+                  TrainModel.GAT_AE_DNN, TrainModel.Drug_GAT_AE_DNN, TrainModel.Drug_GAT_AE_DNN_Test, TrainModel.Fold_GAT_AE_DNN,
+                  TrainModel.GAT_MHA_RD_DNN, TrainModel.Drug_GAT_MHA_RD_DNN, TrainModel.Drug_GAT_MHA_RD_DNN_Test, TrainModel.Fold_GAT_MHA_RD_DNN
+                  ])
 
     def __init__(self, value, display_name, formula, valid_train_models):
         self._value_ = value
