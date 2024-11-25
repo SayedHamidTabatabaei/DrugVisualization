@@ -26,6 +26,7 @@ class AutoEncoderMultiDimLayer(Layer):
 
         # Encode the input into a latent space of shape (196, 128)
         encoded = self.encoder(flattened_input)
+        encoded = Reshape(self.encoding_dim)(encoded)
 
         # Decode the latent space back into a flattened vector (768 * 512)
         decoded = self.decoder(encoded)
