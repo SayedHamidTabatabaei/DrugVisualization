@@ -20,6 +20,8 @@ class TrainModel(Enum):
     GAT_AE_DNN = (14, Scenarios.SplitInteractionSimilarities, 'NotFound', 'GAT On SMILES, AutoEncoder, Concat AutoEncoders and then DNN')
     GAT_MHA_Reverse = (15, Scenarios.SplitInteractionSimilarities, 'NotFound', 'GAT On SMILES, Multi-Head-Attention between text fields and other fields ('
                                                                                'Pathway, Target, Enzyme) and then DNN.')
+    GAT_MHA_RD_DNN = (16, Scenarios.SplitInteractionSimilarities, 'NotFound', 'GAT On SMILES, Multi-Head-Attention between text fields and other fields ('
+                                                                              'Pathway, Target, Enzyme) and then DNN.')
 
     Drug_Enc_Con_DNN = (204, Scenarios.SplitDrugsTestWithTrain, 'NotFound', 'Reduce data dimension, join them and send to DNN')
     Drug_GAT_Enc_Con_DNN = (205, Scenarios.SplitDrugsTestWithTrain, 'NotFound', 'GAT On SMILES, AutoEncoder, Concat AutoEncoders and then DNN')
@@ -28,6 +30,8 @@ class TrainModel(Enum):
     Drug_GAT_AE_DNN = (207, Scenarios.SplitDrugsTestWithTrain, 'NotFound', 'GAT On SMILES, AutoEncoder, Concat AutoEncoders and then DNN')
     Drug_GAT_MHA_Reverse = (208, Scenarios.SplitDrugsTestWithTrain, 'NotFound', 'GAT On SMILES, Multi-Head-Attention between text fields and other fields ('
                                                                                 'Pathway, Target, Enzyme) and then DNN.')
+    Drug_GAT_MHA_RD_DNN = (209, Scenarios.SplitDrugsTestWithTrain, 'NotFound', 'GAT On SMILES, Multi-Head-Attention between text fields and other fields ('
+                                                                               'Pathway, Target, Enzyme) and then DNN.')
 
     Drug_Deep_DDI = (210, Scenarios.SplitDrugsTestWithTrain, 'Deep_DDI', 'The Old Base Algorithm, just use SMILES code.')
     Drug_DDIMDL = (211, Scenarios.SplitDrugsTestWithTrain, 'DDIMDL', 'The Old Base Algorithm, just use SMILES code.')
@@ -44,6 +48,8 @@ class TrainModel(Enum):
     Drug_GAT_AE_DNN_Test = (307, Scenarios.SplitDrugsTestWithTest, 'NotFound', 'GAT On SMILES, AutoEncoder, Concat AutoEncoders and then DNN')
     Drug_GAT_MHA_Reverse_Test = (308, Scenarios.SplitDrugsTestWithTest, 'NotFound', 'GAT On SMILES, Multi-Head-Attention between text fields and other fields ('
                                                                                     'Pathway, Target, Enzyme) and then DNN.')
+    Drug_GAT_MHA_RD_DNN_Test = (309, Scenarios.SplitDrugsTestWithTest, 'NotFound', 'GAT On SMILES, Multi-Head-Attention between text fields and other fields ('
+                                                                                   'Pathway, Target, Enzyme) and then DNN.')
     Drug_Deep_DDI_Test = (310, Scenarios.SplitDrugsTestWithTest, 'Deep_DDI', 'The Old Base Algorithm, just use SMILES code.')
     Drug_DDIMDL_Test = (311, Scenarios.SplitDrugsTestWithTest, 'DDIMDL', 'The Old Base Algorithm, just use SMILES code.')
     Drug_CNN_Siam_Test = (312, Scenarios.SplitDrugsTestWithTest, 'CNN_Siam', 'The Old Base Algorithm, use CNN.')
@@ -58,6 +64,8 @@ class TrainModel(Enum):
     Fold_GAT_AE_DNN = (407, Scenarios.FoldInteractionSimilarities, 'NotFound', 'GAT On SMILES, AutoEncoder, Concat AutoEncoders and then DNN')
     Fold_GAT_MHA_Reverse = (408, Scenarios.FoldInteractionSimilarities, 'NotFound', 'GAT On SMILES, Multi-Head-Attention between text fields and other fields ('
                                                                                     'Pathway, Target, Enzyme) and then DNN.')
+    Fold_GAT_MHA_RD_DNN = (409, Scenarios.FoldInteractionSimilarities, 'NotFound', 'GAT On SMILES, Multi-Head-Attention between text fields and other fields ('
+                                                                                   'Pathway, Target, Enzyme) and then DNN.')
     Fold_Deep_DDI = (410, Scenarios.FoldInteractionSimilarities, 'Deep_DDI', 'The Old Base Algorithm, just use SMILES code.')
     Fold_DDIMDL = (411, Scenarios.FoldInteractionSimilarities, 'DDIMDL', 'The Old Base Algorithm, just use SMILES code.')
     Fold_CNN_Siam = (412, Scenarios.FoldInteractionSimilarities, 'CNN_Siam', 'The Old Base Algorithm, use CNN.')
