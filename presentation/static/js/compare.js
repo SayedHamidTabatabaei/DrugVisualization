@@ -337,18 +337,7 @@ function get_history()
                         table.removeAttribute('style');
                     }
 
-                    const nameColumn = document.querySelectorAll('.name-column');
-                    nameColumn.forEach((column) => { column.style.display = 'none'; });
-
-                    const trainingModelColumn = document.querySelectorAll('.train-model-column');
-                    trainingModelColumn.forEach((column) => { column.style.display = 'none'; });
-
-                    const descriptionColumn = document.querySelectorAll('.description-column');
-                    descriptionColumn.forEach((column) => { column.style.display = 'none'; });
-
-                    const idColumn = document.querySelectorAll('.id-column');
-                    idColumn.forEach((column) => { column.style.display = 'none'; });
-
+                    settingSubmit();
                 },
         dom: 'Bfrtip',
         buttons: [
