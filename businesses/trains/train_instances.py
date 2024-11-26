@@ -1,5 +1,6 @@
 from businesses.trains.split_drugs.drug_cnn_siam_train_service import DrugCNNSiamTrainService
 from businesses.trains.split_drugs.drug_gat_ae_dnn_train_service import DrugGatAeDnnTrainService
+from businesses.trains.split_drugs.drug_gat_enc_mha_dnn_train_service import DrugGatEncMhaDnnTrainService
 from businesses.trains.split_drugs.drug_gat_mha_dnn_train_service import DrugGatMhaDnnTrainService
 from businesses.trains.split_drugs.drug_gat_mha_rd_dnn_train_service import DrugGatMhaRDDnnTrainService
 from businesses.trains.split_drugs.drug_gat_mha_reverse_train_service import DrugGatMhaReverseTrainService
@@ -12,6 +13,7 @@ from businesses.trains.split_fold_interactions.fold_ddi_mdl_train_service import
 from businesses.trains.split_fold_interactions.fold_deep_ddi_train_service import FoldDeepDDITrainService
 from businesses.trains.split_fold_interactions.fold_gat_ae_dnn_train_service import FoldGatAeDnnTrainService
 from businesses.trains.split_fold_interactions.fold_gat_enc_con_dnn_train_service import FoldGatEncConDnnTrainService
+from businesses.trains.split_fold_interactions.fold_gat_enc_mha_dnn_train_service import FoldGatEncMhaDnnTrainService
 from businesses.trains.split_fold_interactions.fold_gat_mha_dnn_train_service import FoldGatMhaDnnTrainService
 from businesses.trains.split_fold_interactions.fold_gat_mha_rd_dnn_train_service import FoldGatMhaRDDnnTrainService
 from businesses.trains.split_fold_interactions.fold_gat_mha_reverse_train_service import FoldGatMhaReverseTrainService
@@ -31,6 +33,7 @@ from businesses.trains.split_drugs.drug_deep_ddi_train_service import DrugDeepDD
 from businesses.trains.split_drugs.drug_gat_enc_con_dnn_train_service import DrugGatEncConDnnTrainService
 from businesses.trains.split_interactions.gat_ae_dnn_train_service import GatAeDnnTrainService
 from businesses.trains.split_interactions.gat_enc_con_dnn_train_service import GatEncConDnnTrainService
+from businesses.trains.split_interactions.gat_enc_mha_dnn_train_service import GatEncMhaDnnTrainService
 from businesses.trains.split_interactions.gat_mha_dnn_train_service import GatMhaDnnTrainService
 from businesses.trains.split_interactions.gat_mha_rd_dnn_train_service import GatMhaRDDnnTrainService
 from businesses.trains.split_interactions.gat_mha_reverse_train_service import GatMhaReverseTrainService
@@ -73,6 +76,8 @@ def get_instance(category: TrainModel) -> TrainBaseService:
         return GatMhaReverseTrainService(category)
     elif category == TrainModel.GAT_MHA_RD_DNN:
         return GatMhaRDDnnTrainService(category)
+    elif category == TrainModel.GAT_Enc_MHA:
+        return GatEncMhaDnnTrainService(category)
 
     elif category == TrainModel.Drug_Enc_Con_DNN:
         return DrugEncConDnnTrainService(category, True)
@@ -92,6 +97,8 @@ def get_instance(category: TrainModel) -> TrainBaseService:
         return DrugGatMhaReverseTrainService(category, True)
     elif category == TrainModel.Drug_GAT_MHA_RD_DNN:
         return DrugGatMhaRDDnnTrainService(category, True)
+    elif category == TrainModel.Drug_GAT_Enc_MHA:
+        return DrugGatEncMhaDnnTrainService(category, True)
     elif category == TrainModel.Drug_KNN:
         return DrugKnnTrainService(category, True)
     elif category == TrainModel.Drug_SVM:
@@ -119,6 +126,8 @@ def get_instance(category: TrainModel) -> TrainBaseService:
         return DrugGatMhaReverseTrainService(category, False)
     elif category == TrainModel.Drug_GAT_MHA_RD_DNN_Test:
         return DrugGatMhaRDDnnTrainService(category, False)
+    elif category == TrainModel.Drug_GAT_Enc_MHA_Test:
+        return DrugGatEncMhaDnnTrainService(category, False)
     elif category == TrainModel.Drug_KNN_Test:
         return DrugKnnTrainService(category, False)
     elif category == TrainModel.Drug_SVM_Test:
@@ -138,6 +147,8 @@ def get_instance(category: TrainModel) -> TrainBaseService:
         return FoldGatMhaReverseTrainService(category)
     elif category == TrainModel.Fold_GAT_MHA_RD_DNN:
         return FoldGatMhaRDDnnTrainService(category)
+    elif category == TrainModel.Fold_GAT_Enc_MHA:
+        return FoldGatEncMhaDnnTrainService(category)
     elif category == TrainModel.Fold_Deep_DDI:
         return FoldDeepDDITrainService(category)
     elif category == TrainModel.Fold_DDIMDL:
