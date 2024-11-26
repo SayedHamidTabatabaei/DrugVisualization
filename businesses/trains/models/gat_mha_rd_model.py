@@ -4,6 +4,7 @@ from tensorflow.keras.callbacks import EarlyStopping
 from tensorflow.keras.layers import Dense, Concatenate, Dropout, Reshape, Flatten, MultiHeadAttention, BatchNormalization, Activation, Lambda
 from tensorflow.keras.metrics import MeanSquaredError, Accuracy
 
+from businesses.trains.helpers.customize_epoch_progress import CustomizeEpochProgress
 from businesses.trains.layers.autoencoder_layer import AutoEncoderLayer
 from businesses.trains.layers.autoencoder_multi_dim_layer import AutoEncoderMultiDimLayer
 from businesses.trains.layers.gat_layer import GATLayer
@@ -24,10 +25,11 @@ class GatMhaRDTrainModel(TrainBaseModel):
         self.interaction_data = interaction_data
         self.training_params = training_params
         self.reverse = reverse
-        self.str_encoding_shape = (196, 128)
+        self.str_encoding_shape = (24, 16)
         self.encoding_dim = self.str_encoding_shape[1]
         self.gat_units = 64
-        self.num_heads = 4
+        self.gat_num_heads = 4
+        self.mha_num_heads = 8
         self.dense_units = [512, 256]
         self.droprate = 0.3
 
@@ -38,6 +40,8 @@ class GatMhaRDTrainModel(TrainBaseModel):
         input_layer_int = None
         decode_models_1 = []
         decode_models_2 = []
+        decode_2d_models_1 = []
+        decode_2d_models_2 = []
         output_models_1 = []
         output_models_2 = []
 
@@ -46,7 +50,7 @@ class GatMhaRDTrainModel(TrainBaseModel):
         str_encoded_models_1 = []
         str_encoded_models_2 = []
 
-        gat_layer = GATLayer(units=self.gat_units, num_heads=self.num_heads)
+        gat_layer = GATLayer(units=self.gat_units, num_heads=self.gat_num_heads)
         reduce_mean_layer = ReduceMeanLayer(axis=1)
 
         for idx, category in self.categories.items():
@@ -74,13 +78,13 @@ class GatMhaRDTrainModel(TrainBaseModel):
                 decoded_output_1, encoded_model_1 = autoencoder_layer(str_input_layer_1)
                 input_layers_1.append(str_input_layer_1)
                 str_encoded_models_1.append(encoded_model_1)
-                decode_models_1.append(decoded_output_1)
+                decode_2d_models_1.append(decoded_output_1)
 
                 str_input_layer_2 = Input(shape=x_train_shapes[idx], name=f"AE_Str_Input_2_{idx}")
                 decoded_output_2, encoded_model_2 = autoencoder_layer(str_input_layer_2)
                 input_layers_2.append(str_input_layer_2)
                 str_encoded_models_2.append(encoded_model_2)
-                decode_models_2.append(decoded_output_2)
+                decode_2d_models_2.append(decoded_output_2)
 
             else:
                 autoencoder_layer = AutoEncoderLayer(encoding_dim=self.encoding_dim, input_dim=x_train_shapes[idx][0])
@@ -105,7 +109,7 @@ class GatMhaRDTrainModel(TrainBaseModel):
 
         for i in range(len(str_encoded_models_1)):
 
-            attention_layer = MultiHeadAttention(num_heads=8, key_dim=64, name=f"MultiHeadAttention_{i}")
+            attention_layer = MultiHeadAttention(num_heads=self.mha_num_heads, key_dim=64, name=f"MultiHeadAttention_{i}")
 
             attention_output_1 = self.generate_multi_head_attention(attention_layer, query_parameter=joint_encoders_1,
                                                                     key_value_parameter=str_encoded_models_1[i], reverse=self.reverse)
@@ -138,7 +142,7 @@ class GatMhaRDTrainModel(TrainBaseModel):
 
             attention_outputs = []
             for j in range(len(sim_encoded_models_1)):
-                attention_layer = MultiHeadAttention(num_heads=8, key_dim=64, name=f"MultiHeadAttention_Int_{j}")
+                attention_layer = MultiHeadAttention(num_heads=self.mha_num_heads, key_dim=64, name=f"MultiHeadAttention_Int_{j}")
                 flatten = Flatten(name=f"Flatten_Int_{j}")
 
                 reshaped_other_input = Reshape((1, sim_encoded_models_1[j].shape[-1]))(sim_encoded_models_1[j])
@@ -150,12 +154,14 @@ class GatMhaRDTrainModel(TrainBaseModel):
                 attention_outputs.append(attention_output)
 
             decodes_output = decode_models_1 + decode_models_2 + [decoded_output]
+            decodes_2d_output = decode_2d_models_1 + decode_2d_models_2
 
             combined_drug_int = Concatenate(name="CombinedAttentionOutput_Int")(attention_outputs)
             combined = Concatenate()([combined_drug_1, combined_drug_2, combined_drug_int])
 
         else:
             decodes_output = decode_models_1 + decode_models_2
+            decodes_2d_output = decode_2d_models_1 + decode_2d_models_2
             combined = Concatenate()([combined_drug_1, combined_drug_2])
 
         train_in = combined
@@ -172,13 +178,13 @@ class GatMhaRDTrainModel(TrainBaseModel):
         else:
             model_inputs = input_layers_1 + input_layers_2
 
-        model = Model(inputs=model_inputs, outputs=decodes_output + [main_output], name="GAT_MHA")
+        model = Model(inputs=model_inputs, outputs=decodes_output + decodes_2d_output + [main_output], name="GAT_MHA")
 
         return model
 
     @staticmethod
     def generate_multi_head_attention(attention_layer, query_parameter, key_value_parameter, reverse: bool = False):
-        # attention_mask = tf.expand_dims(tf.ones((tf.shape(query_parameter)[0], 1)), axis=-1)  # Shape: (None, 1, 1)
+
         if reverse:
             item = query_parameter
             query_parameter = key_value_parameter
@@ -212,35 +218,63 @@ class GatMhaRDTrainModel(TrainBaseModel):
         return self.reduce_multiple_attentions(output_models_1, output_models_2)
 
     def compile_model(self, model):
+
+        def custom_mse_3d(y_true, y_pred):
+            # Flatten both true and predicted values across the 3D dimensions
+            y_true = tf.reshape(y_true, [-1])
+            y_pred = tf.reshape(y_pred, [-1])
+            return tf.reduce_mean(tf.square(y_true - y_pred))
+
         # List of loss functions for each output
         num_autoencoders = len(model.outputs) - 1  # Last output is for classification
 
-        losses = ['mse'] * num_autoencoders + [loss_helper.get_loss_function(self.training_params.loss)]
+        decodes_1d_outputs = []
+        decodes_2d_outputs = []
 
-        # Loss weights: You can adjust these to give more importance to classification vs. autoencoder loss
-        loss_weights = [1.0] * num_autoencoders + [1.0]
+        for decode_output in model.outputs[:num_autoencoders]:
+            if len(decode_output.shape) == 2:  # 2D output (None, 936)
+                decodes_1d_outputs.append(decode_output)
+            else:  # 3D output (None, 768, 512)
+                decodes_2d_outputs.append(decode_output)
 
-        # List of metrics for each output
-        metrics = ([MeanSquaredError(name=f'auto_encoder_{i}_mse') for i in range(num_autoencoders)]
-                   + [Accuracy(name='classification_accuracy')])
+        # Losses for 1D (MSE)
+        losses_1d = ['mse' for _ in range(len(decodes_1d_outputs))]
 
-        # Compile the model with separate losses and metrics for each output
-        model.compile(
-            optimizer='adam',
-            loss=losses,
-            loss_weights=loss_weights,
-            metrics=metrics
-        )
+        # Custom loss for 2D (Pixel-wise MSE or another loss)
+        losses_2d = [custom_mse_3d for _ in range(len(decodes_2d_outputs))]  # You can use your custom loss for 3D data
+
+        # Combine losses
+        losses = losses_1d + losses_2d + [loss_helper.get_loss_function(self.training_params.loss)]
+
+        # Loss weights (adjust as needed)
+        loss_weights = [1.0] * len(decodes_1d_outputs) + [1.0] * len(decodes_2d_outputs) + [1.0]
+
+        # Metrics
+        metrics = ([MeanSquaredError(name=f'auto_encoder_{i}_mse') for i in range(len(decodes_1d_outputs))] +
+                   [MeanSquaredError(name=f'auto_encoder_2d_{i}_mse') for i in range(len(decodes_2d_outputs))] +
+                   [Accuracy(name='classification_accuracy')])
+
+        # Compile model with these separate losses and metrics
+        model.compile(optimizer='adam', loss=losses, loss_weights=loss_weights, metrics=metrics)
 
         return model
 
     def generate_y_data_autoencoder(self, x_data, y_data):
 
         data_type_count = len(x_data) // 2
-        parallel_autoencoder_indexes = [idx for idx, category in self.categories.items() if category != Category.Substructure and category.data_type != str]
-        parallel_autoencoder_indexes = parallel_autoencoder_indexes + [i + data_type_count for i in parallel_autoencoder_indexes]
+        parallel_autoencoder_indexes = [idx for idx, category in self.categories.items()
+                                        if category != Category.Substructure and category.data_type != str]
+        parallel_autoencoder_indexes = (parallel_autoencoder_indexes +
+                                        [i + data_type_count for i in parallel_autoencoder_indexes])
 
-        y = [x for idx, x in enumerate(x_data) if idx in parallel_autoencoder_indexes] + [y_data]
+        parallel_autoencoder_multi_dim_indexes = [idx for idx, category in self.categories.items()
+                                                  if category.data_type == str]
+        parallel_autoencoder_multi_dim_indexes = (parallel_autoencoder_multi_dim_indexes +
+                                                  [i + data_type_count for i in parallel_autoencoder_multi_dim_indexes])
+
+        y = ([x for idx, x in enumerate(x_data) if idx in parallel_autoencoder_indexes] +
+             [x for idx, x in enumerate(x_data) if idx in parallel_autoencoder_multi_dim_indexes] +
+             [y_data])
 
         return y
 
@@ -257,9 +291,14 @@ class GatMhaRDTrainModel(TrainBaseModel):
 
         early_stopping = EarlyStopping(monitor='val_loss', patience=10, verbose=0, mode='auto')
 
+        progress_bar_with_epoch_logging = CustomizeEpochProgress()
+
+        callbacks = [early_stopping, progress_bar_with_epoch_logging]
+
         print('Fit data!')
-        history = model.fit(train_dataset, epochs=10, validation_data=val_dataset, callbacks=[early_stopping],
-                            steps_per_epoch=train_generator_length, validation_steps=val_generator_length)
+        history = model.fit(train_dataset, epochs=10, validation_data=val_dataset,
+                            steps_per_epoch=train_generator_length, validation_steps=val_generator_length,
+                            verbose=0, callbacks=callbacks)
 
         self.save_plots(history, self.train_id)
 

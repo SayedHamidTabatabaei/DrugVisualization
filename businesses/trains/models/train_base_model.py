@@ -285,8 +285,8 @@ class TrainBaseModel:
         y_val = self.generate_y_data_autoencoder(x_val, y_val)
         y_test = self.generate_y_data_autoencoder(x_test, y_test)
 
-        train_generator = DataGenerator(x_train, y_train, batch_size=32, drop_remainder=True)
-        val_generator = DataGenerator(x_val, y_val, batch_size=32, drop_remainder=True)
+        train_generator = DataGenerator(x_train, y_train, batch_size=256, drop_remainder=True)
+        val_generator = DataGenerator(x_val, y_val, batch_size=256, drop_remainder=True)
         test_generator = DataGenerator(x_test, y_test, batch_size=1, drop_remainder=True)
 
         output_signature = self.get_output_signature(x_train, y_train)
