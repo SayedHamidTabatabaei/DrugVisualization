@@ -1,7 +1,8 @@
 import tensorflow as tf
 from tensorflow.keras import Model, Input
 from tensorflow.keras.callbacks import EarlyStopping
-from tensorflow.keras.layers import Dense, Concatenate, Dropout, Reshape, Flatten, MultiHeadAttention, BatchNormalization, Activation, Lambda
+from tensorflow.keras.layers import Dense, Concatenate, Dropout, Reshape, Flatten, MultiHeadAttention, \
+    BatchNormalization, Activation, Lambda
 from tensorflow.keras.metrics import Accuracy
 
 from businesses.trains.layers.encoder_layer import EncoderLayer
@@ -208,14 +209,9 @@ class GatEncMhaTrainModel(TrainBaseModel):
         # Combine losses
         losses = loss_helper.get_loss_function(self.training_params.loss)
 
-        # Loss weights (adjust as needed)
-        loss_weights = 1.0
-
-        # Metrics
-        metrics = Accuracy(name='classification_accuracy')
-
+        print("compile_model - loss function:", losses)
         # Compile model with these separate losses and metrics
-        model.compile(optimizer='adam', loss=losses, loss_weights=loss_weights, metrics=metrics)
+        model.compile(optimizer='adam', loss=losses, metrics=self.training_params.metrics)
 
         return model
 
@@ -235,14 +231,13 @@ class GatEncMhaTrainModel(TrainBaseModel):
         callbacks = early_stopping
 
         print('Fit data!')
-        history = model.fit(train_dataset, epochs=10, validation_data=val_dataset,
+        history = model.fit(train_dataset, epochs=100, validation_data=val_dataset,
                             steps_per_epoch=train_generator_length, validation_steps=val_generator_length,
                             verbose=1, callbacks=callbacks)
 
         self.save_plots(history, self.train_id)
 
         y_pred = model.predict(test_dataset, steps=test_generator_length)
-        y_pred = y_pred[-1]
 
         result = self.calculate_evaluation_metrics(model, x_test, y_test, y_pred=y_pred)
 

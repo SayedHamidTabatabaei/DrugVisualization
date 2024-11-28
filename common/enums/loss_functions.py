@@ -13,7 +13,8 @@ class LossFunctions(Enum):
                                  TrainModel.GAT_Enc_Con_DNN, TrainModel.Drug_GAT_Enc_Con_DNN, TrainModel.Drug_GAT_Enc_Con_DNN_Test, TrainModel.Fold_GAT_Enc_Con_DNN,
                                  TrainModel.GAT_MHA_DNN, TrainModel.Drug_GAT_MHA_DNN, TrainModel.Drug_GAT_MHA_DNN_Test, TrainModel.Fold_GAT_MHA_DNN,
                                  TrainModel.GAT_AE_DNN, TrainModel.Drug_GAT_AE_DNN, TrainModel.Drug_GAT_AE_DNN_Test, TrainModel.Fold_GAT_AE_DNN,
-                                 TrainModel.GAT_MHA_RD_DNN, TrainModel.Drug_GAT_MHA_RD_DNN, TrainModel.Drug_GAT_MHA_RD_DNN_Test, TrainModel.Fold_GAT_MHA_RD_DNN
+                                 TrainModel.GAT_MHA_RD_DNN, TrainModel.Drug_GAT_MHA_RD_DNN, TrainModel.Drug_GAT_MHA_RD_DNN_Test, TrainModel.Fold_GAT_MHA_RD_DNN,
+                                 TrainModel.GAT_Enc_MHA, TrainModel.Drug_GAT_Enc_MHA, TrainModel.Drug_GAT_Enc_MHA_Test, TrainModel.Fold_GAT_Enc_MHA
                                  ])
     sparse_categorical_crossentropy = (1, "sparse_categorical_crossentropy", "sparse categorical cross entropy=",
                                        [TrainModel.Enc_Con_DNN, TrainModel.Drug_Enc_Con_DNN, TrainModel.Drug_Enc_Con_DNN_Test,
@@ -24,7 +25,8 @@ class LossFunctions(Enum):
                                         TrainModel.GAT_Enc_Con_DNN, TrainModel.Drug_GAT_Enc_Con_DNN, TrainModel.Drug_GAT_Enc_Con_DNN_Test, TrainModel.Fold_GAT_Enc_Con_DNN,
                                         TrainModel.GAT_MHA_DNN, TrainModel.Drug_GAT_MHA_DNN, TrainModel.Drug_GAT_MHA_DNN_Test, TrainModel.Fold_GAT_MHA_DNN,
                                         TrainModel.GAT_AE_DNN, TrainModel.Drug_GAT_AE_DNN, TrainModel.Drug_GAT_AE_DNN_Test, TrainModel.Fold_GAT_AE_DNN,
-                                        TrainModel.GAT_MHA_RD_DNN, TrainModel.Drug_GAT_MHA_RD_DNN, TrainModel.Drug_GAT_MHA_RD_DNN_Test, TrainModel.Fold_GAT_MHA_RD_DNN
+                                        TrainModel.GAT_MHA_RD_DNN, TrainModel.Drug_GAT_MHA_RD_DNN, TrainModel.Drug_GAT_MHA_RD_DNN_Test, TrainModel.Fold_GAT_MHA_RD_DNN,
+                                        TrainModel.GAT_Enc_MHA, TrainModel.Drug_GAT_Enc_MHA, TrainModel.Drug_GAT_Enc_MHA_Test, TrainModel.Fold_GAT_Enc_MHA
                                         ])
     focal = (3, "Focal Loss", "Focal Loss=",
              [TrainModel.Enc_Con_DNN, TrainModel.Drug_Enc_Con_DNN, TrainModel.Drug_Enc_Con_DNN_Test,
@@ -35,7 +37,8 @@ class LossFunctions(Enum):
               TrainModel.GAT_Enc_Con_DNN, TrainModel.Drug_GAT_Enc_Con_DNN, TrainModel.Drug_GAT_Enc_Con_DNN_Test, TrainModel.Fold_GAT_Enc_Con_DNN,
               TrainModel.GAT_MHA_DNN, TrainModel.Drug_GAT_MHA_DNN, TrainModel.Drug_GAT_MHA_DNN_Test, TrainModel.Fold_GAT_MHA_DNN,
               TrainModel.GAT_AE_DNN, TrainModel.Drug_GAT_AE_DNN, TrainModel.Drug_GAT_AE_DNN_Test, TrainModel.Fold_GAT_AE_DNN,
-              TrainModel.GAT_MHA_RD_DNN, TrainModel.Drug_GAT_MHA_RD_DNN, TrainModel.Drug_GAT_MHA_RD_DNN_Test, TrainModel.Fold_GAT_MHA_RD_DNN])
+              TrainModel.GAT_MHA_RD_DNN, TrainModel.Drug_GAT_MHA_RD_DNN, TrainModel.Drug_GAT_MHA_RD_DNN_Test, TrainModel.Fold_GAT_MHA_RD_DNN,
+              TrainModel.GAT_Enc_MHA, TrainModel.Drug_GAT_Enc_MHA, TrainModel.Drug_GAT_Enc_MHA_Test, TrainModel.Fold_GAT_Enc_MHA])
     focal_tversky = (4, "Focal Tversky Loss", "Focal Tversky Loss=",
                      [TrainModel.Enc_Con_DNN, TrainModel.Drug_Enc_Con_DNN, TrainModel.Drug_Enc_Con_DNN_Test,
                       TrainModel.Con_AE_DNN,
@@ -45,7 +48,8 @@ class LossFunctions(Enum):
                       TrainModel.GAT_Enc_Con_DNN, TrainModel.Drug_GAT_Enc_Con_DNN, TrainModel.Drug_GAT_Enc_Con_DNN_Test, TrainModel.Fold_GAT_Enc_Con_DNN,
                       TrainModel.GAT_MHA_DNN, TrainModel.Drug_GAT_MHA_DNN, TrainModel.Drug_GAT_MHA_DNN_Test, TrainModel.Fold_GAT_MHA_DNN,
                       TrainModel.GAT_AE_DNN, TrainModel.Drug_GAT_AE_DNN, TrainModel.Drug_GAT_AE_DNN_Test, TrainModel.Fold_GAT_AE_DNN,
-                      TrainModel.GAT_MHA_RD_DNN, TrainModel.Drug_GAT_MHA_RD_DNN, TrainModel.Drug_GAT_MHA_RD_DNN_Test, TrainModel.Fold_GAT_MHA_RD_DNN])
+                      TrainModel.GAT_MHA_RD_DNN, TrainModel.Drug_GAT_MHA_RD_DNN, TrainModel.Drug_GAT_MHA_RD_DNN_Test, TrainModel.Fold_GAT_MHA_RD_DNN,
+                      TrainModel.GAT_Enc_MHA, TrainModel.Drug_GAT_Enc_MHA, TrainModel.Drug_GAT_Enc_MHA_Test, TrainModel.Fold_GAT_Enc_MHA])
     squared_hinge = (5, "squared_hinge", "squared hinge=",
                      [TrainModel.Enc_Con_DNN, TrainModel.Drug_Enc_Con_DNN, TrainModel.Drug_Enc_Con_DNN_Test,
                       TrainModel.Con_AE_DNN,
@@ -55,7 +59,8 @@ class LossFunctions(Enum):
                       TrainModel.GAT_Enc_Con_DNN, TrainModel.Drug_GAT_Enc_Con_DNN, TrainModel.Drug_GAT_Enc_Con_DNN_Test, TrainModel.Fold_GAT_Enc_Con_DNN,
                       TrainModel.GAT_MHA_DNN, TrainModel.Drug_GAT_MHA_DNN, TrainModel.Drug_GAT_MHA_DNN_Test, TrainModel.Fold_GAT_MHA_DNN,
                       TrainModel.GAT_AE_DNN, TrainModel.Drug_GAT_AE_DNN, TrainModel.Drug_GAT_AE_DNN_Test, TrainModel.Fold_GAT_AE_DNN,
-                      TrainModel.GAT_MHA_RD_DNN, TrainModel.Drug_GAT_MHA_RD_DNN, TrainModel.Drug_GAT_MHA_RD_DNN_Test, TrainModel.Fold_GAT_MHA_RD_DNN])
+                      TrainModel.GAT_MHA_RD_DNN, TrainModel.Drug_GAT_MHA_RD_DNN, TrainModel.Drug_GAT_MHA_RD_DNN_Test, TrainModel.Fold_GAT_MHA_RD_DNN,
+                      TrainModel.GAT_Enc_MHA, TrainModel.Drug_GAT_Enc_MHA, TrainModel.Drug_GAT_Enc_MHA_Test, TrainModel.Fold_GAT_Enc_MHA])
     dice_loss = (6, "dice", "dice=",
                  [TrainModel.Enc_Con_DNN, TrainModel.Drug_Enc_Con_DNN, TrainModel.Drug_Enc_Con_DNN_Test,
                   TrainModel.Con_AE_DNN,
@@ -65,7 +70,8 @@ class LossFunctions(Enum):
                   TrainModel.GAT_Enc_Con_DNN, TrainModel.Drug_GAT_Enc_Con_DNN, TrainModel.Drug_GAT_Enc_Con_DNN_Test, TrainModel.Fold_GAT_Enc_Con_DNN,
                   TrainModel.GAT_MHA_DNN, TrainModel.Drug_GAT_MHA_DNN, TrainModel.Drug_GAT_MHA_DNN_Test, TrainModel.Fold_GAT_MHA_DNN,
                   TrainModel.GAT_AE_DNN, TrainModel.Drug_GAT_AE_DNN, TrainModel.Drug_GAT_AE_DNN_Test, TrainModel.Fold_GAT_AE_DNN,
-                  TrainModel.GAT_MHA_RD_DNN, TrainModel.Drug_GAT_MHA_RD_DNN, TrainModel.Drug_GAT_MHA_RD_DNN_Test, TrainModel.Fold_GAT_MHA_RD_DNN
+                  TrainModel.GAT_MHA_RD_DNN, TrainModel.Drug_GAT_MHA_RD_DNN, TrainModel.Drug_GAT_MHA_RD_DNN_Test, TrainModel.Fold_GAT_MHA_RD_DNN,
+                  TrainModel.GAT_Enc_MHA, TrainModel.Drug_GAT_Enc_MHA, TrainModel.Drug_GAT_Enc_MHA_Test, TrainModel.Fold_GAT_Enc_MHA
                   ])
 
     def __init__(self, value, display_name, formula, valid_train_models):

@@ -248,20 +248,24 @@ class TrainBaseModel:
         return x_train_shapes
 
     @staticmethod
-    def get_output_signature(x_train, y_train):
+    def get_output_signature(x_train, y_train, multiple_output:bool = False):
         x_signature = []
-        for i, dataset in enumerate(x_train):
+        for dataset in x_train:
             # Get the shape based on the first element in the list (assuming all elements are the same shape within each sub-list)
             first_element_shape = (None,) + tuple(np.array(dataset[0]).shape)
-            x_signature.append(tf.TensorSpec(shape=first_element_shape, dtype=tf.float32))
+            x_signature.append(tf.TensorSpec(shape=first_element_shape, dtype=dataset[0].dtype))
 
-        y_signature = []
-        for i, dataset in enumerate(y_train):
-            # Get the shape based on the first element in the list (assuming all elements are the same shape within each sub-list)
-            first_element_shape = (None,) + tuple(np.array(dataset[0]).shape)
-            y_signature.append(tf.TensorSpec(shape=first_element_shape, dtype=tf.float32))
+        if not multiple_output:
 
-        return tuple(x_signature), tuple(y_signature)
+            y_signature = tf.TensorSpec(shape=(None, len(y_train[0])), dtype=y_train[0].dtype)  # Batch size, num_classes
+            return tuple(x_signature), y_signature
+        else:
+            y_signature = []
+            for dataset in y_train:
+                # Get the shape based on the first element in the list (assuming all elements are the same shape within each sub-list)
+                first_element_shape = (None,) + tuple(np.array(dataset[0]).shape)
+                y_signature.append(tf.TensorSpec(shape=first_element_shape, dtype=dataset[0].dtype))
+            return tuple(x_signature), tuple(y_signature)
 
     @staticmethod
     def build_gat_layer(gat_layer, reduce_mean_layer, smiles_input_shape, adjacency_input_shape):
@@ -279,17 +283,17 @@ class TrainBaseModel:
 
         return smiles_input_1, smiles_input_2, adjacency_input_1, adjacency_input_2, gat_output_1, gat_output_2
 
-    def big_data_loader(self, x_train, y_train, x_val, y_val, x_test, y_test):
+    def big_data_loader(self, x_train, y_train, x_val, y_val, x_test, y_test, multiple_output:bool = False):
 
         y_train = self.generate_y_data_autoencoder(x_train, y_train)
         y_val = self.generate_y_data_autoencoder(x_val, y_val)
         y_test = self.generate_y_data_autoencoder(x_test, y_test)
 
-        train_generator = DataGenerator(x_train, y_train, batch_size=256, drop_remainder=True)
-        val_generator = DataGenerator(x_val, y_val, batch_size=256, drop_remainder=True)
-        test_generator = DataGenerator(x_test, y_test, batch_size=1, drop_remainder=True)
+        train_generator = DataGenerator(x_train, y_train, batch_size=256, drop_remainder=True, multiple_output=multiple_output)
+        val_generator = DataGenerator(x_val, y_val, batch_size=256, drop_remainder=True, multiple_output=multiple_output)
+        test_generator = DataGenerator(x_test, y_test, batch_size=1, drop_remainder=True, multiple_output=multiple_output)
 
-        output_signature = self.get_output_signature(x_train, y_train)
+        output_signature = self.get_output_signature(x_train, y_train, multiple_output)
 
         train_dataset = tf.data.Dataset.from_generator(lambda: iter(train_generator), output_signature=output_signature).repeat()
         val_dataset = tf.data.Dataset.from_generator(lambda: iter(val_generator), output_signature=output_signature).repeat()

@@ -283,7 +283,7 @@ class GatMhaRDTrainModel(TrainBaseModel):
         x_train_shapes = [x[0].shape for x in x_train]
 
         train_dataset, val_dataset, test_dataset, train_generator_length, val_generator_length, test_generator_length = (
-            self.big_data_loader(x_train, y_train, x_val, y_val, x_test, y_test))
+            self.big_data_loader(x_train, y_train, x_val, y_val, x_test, y_test, multiple_output=True))
 
         model = self.build_model(x_train_shapes, bool(self.interaction_data[0].interaction_description))
 
