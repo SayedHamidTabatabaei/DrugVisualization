@@ -7,5 +7,5 @@ class ReduceMeanLayer(Layer):
         super(ReduceMeanLayer, self).__init__(**kwargs)
         self.axis = axis
 
-    def call(self, inputs):
+    def call(self, inputs, **kwargs):
         return tf.reduce_mean(inputs, axis=self.axis)
