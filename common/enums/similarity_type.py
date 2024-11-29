@@ -19,3 +19,4 @@ class SimilarityType(Enum):
     DynamicTime = 14
     Hausdorff = 15,
     DeepDDISmiles = 20
+    Original_Jacquard = 30

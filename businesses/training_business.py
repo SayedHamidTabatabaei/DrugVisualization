@@ -4,9 +4,9 @@ import io
 import json
 import mimetypes
 import os
-import shutil
 import pickle
 import random
+import shutil
 from collections import defaultdict
 from datetime import datetime, timezone
 
@@ -920,7 +920,25 @@ class TrainingBusiness(BaseBusiness):
 
         print(f'Fetching {category.name} data!')
 
+        if similarity_type == SimilarityType.Original or similarity_type == SimilarityType.Original_Jacquard:
+            similarities = self.get_original_data(category)
+            for d in tqdm(drugs, f'Updating {category.name} data...'):
+                if category != Category.Substructure:
+                    d.train_values.append(TrainingDrugTrainValuesDTO(category=category, similarity_type=SimilarityType.Original, values=(similarities[d.drug_id] or [])))
+                else:
+                    value = next((s for k, s in similarities.items() if k == d.drug_id), None)
+
+                    d.train_values.append(TrainingDrugTrainValuesDTO(category=category, similarity_type=SimilarityType.Original,
+                                                                     values=smiles_helper.smiles_to_feature_matrix(value)))
+
+                    d.train_values.append(TrainingDrugTrainValuesDTO(category=category, similarity_type=SimilarityType.Original,
+                                                                     values=smiles_helper.smiles_to_adjacency_matrix(value)))
+
         if similarity_type != SimilarityType.Original:
+
+            if similarity_type == SimilarityType.Original_Jacquard:
+                similarity_type = SimilarityType.Jacquard
+
             similarities = self.similarity_repository.find_all_active_similarity(similarity_type=similarity_type, category=category)
 
             similarities = sorted(similarities, key=lambda similarity: (similarity.drug_1, similarity.drug_2))
@@ -931,21 +949,7 @@ class TrainingBusiness(BaseBusiness):
 
             for d in drugs:
                 values = {s.drug_2: s.value for s in similarities_by_drug_1.get(d.drug_id, [])}
-                d.train_values.append(TrainingDrugTrainValuesDTO(category=category, values=values))
-
-        else:
-            similarities = self.get_original_data(category)
-            for d in tqdm(drugs, f'Updating {category.name} data...'):
-                if category != Category.Substructure:
-                    d.train_values.append(TrainingDrugTrainValuesDTO(category=category, values=(similarities[d.drug_id] or [])))
-                else:
-                    value = next((s for k, s in similarities.items() if k == d.drug_id), None)
-
-                    d.train_values.append(TrainingDrugTrainValuesDTO(category=category,
-                                                                     values=smiles_helper.smiles_to_feature_matrix(value)))
-
-                    d.train_values.append(TrainingDrugTrainValuesDTO(category=category,
-                                                                     values=smiles_helper.smiles_to_adjacency_matrix(value)))
+                d.train_values.append(TrainingDrugTrainValuesDTO(category=category, similarity_type=similarity_type, values=values))
 
         return drugs
 
@@ -981,6 +985,7 @@ class TrainingBusiness(BaseBusiness):
 
         for d in tqdm(drugs, f"Fetching {text_type.name}-{embedding_type.name}...."):
             d.train_values.append(TrainingDrugTrainValuesDTO(category=embedding_helper.find_category(embedding_type, text_type),
+                                                             similarity_type=SimilarityType.Original,
                                                              values=embeddings.get(d.drug_id, [])))
 
         return drugs

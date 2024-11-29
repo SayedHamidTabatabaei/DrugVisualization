@@ -19,6 +19,7 @@ from tensorflow.keras.utils import to_categorical
 from tqdm import tqdm
 
 from common.enums.category import Category
+from common.enums.similarity_type import SimilarityType
 from common.enums.train_models import TrainModel
 from core.models.training_parameter_base_model import TrainingParameterBaseModel
 from core.repository_models.training_drug_data_dto import TrainingDrugDataDTO
@@ -156,9 +157,9 @@ class TrainBaseService:
         index = 0
 
         for c in train_values:
-            if c.category not in unique_categories.values():
-                unique_categories[index] = c.category
-                if c.category == Category.Substructure:
+            if (c.category, c.similarity_type) not in unique_categories.values():
+                unique_categories[index] = (c.category, c.similarity_type)
+                if (c.category, c.similarity_type) == (Category.Substructure, SimilarityType.Original):
                     index += 1
                 index += 1
 

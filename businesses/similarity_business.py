@@ -122,4 +122,7 @@ class SimilarityBusiness(BaseBusiness):
     def get_similarities_by_category(self, category: Category):
         similarities = self.similarity_repository.find_exists_similarity_types_by_category(category)
 
+        if category == Category.Substructure and SimilarityType.Jacquard in similarities:
+            similarities = [SimilarityType.Original_Jacquard] + similarities
+
         return [SimilarityType.Original] + similarities

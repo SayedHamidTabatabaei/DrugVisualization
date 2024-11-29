@@ -6,22 +6,23 @@ from businesses.trains.layers.gat_layer import GATLayer
 from businesses.trains.layers.reduce_mean_layer import ReduceMeanLayer
 from businesses.trains.models.train_base_model import TrainBaseModel
 from common.enums.category import Category
+from common.enums.similarity_type import SimilarityType
 from core.models.training_params import TrainingParams
 from core.repository_models.training_drug_interaction_dto import TrainingDrugInteractionDTO
 from core.repository_models.training_summary_dto import TrainingSummaryDTO
 
 
 class GatEncTrainModel(TrainBaseModel):
-    def __init__(self, train_id: int, categories: dict, num_classes: int, interaction_data: list[TrainingDrugInteractionDTO], training_params: TrainingParams):
+    def __init__(self, train_id: int, categories: dict, num_classes: int, interaction_data: list[TrainingDrugInteractionDTO], training_params: TrainingParams, hyper_params):
         super().__init__(train_id, num_classes)
         self.categories = categories
         self.interaction_data = interaction_data
         self.training_params = training_params
-        self.encoding_dim = 128
-        self.gat_units = 64
-        self.num_heads = 4
-        self.dense_units = [512, 256]
-        self.droprate = 0.3
+        self.encoding_dim = hyper_params.encoding_dim # 128
+        self.gat_units = hyper_params.gat_units # 64
+        self.num_heads = hyper_params.num_heads # 4
+        self.dense_units = hyper_params.dense_units # [512, 256]
+        self.droprate = hyper_params.droprate # 0.3
 
     def build_model(self, data_categories: dict, x_train_shapes, has_interaction_description: bool = False):
         output_models_1 = []
@@ -34,7 +35,7 @@ class GatEncTrainModel(TrainBaseModel):
 
         for idx, category in data_categories.items():
 
-            if data_categories[idx] == Category.Substructure:
+            if data_categories[idx] == (Category.Substructure, SimilarityType.Original):
 
                 smiles_input_shape = x_train_shapes[idx]
 

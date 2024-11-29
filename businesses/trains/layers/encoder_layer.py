@@ -9,7 +9,7 @@ class EncoderLayer(Layer):
 
     def build(self, input_shape):
         # Define the dense layer with an input dimension inferred from input_shape
-        self.encoder = Dense(self.encoding_dim, activation='relu', dtype='float16')
+        self.encoder = Dense(self.encoding_dim, activation='relu')
         super(EncoderLayer, self).build(input_shape)
 
     def call(self, inputs, **kwargs):
