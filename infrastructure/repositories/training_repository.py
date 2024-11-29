@@ -5,6 +5,7 @@ from common.enums.loss_functions import LossFunctions
 from common.enums.train_models import TrainModel
 from core.domain.training import Training
 from core.mappers import training_mapper
+from core.repository_models.training_history_dto import TrainingHistoryDTO
 from core.repository_models.training_result_dto import TrainingResultDTO
 from infrastructure.mysqldb.mysql_repository import MySqlRepository
 
@@ -60,6 +61,13 @@ class TrainingRepository(MySqlRepository):
 
         return result[0][0]
 
+    def get_all_training_count(self, train_models: list[TrainModel]):
+        model_values = json.dumps([train_model.value for train_model in train_models]) if train_models is not None else None
+
+        result, _ = self.call_procedure('GetAllTrainingCount', [model_values])
+
+        return result[0][0]
+
     def get_training_sample_counts(self):
         result, _ = self.call_procedure('GetTrainingSampleCounts')
 
@@ -72,3 +80,11 @@ class TrainingRepository(MySqlRepository):
         result, _ = self.call_procedure('FindAllTrainings', [model_values, create_date, min_sample_count, start, length])
 
         return training_mapper.map_trainings(result[0])
+
+    def find_all_training_histories(self, train_models: list[TrainModel], start: int, length: int) \
+            -> list[TrainingHistoryDTO]:
+        model_values = json.dumps([train_model.value for train_model in train_models]) if train_models is not None else None
+
+        result, _ = self.call_procedure('FindAllTrainingHistories', [model_values, start, length])
+
+        return training_mapper.map_training_histories(result[0])

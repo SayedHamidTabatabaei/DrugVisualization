@@ -3,6 +3,7 @@ from common.enums.train_models import TrainModel
 from core.domain.training import Training
 from core.domain.training_result import TrainingResult
 from core.models.training_export_model import TrainingExportModel, TrainingResultExportModel, TrainingResultDetailExportModel
+from core.repository_models.training_history_dto import TrainingHistoryDTO
 from core.repository_models.training_result_detail_dto import TrainingResultDetailDTO
 from core.repository_models.training_result_dto import TrainingResultDTO
 from core.repository_models.training_result_report_dto import TrainingResultReportDTO
@@ -87,6 +88,26 @@ def map_trainings(query_results) -> list[TrainingResultDTO]:
                                                   precision_macro=precision_macro,
                                                   execute_time=execute_time,
                                                   min_sample_count=min_sample_count))
+    return training_results
+
+
+def map_training_histories(query_results) -> list[TrainingHistoryDTO]:
+    training_results = []
+    for result in query_results:
+        (id, name, description, train_model, loss_function, class_weight, is_test_algorithm, execute_time, min_sample_count, training_results_count,
+         training_result_details_count) = result
+
+        training_results.append(TrainingHistoryDTO(id=id,
+                                                   name=name,
+                                                   description=description,
+                                                   train_model=TrainModel.from_value(train_model),
+                                                   loss_function=LossFunctions.from_value(loss_function) if loss_function is not None else None,
+                                                   is_test_algorithm=bool(is_test_algorithm),
+                                                   class_weight=bool(class_weight),
+                                                   execute_time=execute_time,
+                                                   min_sample_count=min_sample_count,
+                                                   training_results_count=training_results_count,
+                                                   training_result_details_count=training_result_details_count))
     return training_results
 
 

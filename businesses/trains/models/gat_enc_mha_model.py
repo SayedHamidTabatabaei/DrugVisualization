@@ -3,7 +3,6 @@ from tensorflow.keras import Model, Input
 from tensorflow.keras.callbacks import EarlyStopping
 from tensorflow.keras.layers import Dense, Concatenate, Dropout, Reshape, Flatten, MultiHeadAttention, \
     BatchNormalization, Activation, Lambda
-from tensorflow.keras.metrics import Accuracy
 
 from businesses.trains.layers.encoder_layer import EncoderLayer
 from businesses.trains.layers.encoder_multi_dim_layer import EncoderMultiDimLayer
@@ -68,7 +67,7 @@ class GatEncMhaTrainModel(TrainBaseModel):
                 output_models_2.append(gat_output_2)
 
             elif category.data_type == str:
-                encoder_layer = EncoderMultiDimLayer(encoding_dim=self.str_encoding_shape, target_shape=x_train_shapes[idx])
+                encoder_layer = EncoderMultiDimLayer(encoding_dim=self.str_encoding_shape, source_shape=x_train_shapes[idx])
 
                 str_input_layer_1 = Input(shape=x_train_shapes[idx], name=f"Enc_Str_Input_1_{idx}")
                 encoded_model_1 = encoder_layer(str_input_layer_1)

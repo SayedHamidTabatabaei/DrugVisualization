@@ -40,11 +40,13 @@ from core.repository_models.compare_plot_dto import ComparePlotDTO
 from core.repository_models.training_drug_data_dto import TrainingDrugDataDTO
 from core.repository_models.training_drug_interaction_dto import TrainingDrugInteractionDTO
 from core.repository_models.training_drug_train_values_dto import TrainingDrugTrainValuesDTO
+from core.repository_models.training_history_dto import TrainingHistoryDTO
 from core.repository_models.training_result_detail_dto import TrainingResultDetailDTO
 from core.repository_models.training_result_dto import TrainingResultDTO
 from core.repository_models.training_scheduled_dto import TrainingScheduledDTO
 from core.view_models.image_info_view_model import ImageInfoViewModel
 from core.view_models.train_request_view_model import TrainRequestViewModel
+from core.view_models.training_all_history_view_model import TrainingAllHistoryViewModel
 from core.view_models.training_history_details_view_model import TrainingHistoryDetailsViewModel
 from core.view_models.training_history_view_model import TrainingHistoryViewModel
 from core.view_models.training_scheduled_view_model import TrainingScheduledViewModel
@@ -87,6 +89,21 @@ def map_training_history_view_model(results: list[TrainingResultDTO]) -> list[Tr
         precision_weighted=item.precision_weighted,
         precision_micro=item.precision_micro,
         precision_macro=item.precision_macro,
+        execute_time=item.execute_time,
+        min_sample_count=item.min_sample_count
+    ) for item in results]
+
+
+def map_training_all_history_view_model(results: list[TrainingHistoryDTO]) -> list[TrainingAllHistoryViewModel]:
+    return [TrainingAllHistoryViewModel(
+        id=item.id,
+        name=item.name,
+        description=item.description,
+        train_model=item.train_model.name,
+        loss_function=item.loss_function.display_name if item.loss_function else '',
+        class_weight=item.class_weight,
+        training_results_count=item.training_results_count,
+        training_result_details_count=item.training_result_details_count,
         execute_time=item.execute_time,
         min_sample_count=item.min_sample_count
     ) for item in results]
@@ -288,6 +305,20 @@ class TrainingBusiness(BaseBusiness):
                                                              start=start, length=length)
 
         return map_training_history_view_model(results), total_number[0]
+
+    def get_all_history(self, scenario: Scenarios, train_model: TrainModel, start: int, length: int):
+        if train_model:
+            train_models = [train_model]
+        elif scenario:
+            train_models = [train_model for train_model in TrainModel if train_model.scenario == scenario]
+        else:
+            train_models = None
+
+        total_number = self.training_repository.get_all_training_count(train_models)
+
+        results = self.training_repository.find_all_training_histories(train_models, start=start, length=length)
+
+        return map_training_all_history_view_model(results), total_number[0]
 
     def get_history_details(self, train_id: int):
 

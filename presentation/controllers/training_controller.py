@@ -148,6 +148,28 @@ class TrainingController(MethodView):
         return jsonify({'draw': draw, 'recordsTotal': total_number,
                         'recordsFiltered': total_number, 'data': train_history, 'status': True})
 
+    @route('get_all_history', methods=['GET'])
+    def get_all_history(self):
+        start = int(request.args.get('start', 0))
+        length = int(request.args.get('length', 10))
+        draw = int(request.args.get('draw', 1))
+
+        train_model_str = request.args.get('trainModel')
+
+        train_model = None
+
+        if train_model_str:
+            train_model = TrainModel[train_model_str]
+
+        scenario_str = request.args.get('scenario')
+
+        scenario = Scenarios[scenario_str] if scenario_str else None
+
+        train_history, total_number = self.training_business.get_all_history(scenario, train_model, start, length)
+
+        return jsonify({'draw': draw, 'recordsTotal': total_number,
+                        'recordsFiltered': total_number, 'data': train_history, 'status': True})
+
     @route('get_schedules', methods=['GET'])
     def get_schedules(self):
         train_model_str = request.args.get('trainModel')
@@ -362,6 +384,17 @@ class TrainingController(MethodView):
 
         id = int(request.args.get('id'))
         row_count = self.training_scheduled_repository.delete(id)
+
+        if row_count and row_count != 0:
+            return jsonify({'status': True})
+        else:
+            return jsonify({'message': "No data found!", 'status': False})
+
+    @route('training_history_remove', methods=['DELETE'])
+    def training_history_remove(self):
+
+        id = int(request.args.get('id'))
+        row_count = self.training_repository.delete(id)
 
         if row_count and row_count != 0:
             return jsonify({'status': True})
