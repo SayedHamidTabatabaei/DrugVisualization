@@ -1,5 +1,6 @@
 from tensorflow.keras import Model, Input
-from tensorflow.keras.layers import Dense, Concatenate, Dropout, BatchNormalization, Activation
+from tensorflow.keras.callbacks import EarlyStopping
+from tensorflow.keras.layers import Dense, Concatenate, Dropout, BatchNormalization
 
 from businesses.trains.layers.encoder_layer import EncoderLayer
 from businesses.trains.layers.encoder_multi_dim_layer import EncoderMultiDimLayer
@@ -8,6 +9,7 @@ from businesses.trains.layers.reduce_pooling_layer import ReducePoolingLayer
 from businesses.trains.models.train_base_model import TrainBaseModel
 from common.enums.category import Category
 from common.enums.similarity_type import SimilarityType
+from common.helpers import loss_helper
 from core.models.hyper_params import HyperParams
 from core.models.training_params import TrainingParams
 from core.repository_models.training_drug_interaction_dto import TrainingDrugInteractionDTO
@@ -119,8 +121,7 @@ class GatEncV2TrainModel(TrainBaseModel):
             train_in = Dropout(self.droprate)(train_in)
 
         # Output layer (example for binary classification, use appropriate activation and units for your case)
-        train_in = Dense(self.num_classes)(train_in)
-        output = Activation('softmax')(train_in)
+        output = Dense(self.num_classes, activation='softmax')(train_in)
 
         model_inputs = input_layers_1 + input_layers_2
 
@@ -128,11 +129,44 @@ class GatEncV2TrainModel(TrainBaseModel):
 
         return model
 
+    def compile_model(self, model):
+
+        # Combine losses
+        losses = loss_helper.get_loss_function(self.training_params.loss)
+
+        print("compile_model - loss function:", losses)
+        # Compile model with these separate losses and metrics
+        model.compile(optimizer='adam', loss=losses, metrics=self.training_params.metrics)
+
+        return model
+
     def fit_model(self, x_train, y_train, x_val, y_val, x_test, y_test) -> TrainingSummaryDTO:
 
         x_train_shapes = [x[0].shape for x in x_train]
 
+        train_dataset, val_dataset, test_dataset, train_generator_length, val_generator_length, test_generator_length = (
+            self.big_data_loader(x_train, y_train, x_val, y_val, x_test, y_test))
+
         model = self.build_model(self.categories, x_train_shapes, bool(self.interaction_data[0].interaction_description))
 
-        return super().base_fit_model(model, self.training_params, self.interaction_data,
-                                      x_train, y_train, x_val, y_val, x_test, y_test)
+        model = self.compile_model(model)
+
+        early_stopping = EarlyStopping(monitor='val_loss', patience=10, verbose=0, mode='auto')
+
+        print('Fit data!')
+        history = model.fit(train_dataset, epochs=100, validation_data=val_dataset,
+                            steps_per_epoch=train_generator_length, validation_steps=val_generator_length,
+                            verbose=1, callbacks=early_stopping)
+
+        self.save_plots(history, self.train_id)
+
+        y_pred = model.predict(test_dataset, steps=test_generator_length)
+
+        result = self.calculate_evaluation_metrics(model, x_test, y_test, y_pred=y_pred)
+
+        result.model_info = self.get_model_info(model)
+
+        if self.interaction_data is not None:
+            result.data_report = self.get_data_report_split(self.interaction_data, y_train, y_test)
+
+        return result

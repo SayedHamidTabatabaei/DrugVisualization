@@ -225,7 +225,7 @@ class TrainBaseService:
                                       categorical_labels: bool = True, padding: bool = False, flat: bool = False,
                                       pca_generating: bool = False, pca_components: int = None,
                                       is_deep_face: bool = False, is_cnn: bool = False,
-                                      compare_train_test: bool = True):
+                                      compare_train_test: bool = True, mean_of_text_embeddings: bool = True):
 
         self.num_classes = len(set(item.interaction_type for item in interaction_data))
 
@@ -294,8 +294,8 @@ class TrainBaseService:
             y_test = [i.interaction_type for i in test_interactions]
 
             if is_deep_face:
-                x_train = self.generate_deepface_x_values(drug_data, train_interactions, train_drug_ids, pca_generating=pca_generating)
-                x_test = self.generate_deepface_x_values(drug_data, test_interactions, train_drug_ids, pca_generating=pca_generating)
+                x_train = self.generate_deepface_x_values(drug_data, train_interactions, train_drug_ids, pca_generating=pca_generating, mean_of_text_embeddings=mean_of_text_embeddings)
+                x_test = self.generate_deepface_x_values(drug_data, test_interactions, train_drug_ids, pca_generating=pca_generating, mean_of_text_embeddings=mean_of_text_embeddings)
             elif is_cnn:
                 x_train = self.generate_cnn_x_values(drug_data, train_interactions, train_drug_ids)
                 x_test = self.generate_cnn_x_values(drug_data, test_interactions, train_drug_ids)
@@ -313,7 +313,7 @@ class TrainBaseService:
             if flat:
                 x_train, x_test = self.create_input_tensors_flat(x_train, x_test)
 
-            yield [np.array(x) for x in x_train], [np.array(x) for x in x_test], y_train, y_test
+            yield x_train, x_test, y_train, y_test
 
     @staticmethod
     def get_drug_interaction_dict(interaction_data):
@@ -602,7 +602,9 @@ class TrainBaseService:
                     if not mean_of_text_embeddings and drug_data[0].train_values[data_set_index].category.data_type == str:
                         max_n = max(value.shape[1] for value in drug_dict.values())
 
-                        drug_dict = {drug_id: np.pad(value, ((0, 0), (0, max_n - value.shape[1])), mode='constant') for drug_id, value in drug_dict.items()}
+                        # drug_dict = {drug_id: np.pad(value, ((0, 0), (0, max_n - value.shape[1])), mode='constant') for drug_id, value in drug_dict.items()}
+                        drug_dict = {drug_id: np.tile(value, (max_n // value.shape[1]) + 1)[:, :max_n] if value.shape[1] < max_n else value[:, :max_n] for drug_id, value in drug_dict.items()}
+                        drug_dict = {drug_id: value.reshape(value.shape[0], max_n//2, 2).sum(axis=2) for drug_id, value in drug_dict.items()}
 
                 for interaction in interactions:
                     drug_1_values = drug_dict.get(interaction.drug_1)
