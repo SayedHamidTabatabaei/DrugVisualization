@@ -29,7 +29,8 @@ class DrugGatEncV2DnnTrainService(TrainBaseService):
         fold = 1
 
         for x_train, x_test, y_train, y_test in super().manual_k_fold_train_test_data(parameters.drug_data, parameters.interaction_data,
-                                                                                      is_deep_face=True, compare_train_test=self.compare_train_test, mean_of_text_embeddings=False):
+                                                                                      is_deep_face=True, compare_train_test=self.compare_train_test,
+                                                                                      mean_of_text_embeddings=False, output_as_array=False):
 
             model = GatEncV2TrainModel(parameters.train_id, categories, self.num_classes, parameters.interaction_data, training_params=training_params,
                                        hyper_params=self.hyper_params)

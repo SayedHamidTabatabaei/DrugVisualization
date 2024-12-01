@@ -9,6 +9,7 @@ import random
 import shutil
 from collections import defaultdict
 from datetime import datetime, timezone
+from typing import Optional
 
 import matplotlib.colors as mcolors
 import matplotlib.pyplot as plt
@@ -291,7 +292,7 @@ class TrainingBusiness(BaseBusiness):
 
         return map_training_scheduled_view_model(results)
 
-    def get_history(self, scenario: Scenarios, train_model: TrainModel, create_date: datetime, min_sample_count: int, start: int, length: int):
+    def get_history(self, scenario: Scenarios, train_model: TrainModel, create_date: datetime, min_sample_count: Optional[int], start: int, length: int):
         if train_model:
             train_models = [train_model]
         elif scenario:

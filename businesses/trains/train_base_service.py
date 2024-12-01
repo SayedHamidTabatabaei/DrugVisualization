@@ -225,7 +225,7 @@ class TrainBaseService:
                                       categorical_labels: bool = True, padding: bool = False, flat: bool = False,
                                       pca_generating: bool = False, pca_components: int = None,
                                       is_deep_face: bool = False, is_cnn: bool = False,
-                                      compare_train_test: bool = True, mean_of_text_embeddings: bool = True):
+                                      compare_train_test: bool = True, mean_of_text_embeddings: bool = True, output_as_array: bool = True):
 
         self.num_classes = len(set(item.interaction_type for item in interaction_data))
 
@@ -313,7 +313,10 @@ class TrainBaseService:
             if flat:
                 x_train, x_test = self.create_input_tensors_flat(x_train, x_test)
 
-            yield x_train, x_test, y_train, y_test
+            if output_as_array:
+                yield [np.array(x) for x in x_train], [np.array(x) for x in x_test], y_train, y_test
+            else:
+                yield x_train, x_test, y_train, y_test
 
     @staticmethod
     def get_drug_interaction_dict(interaction_data):

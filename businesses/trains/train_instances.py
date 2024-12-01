@@ -237,9 +237,18 @@ def get_instance(category: TrainModel) -> TrainBaseService:
     elif category == TrainModel.GAT_Enc_Con_DNN_47:
         return GatEncConDnnTrainService(category, encoding_dim=256, gat_units=32, num_heads=16, dense_units=[1024, 512, 256], droprate=0.5)
     elif category == TrainModel.GAT_Enc_Con_DNN_48:
-        return GatEncConDnnTrainService(category, encoding_dim=128, gat_units=64, num_heads=4, dense_units=[512, 256], droprate=0.3)
+        return GatEncConDnnTrainService(category, encoding_dim=128, gat_units=32, num_heads=8, dense_units=[512, 256], droprate=0.5, pooling_mode='mean')
     elif category == TrainModel.GAT_Enc_Con_DNN_49:
-        return GatEncConDnnTrainService(category, encoding_dim=128, gat_units=64, num_heads=4, dense_units=[512, 256], droprate=0.3)
+        return GatEncConDnnTrainService(category, encoding_dim=128, gat_units=32, num_heads=8, dense_units=[512, 256], droprate=0.5, pooling_mode='max')
+    elif category == TrainModel.GAT_Enc_Con_DNN_50:
+        return GatEncConDnnTrainService(category, encoding_dim=128, gat_units=32, num_heads=8, dense_units=[512, 256], droprate=0.5, pooling_mode='sum')
+    elif category == TrainModel.GAT_Enc_Con_DNN_51:
+        return GatEncConDnnTrainService(category, encoding_dim=128, gat_units=32, num_heads=8, dense_units=[256, 128], droprate=0.5, pooling_mode='mean')
+    elif category == TrainModel.GAT_Enc_Con_DNN_52:
+        return GatEncConDnnTrainService(category, encoding_dim=128, gat_units=32, num_heads=8, dense_units=[256, 128], droprate=0.5, pooling_mode='max')
+    elif category == TrainModel.GAT_Enc_Con_DNN_53:
+        return GatEncConDnnTrainService(category, encoding_dim=128, gat_units=32, num_heads=8, dense_units=[256, 128], droprate=0.5, pooling_mode='sum')
+
     elif category == TrainModel.Drug_GAT_Enc_Con_DNN_30:
         return DrugGatEncConDnnTrainService(category, encoding_dim=128, gat_units=64, num_heads=4, dense_units=[512, 256], droprate=0.3,
                                             compare_train_test=True)
@@ -294,10 +303,22 @@ def get_instance(category: TrainModel) -> TrainBaseService:
         return DrugGatEncConDnnTrainService(category, encoding_dim=256, gat_units=32, num_heads=16, dense_units=[1024, 512, 256], droprate=0.5,
                                             compare_train_test=True)
     elif category == TrainModel.Drug_GAT_Enc_Con_DNN_48:
-        return DrugGatEncConDnnTrainService(category, encoding_dim=128, gat_units=64, num_heads=4, dense_units=[512, 256], droprate=0.3,
+        return DrugGatEncConDnnTrainService(category, encoding_dim=128, gat_units=32, num_heads=8, dense_units=[512, 256], droprate=0.5, pooling_mode='mean',
                                             compare_train_test=True)
     elif category == TrainModel.Drug_GAT_Enc_Con_DNN_49:
-        return DrugGatEncConDnnTrainService(category, encoding_dim=128, gat_units=64, num_heads=4, dense_units=[512, 256], droprate=0.3,
+        return DrugGatEncConDnnTrainService(category, encoding_dim=128, gat_units=32, num_heads=8, dense_units=[512, 256], droprate=0.5, pooling_mode='max',
+                                            compare_train_test=True)
+    elif category == TrainModel.Drug_GAT_Enc_Con_DNN_50:
+        return DrugGatEncConDnnTrainService(category, encoding_dim=128, gat_units=32, num_heads=8, dense_units=[512, 256], droprate=0.5, pooling_mode='sum',
+                                            compare_train_test=True)
+    elif category == TrainModel.Drug_GAT_Enc_Con_DNN_51:
+        return DrugGatEncConDnnTrainService(category, encoding_dim=128, gat_units=32, num_heads=8, dense_units=[256, 128], droprate=0.5, pooling_mode='mean',
+                                            compare_train_test=True)
+    elif category == TrainModel.Drug_GAT_Enc_Con_DNN_52:
+        return DrugGatEncConDnnTrainService(category, encoding_dim=128, gat_units=32, num_heads=8, dense_units=[256, 128], droprate=0.5, pooling_mode='max',
+                                            compare_train_test=True)
+    elif category == TrainModel.Drug_GAT_Enc_Con_DNN_53:
+        return DrugGatEncConDnnTrainService(category, encoding_dim=128, gat_units=32, num_heads=8, dense_units=[256, 128], droprate=0.5, pooling_mode='sum',
                                             compare_train_test=True)
     elif category == TrainModel.Drug_GAT_Enc_Con_DNN_Test_30:
         return DrugGatEncConDnnTrainService(category, encoding_dim=128, gat_units=64, num_heads=4, dense_units=[512, 256], droprate=0.3,
@@ -354,11 +375,24 @@ def get_instance(category: TrainModel) -> TrainBaseService:
         return DrugGatEncConDnnTrainService(category, encoding_dim=256, gat_units=32, num_heads=16, dense_units=[1024, 512, 256], droprate=0.5,
                                             compare_train_test=False)
     elif category == TrainModel.Drug_GAT_Enc_Con_DNN_Test_48:
-        return DrugGatEncConDnnTrainService(category, encoding_dim=128, gat_units=64, num_heads=4, dense_units=[512, 256], droprate=0.3,
+        return DrugGatEncConDnnTrainService(category, encoding_dim=128, gat_units=32, num_heads=8, dense_units=[512, 256], droprate=0.5, pooling_mode='mean',
                                             compare_train_test=False)
     elif category == TrainModel.Drug_GAT_Enc_Con_DNN_Test_49:
-        return DrugGatEncConDnnTrainService(category, encoding_dim=128, gat_units=64, num_heads=4, dense_units=[512, 256], droprate=0.3,
+        return DrugGatEncConDnnTrainService(category, encoding_dim=128, gat_units=32, num_heads=8, dense_units=[512, 256], droprate=0.5, pooling_mode='max',
                                             compare_train_test=False)
+    elif category == TrainModel.Drug_GAT_Enc_Con_DNN_Test_50:
+        return DrugGatEncConDnnTrainService(category, encoding_dim=128, gat_units=32, num_heads=8, dense_units=[512, 256], droprate=0.5, pooling_mode='sum',
+                                            compare_train_test=False)
+    elif category == TrainModel.Drug_GAT_Enc_Con_DNN_Test_51:
+        return DrugGatEncConDnnTrainService(category, encoding_dim=128, gat_units=32, num_heads=8, dense_units=[256, 128], droprate=0.5, pooling_mode='mean',
+                                            compare_train_test=False)
+    elif category == TrainModel.Drug_GAT_Enc_Con_DNN_Test_52:
+        return DrugGatEncConDnnTrainService(category, encoding_dim=128, gat_units=32, num_heads=8, dense_units=[256, 128], droprate=0.5, pooling_mode='max',
+                                            compare_train_test=False)
+    elif category == TrainModel.Drug_GAT_Enc_Con_DNN_Test_53:
+        return DrugGatEncConDnnTrainService(category, encoding_dim=128, gat_units=32, num_heads=8, dense_units=[256, 128], droprate=0.5, pooling_mode='sum',
+                                            compare_train_test=False)
+
     elif category == TrainModel.Fold_GAT_Enc_Con_DNN_30:
         return FoldGatEncConDnnTrainService(category, encoding_dim=128, gat_units=64, num_heads=4, dense_units=[512, 256], droprate=0.3)
     elif category == TrainModel.Fold_GAT_Enc_Con_DNN_31:
@@ -396,9 +430,17 @@ def get_instance(category: TrainModel) -> TrainBaseService:
     elif category == TrainModel.Fold_GAT_Enc_Con_DNN_47:
         return FoldGatEncConDnnTrainService(category, encoding_dim=256, gat_units=32, num_heads=16, dense_units=[1024, 512, 256], droprate=0.5)
     elif category == TrainModel.Fold_GAT_Enc_Con_DNN_48:
-        return FoldGatEncConDnnTrainService(category, encoding_dim=128, gat_units=64, num_heads=4, dense_units=[512, 256], droprate=0.3)
+        return FoldGatEncConDnnTrainService(category, encoding_dim=128, gat_units=32, num_heads=8, dense_units=[512, 256], droprate=0.5, pooling_mode='mean')
     elif category == TrainModel.Fold_GAT_Enc_Con_DNN_49:
-        return FoldGatEncConDnnTrainService(category, encoding_dim=128, gat_units=64, num_heads=4, dense_units=[512, 256], droprate=0.3)
+        return FoldGatEncConDnnTrainService(category, encoding_dim=128, gat_units=32, num_heads=8, dense_units=[512, 256], droprate=0.5, pooling_mode='max')
+    elif category == TrainModel.Fold_GAT_Enc_Con_DNN_50:
+        return FoldGatEncConDnnTrainService(category, encoding_dim=128, gat_units=32, num_heads=8, dense_units=[512, 256], droprate=0.5, pooling_mode='sum')
+    elif category == TrainModel.Fold_GAT_Enc_Con_DNN_51:
+        return FoldGatEncConDnnTrainService(category, encoding_dim=128, gat_units=32, num_heads=8, dense_units=[256, 128], droprate=0.5, pooling_mode='mean')
+    elif category == TrainModel.Fold_GAT_Enc_Con_DNN_52:
+        return FoldGatEncConDnnTrainService(category, encoding_dim=128, gat_units=32, num_heads=8, dense_units=[256, 128], droprate=0.5, pooling_mode='max')
+    elif category == TrainModel.Fold_GAT_Enc_Con_DNN_53:
+        return FoldGatEncConDnnTrainService(category, encoding_dim=128, gat_units=32, num_heads=8, dense_units=[256, 128], droprate=0.5, pooling_mode='sum')
 
 
     elif category == TrainModel.GAT_Enc_Sum_DNN_60:
@@ -602,3 +644,5 @@ def get_instance(category: TrainModel) -> TrainBaseService:
         return FoldGatEncSumDnnTrainService(category, encoding_dim=128, gat_units=64, num_heads=4, dense_units=[512, 256], droprate=0.3)
     else:
         raise ValueError("No suitable subclass found")
+
+    # DOI 10.3389/fphar.2024.1354540

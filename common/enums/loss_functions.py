@@ -37,6 +37,11 @@ class LossFunctions(Enum):
                                  TrainModel.GAT_Enc_Con_DNN_47, TrainModel.Drug_GAT_Enc_Con_DNN_47, TrainModel.Drug_GAT_Enc_Con_DNN_Test_47, TrainModel.Fold_GAT_Enc_Con_DNN_47,
                                  TrainModel.GAT_Enc_Con_DNN_48, TrainModel.Drug_GAT_Enc_Con_DNN_48, TrainModel.Drug_GAT_Enc_Con_DNN_Test_48, TrainModel.Fold_GAT_Enc_Con_DNN_48,
                                  TrainModel.GAT_Enc_Con_DNN_49, TrainModel.Drug_GAT_Enc_Con_DNN_49, TrainModel.Drug_GAT_Enc_Con_DNN_Test_49, TrainModel.Fold_GAT_Enc_Con_DNN_49,
+                                 TrainModel.GAT_Enc_Con_DNN_50, TrainModel.Drug_GAT_Enc_Con_DNN_50, TrainModel.Drug_GAT_Enc_Con_DNN_Test_50, TrainModel.Fold_GAT_Enc_Con_DNN_50,
+                                 TrainModel.GAT_Enc_Con_DNN_51, TrainModel.Drug_GAT_Enc_Con_DNN_51, TrainModel.Drug_GAT_Enc_Con_DNN_Test_51, TrainModel.Fold_GAT_Enc_Con_DNN_51,
+                                 TrainModel.GAT_Enc_Con_DNN_52, TrainModel.Drug_GAT_Enc_Con_DNN_52, TrainModel.Drug_GAT_Enc_Con_DNN_Test_52, TrainModel.Fold_GAT_Enc_Con_DNN_52,
+                                 TrainModel.GAT_Enc_Con_DNN_53, TrainModel.Drug_GAT_Enc_Con_DNN_53, TrainModel.Drug_GAT_Enc_Con_DNN_Test_53, TrainModel.Fold_GAT_Enc_Con_DNN_53,
+
                                  TrainModel.GAT_Enc_Sum_DNN_60, TrainModel.Drug_GAT_Enc_Sum_DNN_60, TrainModel.Drug_GAT_Enc_Sum_DNN_Test_60, TrainModel.Fold_GAT_Enc_Sum_DNN_60,
                                  TrainModel.GAT_Enc_Sum_DNN_61, TrainModel.Drug_GAT_Enc_Sum_DNN_61, TrainModel.Drug_GAT_Enc_Sum_DNN_Test_61, TrainModel.Fold_GAT_Enc_Sum_DNN_61,
                                  TrainModel.GAT_Enc_Sum_DNN_62, TrainModel.Drug_GAT_Enc_Sum_DNN_62, TrainModel.Drug_GAT_Enc_Sum_DNN_Test_62, TrainModel.Fold_GAT_Enc_Sum_DNN_62,

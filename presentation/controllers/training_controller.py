@@ -35,7 +35,7 @@ class TrainingController(MethodView):
 
     @route('trainingSampleCounts', methods=['GET'])
     def get_training_sample_counts(self):
-        training_sample_counts = self.training_repository.get_training_sample_counts()
+        training_sample_counts = ["All"] + self.training_repository.get_training_sample_counts()
 
         types = [{"name": tsc, "value": tsc} for tsc in training_sample_counts]
         return jsonify(types)
@@ -141,7 +141,8 @@ class TrainingController(MethodView):
         else:
             date = None
 
-        min_sample_count = int(request.args.get('min_sample_count') or "0")
+        min_sample_count_str = request.args.get('min_sample_count')
+        min_sample_count = int(min_sample_count_str) if min_sample_count_str and min_sample_count_str != 'All' else None
 
         train_history, total_number = self.training_business.get_history(scenario, train_model, date, min_sample_count, start, length)
 

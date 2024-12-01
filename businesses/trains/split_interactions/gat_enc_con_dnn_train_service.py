@@ -16,9 +16,9 @@ train_model = TrainModel.GAT_Enc_Con_DNN
 
 class GatEncConDnnTrainService(TrainBaseService):
 
-    def __init__(self, category: TrainModel, encoding_dim, gat_units, num_heads, dense_units, droprate):
+    def __init__(self, category: TrainModel, encoding_dim, gat_units, num_heads, dense_units, droprate, pooling_mode = None):
         super().__init__(category)
-        self.hyper_params = HyperParams(encoding_dim, gat_units, num_heads, dense_units, droprate)
+        self.hyper_params = HyperParams(encoding_dim, gat_units, num_heads, dense_units, droprate, pooling_mode)
 
     def train(self, parameters: SplitInteractionSimilaritiesTrainingParameterModel) -> (TrainingSummaryDTO, object):
 

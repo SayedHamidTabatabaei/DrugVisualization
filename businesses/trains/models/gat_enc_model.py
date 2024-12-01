@@ -3,17 +3,19 @@ from tensorflow.keras.layers import Dense, Concatenate, Dropout, BatchNormalizat
 
 from businesses.trains.layers.encoder_layer import EncoderLayer
 from businesses.trains.layers.gat_layer import GATLayer
-from businesses.trains.layers.reduce_mean_layer import ReduceMeanLayer
+from businesses.trains.layers.reduce_pooling_layer import ReducePoolingLayer
 from businesses.trains.models.train_base_model import TrainBaseModel
 from common.enums.category import Category
 from common.enums.similarity_type import SimilarityType
+from core.models.hyper_params import HyperParams
 from core.models.training_params import TrainingParams
 from core.repository_models.training_drug_interaction_dto import TrainingDrugInteractionDTO
 from core.repository_models.training_summary_dto import TrainingSummaryDTO
 
 
 class GatEncTrainModel(TrainBaseModel):
-    def __init__(self, train_id: int, categories: dict, num_classes: int, interaction_data: list[TrainingDrugInteractionDTO], training_params: TrainingParams, hyper_params):
+    def __init__(self, train_id: int, categories: dict, num_classes: int, interaction_data: list[TrainingDrugInteractionDTO],
+                 training_params: TrainingParams, hyper_params: HyperParams):
         super().__init__(train_id, num_classes)
         self.categories = categories
         self.interaction_data = interaction_data
@@ -23,6 +25,7 @@ class GatEncTrainModel(TrainBaseModel):
         self.num_heads = hyper_params.num_heads # 4
         self.dense_units = hyper_params.dense_units # [512, 256]
         self.droprate = hyper_params.droprate # 0.3
+        self.pooling_mode = hyper_params.pooling_mode
 
     def build_model(self, data_categories: dict, x_train_shapes, has_interaction_description: bool = False):
         output_models_1 = []
@@ -31,8 +34,8 @@ class GatEncTrainModel(TrainBaseModel):
         input_layers_2 = []
 
         gat_layer = GATLayer(units=self.gat_units, num_heads=self.num_heads)
-        reduce_mean_layer = ReduceMeanLayer(axis=1)
-
+        # reduce_mean_layer = ReduceMeanLayer(axis=1)
+        reduce_pooling_layer = ReducePoolingLayer(axis=1, pooling_mode=self.pooling_mode)
         for idx, category in data_categories.items():
 
             if data_categories[idx] == (Category.Substructure, SimilarityType.Original):
@@ -55,12 +58,14 @@ class GatEncTrainModel(TrainBaseModel):
 
                 # GAT processing for SMILES
                 gat_output_1 = gat_layer((smiles_input_1, adjacency_input_1))
-                gat_output_1 = reduce_mean_layer(gat_output_1)  # Aggregate over all nodes
+                # gat_output_1 = reduce_mean_layer(gat_output_1)  # Aggregate over all nodes
+                gat_output_1 = reduce_pooling_layer(gat_output_1)  # Aggregate over all nodes
                 output_models_1.append(gat_output_1)
 
                 # GAT processing for SMILES
                 gat_output_2 = gat_layer((smiles_input_2, adjacency_input_2))
-                gat_output_2 = reduce_mean_layer(gat_output_2)  # Aggregate over all nodes
+                # gat_output_2 = reduce_mean_layer(gat_output_2)  # Aggregate over all nodes
+                gat_output_2 = reduce_pooling_layer(gat_output_2)  # Aggregate over all nodes
                 output_models_2.append(gat_output_2)
 
             else:
