@@ -13,7 +13,7 @@ train_model = TrainModel.Drug_GAT_Enc_Con_DNN or TrainModel.Drug_GAT_Enc_Con_DNN
 
 class DrugGatEncConDnnTrainService(TrainBaseService):
 
-    def __init__(self, category, encoding_dim, gat_units, num_heads, dense_units, droprate, pooling_mode = None, compare_train_test: bool = True):
+    def __init__(self, category, encoding_dim, gat_units, num_heads, dense_units, droprate, pooling_mode = 'mean', compare_train_test: bool = True):
         super().__init__(category)
         self.hyper_params = HyperParams(encoding_dim, gat_units, num_heads, dense_units, droprate, pooling_mode)
         self.compare_train_test = compare_train_test
