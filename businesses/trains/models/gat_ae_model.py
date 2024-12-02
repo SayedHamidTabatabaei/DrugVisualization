@@ -5,9 +5,10 @@ from tensorflow.keras.metrics import MeanSquaredError, Accuracy
 
 from businesses.trains.layers.autoencoder_layer import AutoEncoderLayer
 from businesses.trains.layers.gat_layer import GATLayer
-from businesses.trains.layers.reduce_mean_layer import ReduceMeanLayer
+from businesses.trains.layers.reduce_pooling_layer import ReducePoolingLayer
 from businesses.trains.models.train_base_model import TrainBaseModel
 from common.enums.category import Category
+from common.enums.similarity_type import SimilarityType
 from common.helpers import loss_helper
 from core.models.training_params import TrainingParams
 from core.repository_models.training_drug_interaction_dto import TrainingDrugInteractionDTO
@@ -37,11 +38,11 @@ class GatAeTrainModel(TrainBaseModel):
         input_layer_int = None
 
         gat_layer = GATLayer(units=self.gat_units, num_heads=self.num_heads)
-        reduce_mean_layer = ReduceMeanLayer(axis=1)
+        reduce_mean_layer = ReducePoolingLayer(axis=1, pooling_mode='mean')
 
         for idx, category in data_categories.items():
 
-            if category == Category.Substructure:
+            if category == (Category.Substructure, SimilarityType.Original):
                 smiles_input_shape = x_train_shapes[idx]
                 adjacency_input_shape = x_train_shapes[idx + 1]
 

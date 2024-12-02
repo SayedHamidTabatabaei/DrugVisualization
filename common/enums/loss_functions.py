@@ -17,6 +17,7 @@ class LossFunctions(Enum):
                                  TrainModel.GAT_Enc_MHA, TrainModel.Drug_GAT_Enc_MHA, TrainModel.Drug_GAT_Enc_MHA_Test, TrainModel.Fold_GAT_Enc_MHA,
                                  TrainModel.GAT_Enc_Sum_DNN, TrainModel.Drug_GAT_Enc_Sum_DNN, TrainModel.Drug_GAT_Enc_Sum_DNN_Test, TrainModel.Fold_GAT_Enc_Sum_DNN,
                                  TrainModel.GAT_Enc_V2, TrainModel.Drug_GAT_Enc_V2, TrainModel.Drug_GAT_Enc_V2_Test, TrainModel.Fold_GAT_Enc_V2,
+                                 TrainModel.GAT_Lstm_MHA, TrainModel.Drug_GAT_Lstm_MHA, TrainModel.Drug_GAT_Lstm_MHA_Test, TrainModel.Fold_GAT_Lstm_MHA,
                                  TrainModel.GAT_Enc_Con_DNN_30, TrainModel.Drug_GAT_Enc_Con_DNN_30, TrainModel.Drug_GAT_Enc_Con_DNN_Test_30, TrainModel.Fold_GAT_Enc_Con_DNN_30,
                                  TrainModel.GAT_Enc_Con_DNN_31, TrainModel.Drug_GAT_Enc_Con_DNN_31, TrainModel.Drug_GAT_Enc_Con_DNN_Test_31, TrainModel.Fold_GAT_Enc_Con_DNN_31,
                                  TrainModel.GAT_Enc_Con_DNN_32, TrainModel.Drug_GAT_Enc_Con_DNN_32, TrainModel.Drug_GAT_Enc_Con_DNN_Test_32, TrainModel.Fold_GAT_Enc_Con_DNN_32,

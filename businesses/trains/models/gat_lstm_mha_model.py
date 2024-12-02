@@ -1,11 +1,10 @@
 import tensorflow as tf
 from tensorflow.keras import Model, Input
 from tensorflow.keras.callbacks import EarlyStopping
-from tensorflow.keras.layers import Dense, Concatenate, Dropout, Reshape, Flatten, MultiHeadAttention, \
-    BatchNormalization, Activation, Lambda
+from tensorflow.keras.layers import Dense, Concatenate, Dropout, Flatten, MultiHeadAttention, \
+    BatchNormalization, Activation, Lambda, LSTM, RepeatVector
 
 from businesses.trains.layers.encoder_layer import EncoderLayer
-from businesses.trains.layers.encoder_multi_dim_layer import EncoderMultiDimLayer
 from businesses.trains.layers.gat_layer import GATLayer
 from businesses.trains.layers.reduce_pooling_layer import ReducePoolingLayer
 from businesses.trains.models.train_base_model import TrainBaseModel
@@ -17,7 +16,7 @@ from core.repository_models.training_drug_interaction_dto import TrainingDrugInt
 from core.repository_models.training_summary_dto import TrainingSummaryDTO
 
 
-class GatEncMhaTrainModel(TrainBaseModel):
+class GatLstmMhaTrainModel(TrainBaseModel):
     def __init__(self, train_id: int, categories: dict, num_classes: int, interaction_data: list[TrainingDrugInteractionDTO],
                  training_params: TrainingParams, reverse: bool = False):
         super().__init__(train_id, num_classes)
@@ -33,7 +32,7 @@ class GatEncMhaTrainModel(TrainBaseModel):
         self.dense_units = [512, 256]
         self.droprate = 0.3
 
-    def build_model(self, x_train_shapes, has_interaction_description: bool = False):
+    def build_model(self, x_train_shapes):
 
         input_layers_1 = []
         input_layers_2 = []
@@ -66,19 +65,33 @@ class GatEncMhaTrainModel(TrainBaseModel):
 
                 output_models_1.append(gat_output_1)
                 output_models_2.append(gat_output_2)
-
             elif category[0].data_type == str:
-                encoder_layer = EncoderMultiDimLayer(encoding_dim=self.str_encoding_shape, source_shape=x_train_shapes[idx])
+                input_dim = x_train_shapes[idx][1]  # 512 or the input feature size
+                target_sequence_length = self.str_encoding_shape[0]  # 24
+                target_feature_dim = self.str_encoding_shape[1]  # 16
 
-                str_input_layer_1 = Input(shape=x_train_shapes[idx], name=f"Enc_Str_Input_1_{idx}")
-                encoded_model_1 = encoder_layer(str_input_layer_1)
+                dense_layer = Dense(target_feature_dim)  # Reduces feature dimension to 16
+                repeat_vector_layer = RepeatVector(target_sequence_length)  # Repeat the feature vector over 24 time steps
+                lstm_layer = LSTM(target_feature_dim, return_sequences=True)  # LSTM layer
+                flat_layer = Flatten()
+
+                # First input: Process the first drug
+                str_input_layer_1 = Input(shape=(input_dim,), name=f"Enc_Str_Input_1_{idx}")
+                dense_output_1 = dense_layer(str_input_layer_1)
+                repeated_output_1 = repeat_vector_layer(dense_output_1)  # Repeat the dense output to form a sequence
+                lstm_model_1 = lstm_layer(repeated_output_1)
+                lstm_model_flat_1 = flat_layer(lstm_model_1)
                 input_layers_1.append(str_input_layer_1)
-                str_encoded_models_1.append(encoded_model_1)
+                str_encoded_models_1.append(lstm_model_flat_1)
 
-                str_input_layer_2 = Input(shape=x_train_shapes[idx], name=f"Enc_Str_Input_2_{idx}")
-                encoded_model_2 = encoder_layer(str_input_layer_2)
+                # Second input: Process the second drug
+                str_input_layer_2 = Input(shape=(input_dim,), name=f"Enc_Str_Input_2_{idx}")
+                dense_output_2 = dense_layer(str_input_layer_2)
+                repeated_output_2 = repeat_vector_layer(dense_output_2)  # Repeat the dense output to form a sequence
+                lstm_model_2 = lstm_layer(repeated_output_2)
+                lstm_model_flat_2 = flat_layer(lstm_model_2)
                 input_layers_2.append(str_input_layer_2)
-                str_encoded_models_2.append(encoded_model_2)
+                str_encoded_models_2.append(lstm_model_flat_2)
 
             else:
                 encoder_layer = EncoderLayer(encoding_dim=self.encoding_dim, input_dim=x_train_shapes[idx][0])
@@ -124,32 +137,7 @@ class GatEncMhaTrainModel(TrainBaseModel):
         combined_drug_1 = Concatenate(name="CombinedAttentionOutput_1")(output_models_1)
         combined_drug_2 = Concatenate(name="CombinedAttentionOutput_2")(output_models_2)
 
-        # Combine both drugs' information for interaction prediction
-        if has_interaction_description:
-            encoder_layer = EncoderLayer(encoding_dim=self.encoding_dim, input_dim=x_train_shapes[-1][0])
-
-            input_layer_str = Input(shape=x_train_shapes[-1])
-            encoded_model = encoder_layer(input_layer_str)
-            input_layer_int = input_layer_str
-
-            attention_outputs = []
-            for j in range(len(sim_encoded_models_1)):
-                attention_layer = MultiHeadAttention(num_heads=self.mha_num_heads, key_dim=64, name=f"MultiHeadAttention_Int_{j}")
-                flatten = Flatten(name=f"Flatten_Int_{j}")
-
-                reshaped_other_input = Reshape((1, sim_encoded_models_1[j].shape[-1]))(sim_encoded_models_1[j])
-                attention_output = self.generate_multi_head_attention(attention_layer,
-                                                                      query_parameter=reshaped_other_input,
-                                                                      key_value_parameter=input_layer_str,
-                                                                      reverse=self.reverse)
-                attention_output = flatten(attention_output)
-                attention_outputs.append(attention_output)
-
-            combined_drug_int = Concatenate(name="CombinedAttentionOutput_Int")(attention_outputs)
-            combined = Concatenate()([combined_drug_1, combined_drug_2, combined_drug_int])
-
-        else:
-            combined = Concatenate()([combined_drug_1, combined_drug_2])
+        combined = Concatenate()([combined_drug_1, combined_drug_2])
 
         train_in = combined
         for units in self.dense_units:
@@ -222,7 +210,7 @@ class GatEncMhaTrainModel(TrainBaseModel):
         train_dataset, val_dataset, test_dataset, train_generator_length, val_generator_length, test_generator_length = (
             self.big_data_loader(x_train, y_train, x_val, y_val, x_test, y_test))
 
-        model = self.build_model(x_train_shapes, bool(self.interaction_data[0].interaction_description))
+        model = self.build_model(x_train_shapes)
 
         model = self.compile_model(model)
 

@@ -6,9 +6,10 @@ from tensorflow.keras.metrics import MeanSquaredError, Accuracy
 
 from businesses.trains.layers.autoencoder_layer import AutoEncoderLayer
 from businesses.trains.layers.gat_layer import GATLayer
-from businesses.trains.layers.reduce_mean_layer import ReduceMeanLayer
+from businesses.trains.layers.reduce_pooling_layer import ReducePoolingLayer
 from businesses.trains.models.train_base_model import TrainBaseModel
 from common.enums.category import Category
+from common.enums.similarity_type import SimilarityType
 from common.helpers import loss_helper
 from core.models.training_params import TrainingParams
 from core.repository_models.training_drug_interaction_dto import TrainingDrugInteractionDTO
@@ -49,11 +50,11 @@ class GatMhaTrainModel(TrainBaseModel):
         str_dim = str_dim.pop()
 
         gat_layer = GATLayer(units=self.gat_units, num_heads=self.num_heads)
-        reduce_mean_layer = ReduceMeanLayer(axis=1)
+        reduce_mean_layer = ReducePoolingLayer(axis=1, pooling_mode='mean')
 
         for idx, category in self.categories.items():
 
-            if category == Category.Substructure:
+            if category == (Category.Substructure, SimilarityType.Original):
                 smiles_input_shape = x_train_shapes[idx]
                 adjacency_input_shape = x_train_shapes[idx + 1]
 
@@ -69,7 +70,7 @@ class GatMhaTrainModel(TrainBaseModel):
                 output_models_1.append(gat_output_1)
                 output_models_2.append(gat_output_2)
 
-            elif category.data_type == str:
+            elif category[0].data_type == str:
                 input_layer_str_1 = Input(shape=x_train_shapes[idx], name=f"Str_Input_1_{idx}")
                 input_layers_str_1.append(input_layer_str_1)
 

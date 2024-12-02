@@ -1,3 +1,4 @@
+import numpy as np
 from sklearn.neighbors import KNeighborsClassifier
 
 from businesses.trains.models.train_base_model import TrainBaseModel
@@ -12,7 +13,7 @@ class KNNModel(TrainBaseModel):
 
     def fit_model(self, x_train, y_train, x_val, y_val, x_test, y_test) -> TrainingSummaryDTO:
 
-        if x_val.any() or y_val.any():
+        if not np.any(x_val) or not np.any(y_val):
             print("In this algorithm, it doesn't use x_val and y_val!")
 
         knn = KNeighborsClassifier(n_neighbors=5)

@@ -1,10 +1,10 @@
 from tensorflow.keras import Model, Input
-from tensorflow.keras.layers import Dense, Concatenate, Dropout, BatchNormalization, Activation
 from tensorflow.keras.callbacks import EarlyStopping
+from tensorflow.keras.layers import Dense, Concatenate, Dropout, BatchNormalization, Activation
 
 from businesses.trains.layers.encoder_layer import EncoderLayer
 from businesses.trains.layers.gat_layer import GATLayer
-from businesses.trains.layers.reduce_mean_layer import ReduceMeanLayer
+from businesses.trains.layers.reduce_pooling_layer import ReducePoolingLayer
 from businesses.trains.models.train_base_model import TrainBaseModel
 from common.enums.category import Category
 from common.enums.similarity_type import SimilarityType
@@ -27,13 +27,11 @@ class GatEncSumTrainModel(TrainBaseModel):
         self.droprate = hyper_params.droprate # 0.3
 
     def build_model(self, idx: int, category, x_train_shapes, has_interaction_description: bool = False):
-        output_model_1 = None
-        output_model_2 = None
         input_layers_1 = []
         input_layers_2 = []
 
         gat_layer = GATLayer(units=self.gat_units, num_heads=self.num_heads)
-        reduce_mean_layer = ReduceMeanLayer(axis=1)
+        reduce_mean_layer = ReducePoolingLayer(axis=1, pooling_mode='mean')
 
         if category == (Category.Substructure, SimilarityType.Original):
 

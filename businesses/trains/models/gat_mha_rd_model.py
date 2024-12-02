@@ -8,9 +8,10 @@ from businesses.trains.helpers.customize_epoch_progress import CustomizeEpochPro
 from businesses.trains.layers.autoencoder_layer import AutoEncoderLayer
 from businesses.trains.layers.autoencoder_multi_dim_layer import AutoEncoderMultiDimLayer
 from businesses.trains.layers.gat_layer import GATLayer
-from businesses.trains.layers.reduce_mean_layer import ReduceMeanLayer
+from businesses.trains.layers.reduce_pooling_layer import ReducePoolingLayer
 from businesses.trains.models.train_base_model import TrainBaseModel
 from common.enums.category import Category
+from common.enums.similarity_type import SimilarityType
 from common.helpers import loss_helper
 from core.models.training_params import TrainingParams
 from core.repository_models.training_drug_interaction_dto import TrainingDrugInteractionDTO
@@ -51,11 +52,11 @@ class GatMhaRDTrainModel(TrainBaseModel):
         str_encoded_models_2 = []
 
         gat_layer = GATLayer(units=self.gat_units, num_heads=self.gat_num_heads)
-        reduce_mean_layer = ReduceMeanLayer(axis=1)
+        reduce_mean_layer = ReducePoolingLayer(axis=1, pooling_mode='mean')
 
         for idx, category in self.categories.items():
 
-            if category == Category.Substructure:
+            if category == (Category.Substructure, SimilarityType.Original):
                 smiles_input_shape = x_train_shapes[idx]
                 adjacency_input_shape = x_train_shapes[idx + 1]
 
@@ -71,7 +72,7 @@ class GatMhaRDTrainModel(TrainBaseModel):
                 output_models_1.append(gat_output_1)
                 output_models_2.append(gat_output_2)
 
-            elif category.data_type == str:
+            elif category[0].data_type == str:
                 autoencoder_layer = AutoEncoderMultiDimLayer(encoding_dim=self.str_encoding_shape, target_shape=x_train_shapes[idx])
 
                 str_input_layer_1 = Input(shape=x_train_shapes[idx], name=f"AE_Str_Input_1_{idx}")
