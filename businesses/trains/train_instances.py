@@ -1,5 +1,6 @@
 from businesses.trains.split_drugs.drug_cnn_siam_train_service import DrugCNNSiamTrainService
 from businesses.trains.split_drugs.drug_gat_ae_dnn_train_service import DrugGatAeDnnTrainService
+from businesses.trains.split_drugs.drug_gat_enc_adv_dnn_train_service import DrugGatEncAdvDnnTrainService
 from businesses.trains.split_drugs.drug_gat_enc_mha_dnn_train_service import DrugGatEncMhaDnnTrainService
 from businesses.trains.split_drugs.drug_gat_enc_sum_dnn_train_service import DrugGatEncSumDnnTrainService
 from businesses.trains.split_drugs.drug_gat_enc_v2_dnn_train_service import DrugGatEncV2DnnTrainService
@@ -38,6 +39,7 @@ from businesses.trains.split_drugs.drug_ddi_mdl_train_service import DrugDDIMDLT
 from businesses.trains.split_drugs.drug_deep_ddi_train_service import DrugDeepDDITrainService
 from businesses.trains.split_drugs.drug_gat_enc_con_dnn_train_service import DrugGatEncConDnnTrainService
 from businesses.trains.split_interactions.gat_ae_dnn_train_service import GatAeDnnTrainService
+from businesses.trains.split_interactions.gat_enc_adv_dnn_train_service import GatEncAdvDnnTrainService
 from businesses.trains.split_interactions.gat_enc_con_dnn_train_service import GatEncConDnnTrainService
 from businesses.trains.split_interactions.gat_enc_mha_dnn_train_service import GatEncMhaDnnTrainService
 from businesses.trains.split_interactions.gat_enc_sum_dnn_train_service import GatEncSumDnnTrainService
@@ -77,6 +79,8 @@ def get_instance(category: TrainModel) -> TrainBaseService:
         return RfTrainService(category)
     elif category == TrainModel.GAT_Enc_Con_DNN:
         return GatEncConDnnTrainService(category, encoding_dim=128, gat_units=64, num_heads=4, dense_units=[512, 256], droprate=0.3)
+    elif category == TrainModel.GAT_Enc_Adv_DNN:
+        return GatEncAdvDnnTrainService(category, encoding_dim=128, gat_units=64, num_heads=4, dense_units=[512, 256], droprate=0.3)
     elif category == TrainModel.GAT_Enc_Sum_DNN:
         return GatEncSumDnnTrainService(category, encoding_dim=128, gat_units=64, num_heads=4, dense_units=[512, 256], droprate=0.3)
     elif category == TrainModel.GAT_Enc_V2:
@@ -104,6 +108,9 @@ def get_instance(category: TrainModel) -> TrainBaseService:
         return DrugCNNSiamTrainService(category, True)
     elif category == TrainModel.Drug_GAT_Enc_Con_DNN:
         return DrugGatEncConDnnTrainService(category, encoding_dim=128, gat_units=64, num_heads=4, dense_units=[512, 256], droprate=0.3,
+                                            compare_train_test=True)
+    elif category == TrainModel.Drug_GAT_Enc_Adv_DNN:
+        return DrugGatEncAdvDnnTrainService(category, encoding_dim=128, gat_units=64, num_heads=4, dense_units=[512, 256], droprate=0.3,
                                             compare_train_test=True)
     elif category == TrainModel.Drug_GAT_Enc_Sum_DNN:
         return DrugGatEncSumDnnTrainService(category, encoding_dim=128, gat_units=64, num_heads=4, dense_units=[512, 256], droprate=0.3,
@@ -143,6 +150,9 @@ def get_instance(category: TrainModel) -> TrainBaseService:
     elif category == TrainModel.Drug_GAT_Enc_Con_DNN_Test:
         return DrugGatEncConDnnTrainService(category, encoding_dim=128, gat_units=64, num_heads=4, dense_units=[512, 256], droprate=0.3,
                                             compare_train_test=False)
+    elif category == TrainModel.Drug_GAT_Enc_Adv_DNN_Test:
+        return DrugGatEncAdvDnnTrainService(category, encoding_dim=128, gat_units=64, num_heads=4, dense_units=[512, 256], droprate=0.3,
+                                            compare_train_test=False)
     elif category == TrainModel.Drug_GAT_Enc_Sum_DNN_Test:
         return DrugGatEncSumDnnTrainService(category, encoding_dim=128, gat_units=64, num_heads=4, dense_units=[512, 256], droprate=0.3,
                                             compare_train_test=False)
@@ -171,6 +181,8 @@ def get_instance(category: TrainModel) -> TrainBaseService:
         return DrugRfTrainService(category, False)
 
     elif category == TrainModel.Fold_GAT_Enc_Con_DNN:
+        return FoldGatEncConDnnTrainService(category, encoding_dim=128, gat_units=64, num_heads=4, dense_units=[512, 256], droprate=0.3)
+    elif category == TrainModel.Fold_GAT_Enc_Adv_DNN:
         return FoldGatEncConDnnTrainService(category, encoding_dim=128, gat_units=64, num_heads=4, dense_units=[512, 256], droprate=0.3)
     elif category == TrainModel.Fold_GAT_Enc_Sum_DNN:
         return FoldGatEncSumDnnTrainService(category, encoding_dim=128, gat_units=64, num_heads=4, dense_units=[512, 256], droprate=0.3)

@@ -27,7 +27,8 @@ class TrainModel(Enum):
     GAT_Enc_MHA = (20, Scenarios.SplitInteractionSimilarities, 'NotFound', 'GAT On SMILES, Multi-Head-Attention between text fields and other fields ('
                                                                            'Pathway, Target, Enzyme) and then DNN.')
     GAT_Lstm_MHA = (21, Scenarios.SplitInteractionSimilarities, 'NotFound', 'GAT On SMILES, Multi-Head-Attention between text fields and other fields ('
-                                                                           'Pathway, Target, Enzyme) and then DNN.')
+                                                                            'Pathway, Target, Enzyme) and then DNN.')
+    GAT_Enc_Adv_DNN = (22, Scenarios.SplitInteractionSimilarities, 'NotFound', 'GAT On SMILES, Encoder, Concat AutoEncoders and then DNN')
 
     Drug_Enc_Con_DNN = (204, Scenarios.SplitDrugsTestWithTrain, 'NotFound', 'Reduce data dimension, join them and send to DNN')
     Drug_GAT_Enc_Con_DNN = (205, Scenarios.SplitDrugsTestWithTrain, 'NotFound', 'GAT On SMILES, AutoEncoder, Concat AutoEncoders and then DNN')
@@ -48,6 +49,7 @@ class TrainModel(Enum):
                                                                             'Pathway, Target, Enzyme) and then DNN.')
     Drug_GAT_Lstm_MHA = (221, Scenarios.SplitDrugsTestWithTrain, 'NotFound', 'GAT On SMILES, Multi-Head-Attention between text fields and other fields ('
                                                                              'Pathway, Target, Enzyme) and then DNN.')
+    Drug_GAT_Enc_Adv_DNN = (222, Scenarios.SplitDrugsTestWithTrain, 'NotFound', 'GAT On SMILES, AutoEncoder, Concat AutoEncoders and then DNN')
     Drug_KNN = (251, Scenarios.SplitDrugsTestWithTrain, 'NotFound', 'This network learns by KNN.')
     Drug_SVM = (252, Scenarios.SplitDrugsTestWithTrain, 'NotFound', 'This network learns by SVM.')
     Drug_LR = (253, Scenarios.SplitDrugsTestWithTrain, 'NotFound', 'Logistic Regression.')
@@ -70,34 +72,13 @@ class TrainModel(Enum):
     Drug_GAT_Enc_MHA_Test = (320, Scenarios.SplitDrugsTestWithTest, 'NotFound', 'GAT On SMILES, Multi-Head-Attention between text fields and other fields ('
                                                                                 'Pathway, Target, Enzyme) and then DNN.')
     Drug_GAT_Lstm_MHA_Test = (321, Scenarios.SplitDrugsTestWithTest, 'NotFound', 'GAT On SMILES, Multi-Head-Attention between text fields and other fields ('
-                                                                                'Pathway, Target, Enzyme) and then DNN.')
+                                                                                 'Pathway, Target, Enzyme) and then DNN.')
+    Drug_GAT_Enc_Adv_DNN_Test = (322, Scenarios.SplitDrugsTestWithTest, 'NotFound', 'GAT On SMILES, AutoEncoder, Concat AutoEncoders and then DNN')
 
     Drug_KNN_Test = (351, Scenarios.SplitDrugsTestWithTest, 'NotFound', 'This network learns by KNN.')
     Drug_SVM_Test = (352, Scenarios.SplitDrugsTestWithTest, 'NotFound', 'This network learns by SVM.')
     Drug_LR_Test = (353, Scenarios.SplitDrugsTestWithTest, 'NotFound', 'Logistic Regression.')
     Drug_RF_Test = (354, Scenarios.SplitDrugsTestWithTest, 'NotFound', 'Random Forest.')
-
-
-    Drug_GAT_Enc_Sum_DNN_Test_60 = (360, Scenarios.SplitDrugsTestWithTest, 'NotFound', 'GAT On SMILES, AutoEncoder, Concat AutoEncoders and then DNN')
-    Drug_GAT_Enc_Sum_DNN_Test_61 = (361, Scenarios.SplitDrugsTestWithTest, 'NotFound', 'GAT On SMILES, AutoEncoder, Concat AutoEncoders and then DNN')
-    Drug_GAT_Enc_Sum_DNN_Test_62 = (362, Scenarios.SplitDrugsTestWithTest, 'NotFound', 'GAT On SMILES, AutoEncoder, Concat AutoEncoders and then DNN')
-    Drug_GAT_Enc_Sum_DNN_Test_63 = (363, Scenarios.SplitDrugsTestWithTest, 'NotFound', 'GAT On SMILES, AutoEncoder, Concat AutoEncoders and then DNN')
-    Drug_GAT_Enc_Sum_DNN_Test_64 = (364, Scenarios.SplitDrugsTestWithTest, 'NotFound', 'GAT On SMILES, AutoEncoder, Concat AutoEncoders and then DNN')
-    Drug_GAT_Enc_Sum_DNN_Test_65 = (365, Scenarios.SplitDrugsTestWithTest, 'NotFound', 'GAT On SMILES, AutoEncoder, Concat AutoEncoders and then DNN')
-    Drug_GAT_Enc_Sum_DNN_Test_66 = (366, Scenarios.SplitDrugsTestWithTest, 'NotFound', 'GAT On SMILES, AutoEncoder, Concat AutoEncoders and then DNN')
-    Drug_GAT_Enc_Sum_DNN_Test_67 = (367, Scenarios.SplitDrugsTestWithTest, 'NotFound', 'GAT On SMILES, AutoEncoder, Concat AutoEncoders and then DNN')
-    Drug_GAT_Enc_Sum_DNN_Test_68 = (368, Scenarios.SplitDrugsTestWithTest, 'NotFound', 'GAT On SMILES, AutoEncoder, Concat AutoEncoders and then DNN')
-    Drug_GAT_Enc_Sum_DNN_Test_69 = (369, Scenarios.SplitDrugsTestWithTest, 'NotFound', 'GAT On SMILES, AutoEncoder, Concat AutoEncoders and then DNN')
-    Drug_GAT_Enc_Sum_DNN_Test_70 = (370, Scenarios.SplitDrugsTestWithTest, 'NotFound', 'GAT On SMILES, AutoEncoder, Concat AutoEncoders and then DNN')
-    Drug_GAT_Enc_Sum_DNN_Test_71 = (371, Scenarios.SplitDrugsTestWithTest, 'NotFound', 'GAT On SMILES, AutoEncoder, Concat AutoEncoders and then DNN')
-    Drug_GAT_Enc_Sum_DNN_Test_72 = (372, Scenarios.SplitDrugsTestWithTest, 'NotFound', 'GAT On SMILES, AutoEncoder, Concat AutoEncoders and then DNN')
-    Drug_GAT_Enc_Sum_DNN_Test_73 = (373, Scenarios.SplitDrugsTestWithTest, 'NotFound', 'GAT On SMILES, AutoEncoder, Concat AutoEncoders and then DNN')
-    Drug_GAT_Enc_Sum_DNN_Test_74 = (374, Scenarios.SplitDrugsTestWithTest, 'NotFound', 'GAT On SMILES, AutoEncoder, Concat AutoEncoders and then DNN')
-    Drug_GAT_Enc_Sum_DNN_Test_75 = (375, Scenarios.SplitDrugsTestWithTest, 'NotFound', 'GAT On SMILES, AutoEncoder, Concat AutoEncoders and then DNN')
-    Drug_GAT_Enc_Sum_DNN_Test_76 = (376, Scenarios.SplitDrugsTestWithTest, 'NotFound', 'GAT On SMILES, AutoEncoder, Concat AutoEncoders and then DNN')
-    Drug_GAT_Enc_Sum_DNN_Test_77 = (377, Scenarios.SplitDrugsTestWithTest, 'NotFound', 'GAT On SMILES, AutoEncoder, Concat AutoEncoders and then DNN')
-    Drug_GAT_Enc_Sum_DNN_Test_78 = (378, Scenarios.SplitDrugsTestWithTest, 'NotFound', 'GAT On SMILES, AutoEncoder, Concat AutoEncoders and then DNN')
-    Drug_GAT_Enc_Sum_DNN_Test_79 = (379, Scenarios.SplitDrugsTestWithTest, 'NotFound', 'GAT On SMILES, AutoEncoder, Concat AutoEncoders and then DNN')
 
     Fold_GAT_Enc_Con_DNN = (405, Scenarios.FoldInteractionSimilarities, 'NotFound', 'GAT On SMILES, AutoEncoder, Concat AutoEncoders and then DNN')
     Fold_GAT_MHA_DNN = (406, Scenarios.FoldInteractionSimilarities, 'NotFound', 'GAT On SMILES, Multi-Head-Attention between text fields and other fields ('
@@ -115,7 +96,8 @@ class TrainModel(Enum):
     Fold_GAT_Enc_MHA = (420, Scenarios.FoldInteractionSimilarities, 'NotFound', 'GAT On SMILES, Multi-Head-Attention between text fields and other fields ('
                                                                                 'Pathway, Target, Enzyme) and then DNN.')
     Fold_GAT_Lstm_MHA = (421, Scenarios.FoldInteractionSimilarities, 'NotFound', 'GAT On SMILES, Multi-Head-Attention between text fields and other fields ('
-                                                                                'Pathway, Target, Enzyme) and then DNN.')
+                                                                                 'Pathway, Target, Enzyme) and then DNN.')
+    Fold_GAT_Enc_Adv_DNN = (422, Scenarios.FoldInteractionSimilarities, 'NotFound', 'GAT On SMILES, AutoEncoder, Concat AutoEncoders and then DNN')
 
     Fold_KNN = (451, Scenarios.FoldInteractionSimilarities, 'NotFound', 'This network learns by KNN.')
     Fold_SVM = (452, Scenarios.FoldInteractionSimilarities, 'NotFound', 'This network learns by SVM.')
@@ -126,6 +108,26 @@ class TrainModel(Enum):
     DDIMDL = (502, Scenarios.SplitInteractionSimilarities, 'DDIMDL', 'The Old Base Algorithm, just use SMILES code.')
     CNN_Siam = (503, Scenarios.SplitInteractionSimilarities, 'CNN_Siam', 'The Old Base Algorithm, use CNN.')
 
+    Drug_GAT_Enc_Sum_DNN_Test_60 = (1360, Scenarios.SplitDrugsTestWithTest, 'NotFound', 'GAT On SMILES, AutoEncoder, Concat AutoEncoders and then DNN')
+    Drug_GAT_Enc_Sum_DNN_Test_61 = (1361, Scenarios.SplitDrugsTestWithTest, 'NotFound', 'GAT On SMILES, AutoEncoder, Concat AutoEncoders and then DNN')
+    Drug_GAT_Enc_Sum_DNN_Test_62 = (1362, Scenarios.SplitDrugsTestWithTest, 'NotFound', 'GAT On SMILES, AutoEncoder, Concat AutoEncoders and then DNN')
+    Drug_GAT_Enc_Sum_DNN_Test_63 = (1363, Scenarios.SplitDrugsTestWithTest, 'NotFound', 'GAT On SMILES, AutoEncoder, Concat AutoEncoders and then DNN')
+    Drug_GAT_Enc_Sum_DNN_Test_64 = (1364, Scenarios.SplitDrugsTestWithTest, 'NotFound', 'GAT On SMILES, AutoEncoder, Concat AutoEncoders and then DNN')
+    Drug_GAT_Enc_Sum_DNN_Test_65 = (1365, Scenarios.SplitDrugsTestWithTest, 'NotFound', 'GAT On SMILES, AutoEncoder, Concat AutoEncoders and then DNN')
+    Drug_GAT_Enc_Sum_DNN_Test_66 = (1366, Scenarios.SplitDrugsTestWithTest, 'NotFound', 'GAT On SMILES, AutoEncoder, Concat AutoEncoders and then DNN')
+    Drug_GAT_Enc_Sum_DNN_Test_67 = (1367, Scenarios.SplitDrugsTestWithTest, 'NotFound', 'GAT On SMILES, AutoEncoder, Concat AutoEncoders and then DNN')
+    Drug_GAT_Enc_Sum_DNN_Test_68 = (1368, Scenarios.SplitDrugsTestWithTest, 'NotFound', 'GAT On SMILES, AutoEncoder, Concat AutoEncoders and then DNN')
+    Drug_GAT_Enc_Sum_DNN_Test_69 = (1369, Scenarios.SplitDrugsTestWithTest, 'NotFound', 'GAT On SMILES, AutoEncoder, Concat AutoEncoders and then DNN')
+    Drug_GAT_Enc_Sum_DNN_Test_70 = (1370, Scenarios.SplitDrugsTestWithTest, 'NotFound', 'GAT On SMILES, AutoEncoder, Concat AutoEncoders and then DNN')
+    Drug_GAT_Enc_Sum_DNN_Test_71 = (1371, Scenarios.SplitDrugsTestWithTest, 'NotFound', 'GAT On SMILES, AutoEncoder, Concat AutoEncoders and then DNN')
+    Drug_GAT_Enc_Sum_DNN_Test_72 = (1372, Scenarios.SplitDrugsTestWithTest, 'NotFound', 'GAT On SMILES, AutoEncoder, Concat AutoEncoders and then DNN')
+    Drug_GAT_Enc_Sum_DNN_Test_73 = (1373, Scenarios.SplitDrugsTestWithTest, 'NotFound', 'GAT On SMILES, AutoEncoder, Concat AutoEncoders and then DNN')
+    Drug_GAT_Enc_Sum_DNN_Test_74 = (1374, Scenarios.SplitDrugsTestWithTest, 'NotFound', 'GAT On SMILES, AutoEncoder, Concat AutoEncoders and then DNN')
+    Drug_GAT_Enc_Sum_DNN_Test_75 = (1375, Scenarios.SplitDrugsTestWithTest, 'NotFound', 'GAT On SMILES, AutoEncoder, Concat AutoEncoders and then DNN')
+    Drug_GAT_Enc_Sum_DNN_Test_76 = (1376, Scenarios.SplitDrugsTestWithTest, 'NotFound', 'GAT On SMILES, AutoEncoder, Concat AutoEncoders and then DNN')
+    Drug_GAT_Enc_Sum_DNN_Test_77 = (1377, Scenarios.SplitDrugsTestWithTest, 'NotFound', 'GAT On SMILES, AutoEncoder, Concat AutoEncoders and then DNN')
+    Drug_GAT_Enc_Sum_DNN_Test_78 = (1378, Scenarios.SplitDrugsTestWithTest, 'NotFound', 'GAT On SMILES, AutoEncoder, Concat AutoEncoders and then DNN')
+    Drug_GAT_Enc_Sum_DNN_Test_79 = (1379, Scenarios.SplitDrugsTestWithTest, 'NotFound', 'GAT On SMILES, AutoEncoder, Concat AutoEncoders and then DNN')
 
     GAT_Enc_Con_DNN_30 = (1030, Scenarios.SplitInteractionSimilarities, 'NotFound', 'GAT On SMILES, Encoder, Concat AutoEncoders and then DNN')
     GAT_Enc_Con_DNN_31 = (1031, Scenarios.SplitInteractionSimilarities, 'NotFound', 'GAT On SMILES, Encoder, Concat AutoEncoders and then DNN')
@@ -151,7 +153,6 @@ class TrainModel(Enum):
     GAT_Enc_Con_DNN_51 = (1051, Scenarios.SplitInteractionSimilarities, 'NotFound', 'GAT On SMILES, Encoder, Concat AutoEncoders and then DNN')
     GAT_Enc_Con_DNN_52 = (1052, Scenarios.SplitInteractionSimilarities, 'NotFound', 'GAT On SMILES, Encoder, Concat AutoEncoders and then DNN')
     GAT_Enc_Con_DNN_53 = (1053, Scenarios.SplitInteractionSimilarities, 'NotFound', 'GAT On SMILES, Encoder, Concat AutoEncoders and then DNN')
-
 
     GAT_Enc_Sum_DNN_60 = (1060, Scenarios.SplitInteractionSimilarities, 'NotFound', 'GAT On SMILES, Encoder, Concat AutoEncoders and then DNN')
     GAT_Enc_Sum_DNN_61 = (1061, Scenarios.SplitInteractionSimilarities, 'NotFound', 'GAT On SMILES, Encoder, Concat AutoEncoders and then DNN')
