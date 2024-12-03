@@ -29,10 +29,8 @@ class LRModel(TrainBaseModel):
 
         model.fit(x_train, y_train)
 
-        result = self.calculate_evaluation_metrics(model, x_test, y_test)
+        result = self.calculate_evaluation_metrics(model, x_test, y_test, is_labels_categorical=True)
 
-        result.model_info = self.get_model_info(model)
-
-        result.data_report = self.get_data_report_split(self.interaction_data, y_train, y_test)
+        result.data_report = self.get_data_report_split(self.interaction_data, y_train, y_test, is_labels_categorical=True)
 
         return result

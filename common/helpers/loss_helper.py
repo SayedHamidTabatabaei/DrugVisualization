@@ -14,6 +14,8 @@ def get_loss_function(loss_type: LossFunctions, class_weights: dict = None):
         return focal_tversky_loss(alpha=0.7, beta=0.3, gamma=0.75, class_weights=class_weights)
 
     # Without class weights
+    elif loss_type == LossFunctions.hinge:
+        return "hinge"
     elif loss_type == LossFunctions.squared_hinge:
         return "squared_hinge"
     elif loss_type == LossFunctions.dice_loss:

@@ -32,7 +32,11 @@ class JobBusiness:
         # except Exception as e:
         #     print(f"An error occurred during training: {e}")
         # finally:
-        self.job_repository.update(job_id, datetime.now(timezone.utc))
+        try:
+            self.job_repository.update(job_id, datetime.now(timezone.utc))
+        except Exception as e:
+            print(e)
+            pass
         print("Finished background job")
 
     def run_scheduler(self):
