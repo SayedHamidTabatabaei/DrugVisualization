@@ -2,6 +2,7 @@ from tensorflow.keras import Model, Input
 from tensorflow.keras.layers import Dense, Concatenate, Dropout, BatchNormalization, Activation
 from tensorflow.keras.callbacks import EarlyStopping
 from tensorflow.keras import backend as K
+from tensorflow.keras.metrics import Precision, Recall
 
 from businesses.trains.layers.encoder_layer import EncoderLayer
 from businesses.trains.layers.gat_layer import GATLayer
@@ -43,7 +44,7 @@ class GatEncAdvTrainModel(TrainBaseModel):
         self.droprate = hyper_params.droprate
         self.pooling_mode = hyper_params.pooling_mode
 
-        self.training_params.metrics = ['accuracy', f1_score]
+        self.training_params.metrics = ['accuracy', Precision(), Recall()]  # ['accuracy', f1_score]
 
     def build_model(self, data_categories: dict, x_train_shapes, has_interaction_description: bool = False):
         output_models_1 = []
