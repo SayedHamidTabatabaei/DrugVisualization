@@ -2,6 +2,7 @@ from tensorflow.keras import Model, Input
 from tensorflow.keras.layers import Dense, Concatenate, Dropout, BatchNormalization, Activation
 from tensorflow.keras.callbacks import EarlyStopping
 from tensorflow.keras import backend as K
+from tensorflow.keras.optimizers import schedules, Adam
 
 from businesses.trains.layers.encoder_layer import EncoderLayer
 from businesses.trains.layers.gat_layer import GATLayer
@@ -141,7 +142,16 @@ class GatEncAdvTrainModel(TrainBaseModel):
         else:
             class_weights = None
 
-        model.compile(optimizer=self.training_params.optimizer,
+        initial_lr = 1e-4
+        lr_schedule = schedules.CosineDecay(
+            initial_learning_rate=initial_lr,
+            decay_steps=100 * len(y_train),
+            alpha=0.0
+        )
+
+        optimizer = Adam(learning_rate=lr_schedule)
+
+        model.compile(optimizer=optimizer,
                       loss=loss_helper.get_loss_function(self.training_params.loss, class_weights),
                       metrics=self.training_params.metrics)
 
