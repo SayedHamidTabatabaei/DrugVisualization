@@ -109,6 +109,9 @@ class TrainBaseModel:
         y_pred = y_pred if not is_labels_categorical else np.eye(self.num_classes)[y_pred_classes]
         y_test = y_test if not is_labels_categorical else np.eye(self.num_classes)[y_test_classes]
 
+        incorrect_indices = np.where(y_pred != y_test)[0]
+        training_results.incorrect_predictions = {idx: y_pred[idx] for idx in incorrect_indices}
+
         accuracy = accuracy_score(y_test_classes, y_pred_classes)
         training_results.append(TrainingResultSummaryDTO(TrainingResultType.accuracy, accuracy))
 

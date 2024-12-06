@@ -33,8 +33,9 @@ from core.repository_models.training_summary_dto import TrainingSummaryDTO
 class TrainBaseService:
     category: TrainModel
 
-    def __init__(self, category: TrainModel):
+    def __init__(self, category: TrainModel, file_train_id: int = None):
         self.category = category
+        self.file_train_id = file_train_id
         self.num_classes = 65
         self.num_folds = 5
         self.usage_model_file = 'usage_models'
@@ -188,7 +189,8 @@ class TrainBaseService:
                         "precision": r.precision
                     }
                     for r in result.training_result_details
-                ]
+                ],
+                "incorrect_predictions": result.incorrect_predictions
             }
 
             results.append(result)
@@ -227,7 +229,7 @@ class TrainBaseService:
                                       pca_generating: bool = False, pca_components: int = None,
                                       is_deep_face: bool = False, is_cnn: bool = False,
                                       compare_train_test: bool = True, mean_of_text_embeddings: bool = True,
-                                      output_as_array: bool = True):
+                                      output_as_array: bool = True, file_train_id: int = None):
 
         self.num_classes = len(set(item.interaction_type for item in interaction_data))
         fold_data = []
@@ -240,58 +242,72 @@ class TrainBaseService:
             {key: math.floor(len(value) / self.num_folds) if len(value) < 50 else math.ceil(len(value) / self.num_folds)
              for key, value in sorted(interaction_drugs.items(), reverse=True)}
 
+        if file_train_id:
+            with open(f'{file_train_id}.json', 'r') as file:
+                fold_file_data = json.load(file)
+
         for k in range(1, self.num_folds + 1):
-            active_drugs_on_test = {
-                key: {drug for drug in drugs if drug not in previous_fold_tests}
-                for key, drugs in sorted(interaction_drugs.items(), reverse=True)
-            }
+            if not file_train_id:
+                active_drugs_on_test = {
+                    key: {drug for drug in drugs if drug not in previous_fold_tests}
+                    for key, drugs in sorted(interaction_drugs.items(), reverse=True)
+                }
 
-            test_drug_ids: list[int] = []
-            train_drug_ids: list[int] = []
+                test_drug_ids: list[int] = []
+                train_drug_ids: list[int] = []
 
-            if k == self.num_folds:
-                test_drug_ids = [drug for drugs in active_drugs_on_test.values() for drug in drugs]
-                train_drug_ids = [drug for drug in all_drugs if drug not in test_drug_ids]
+                if k == self.num_folds:
+                    test_drug_ids = [drug for drugs in active_drugs_on_test.values() for drug in drugs]
+                    train_drug_ids = [drug for drug in all_drugs if drug not in test_drug_ids]
 
-            else:
-                for key, drugs in active_drugs_on_test.items():
+                else:
+                    for key, drugs in active_drugs_on_test.items():
 
-                    temp_test = list(drugs.intersection(test_drug_ids))
+                        temp_test = list(drugs.intersection(test_drug_ids))
 
-                    needed_data_count = min_test_drugs_in_folds_per_interaction_type[key] - len(temp_test)
+                        needed_data_count = min_test_drugs_in_folds_per_interaction_type[key] - len(temp_test)
 
-                    if 0 < needed_data_count < len([d for d in drugs if d not in test_drug_ids and d not in train_drug_ids]):
-                        temp_test = temp_test + random.sample([d for d in drugs if d not in test_drug_ids and d not in train_drug_ids], needed_data_count)
+                        if 0 < needed_data_count < len([d for d in drugs if d not in test_drug_ids and d not in train_drug_ids]):
+                            temp_test = temp_test + random.sample([d for d in drugs if d not in test_drug_ids and d not in train_drug_ids], needed_data_count)
 
-                    if key == 0:
-                        pass
+                        if key == 0:
+                            pass
 
-                    test_drug_ids = list(set(test_drug_ids + temp_test))
+                        test_drug_ids = list(set(test_drug_ids + temp_test))
 
-                    temp_train = [drug for drug in interaction_drugs[key] if drug not in temp_test]
-                    train_drug_ids = train_drug_ids + temp_train
+                        temp_train = [drug for drug in interaction_drugs[key] if drug not in temp_test]
+                        train_drug_ids = train_drug_ids + temp_train
 
-            test_drug_ids = list(set(test_drug_ids))
-            train_drug_ids = list(set(train_drug_ids))
+                test_drug_ids = list(set(test_drug_ids))
+                train_drug_ids = list(set(train_drug_ids))
 
-            previous_fold_tests.extend(test_drug_ids)
+                previous_fold_tests.extend(test_drug_ids)
 
-            # Filter interaction_data based on the defined conditions
-            train_interactions = [
-                interaction for interaction in interaction_data
-                if interaction.drug_1 in train_drug_ids and interaction.drug_2 in train_drug_ids
-            ]
-
-            if compare_train_test:
-                test_interactions = [
+                # Filter interaction_data based on the defined conditions
+                train_interactions = [
                     interaction for interaction in interaction_data
-                    if interaction.drug_1 in test_drug_ids or interaction.drug_2 in test_drug_ids
+                    if interaction.drug_1 in train_drug_ids and interaction.drug_2 in train_drug_ids
                 ]
+
+                if compare_train_test:
+                    test_interactions = [
+                        interaction for interaction in interaction_data
+                        if interaction.drug_1 in test_drug_ids or interaction.drug_2 in test_drug_ids
+                    ]
+                else:
+                    test_interactions = [
+                        interaction for interaction in interaction_data
+                        if interaction.drug_1 in test_drug_ids and interaction.drug_2 in test_drug_ids
+                    ]
             else:
-                test_interactions = [
-                    interaction for interaction in interaction_data
-                    if interaction.drug_1 in test_drug_ids and interaction.drug_2 in test_drug_ids
-                ]
+                file_data = [entry for entry in fold_file_data if entry['fold'] == k]
+                train_interaction_ids = file_data['train_interaction_ids']
+                test_interaction_ids = file_data['test_interaction_ids']
+
+                train_interactions = [interaction for interaction in interaction_data if interaction.id in train_interaction_ids]
+                test_interactions = [interaction for interaction in interaction_data if interaction.id in test_interaction_ids]
+
+                train_drug_ids = [t.drug_1 for t in train_interactions] + [t.drug_2 for t in train_interactions]
 
             # Save fold data to list
             fold_data.append({

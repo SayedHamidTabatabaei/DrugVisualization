@@ -14,3 +14,4 @@ class TrainingSummaryDTO:
     model_info: object
     fold_result_details: object
     training_result_details: list[TrainingResultDetailSummaryDTO]
+    incorrect_predictions: dict

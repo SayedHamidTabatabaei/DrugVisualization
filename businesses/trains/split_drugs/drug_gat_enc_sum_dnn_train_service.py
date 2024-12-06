@@ -14,8 +14,8 @@ train_model = TrainModel.Drug_GAT_Enc_Sum_DNN or TrainModel.Drug_GAT_Enc_Sum_DNN
 
 class DrugGatEncSumDnnTrainService(TrainBaseService):
 
-    def __init__(self, category, encoding_dim, gat_units, num_heads, dense_units, droprate, compare_train_test: bool = True):
-        super().__init__(category)
+    def __init__(self, category, encoding_dim, gat_units, num_heads, dense_units, droprate, compare_train_test: bool = True, file_train_id: int = None):
+        super().__init__(category, file_train_id=file_train_id)
         self.hyper_params = HyperParams(encoding_dim, gat_units, num_heads, dense_units, droprate)
         self.compare_train_test = compare_train_test
 

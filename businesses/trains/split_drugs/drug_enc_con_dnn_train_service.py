@@ -13,8 +13,8 @@ train_model = TrainModel.Drug_Enc_Con_DNN or TrainModel.Drug_Enc_Con_DNN_Test
 
 class DrugEncConDnnTrainService(TrainBaseService):
 
-    def __init__(self, category: TrainModel, compare_train_test: bool = True):
-        super().__init__(category)
+    def __init__(self, category: TrainModel, compare_train_test: bool = True, file_train_id: int = None):
+        super().__init__(category, file_train_id=file_train_id)
         self.compare_train_test = compare_train_test
 
     def train(self, parameters: SplitDrugsTestWithTrainTrainingParameterModel) -> TrainingSummaryDTO:

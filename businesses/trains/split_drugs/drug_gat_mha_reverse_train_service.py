@@ -10,8 +10,8 @@ train_model = TrainModel.Drug_GAT_MHA_Reverse or TrainModel.Drug_GAT_MHA_Reverse
 
 class DrugGatMhaReverseTrainService(TrainBaseService):
 
-    def __init__(self, category, compare_train_test: bool = True):
-        super().__init__(category)
+    def __init__(self, category, compare_train_test: bool = True, file_train_id: int = None):
+        super().__init__(category, file_train_id=file_train_id)
         self.compare_train_test = compare_train_test
 
     def train(self, parameters: SplitDrugsTestWithTrainTrainingParameterModel) -> TrainingSummaryDTO:

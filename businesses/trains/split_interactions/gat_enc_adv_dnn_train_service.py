@@ -35,4 +35,4 @@ class GatEncAdvDnnTrainService(TrainBaseService):
         del x_train, x_test, y_train, y_test
         gc.collect()
 
-        return result
+        return super().calculate_fold_results([result])

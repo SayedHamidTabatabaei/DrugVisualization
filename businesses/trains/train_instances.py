@@ -62,6 +62,10 @@ from businesses.trains.train_base_service import TrainBaseService
 from common.enums.train_models import TrainModel
 
 
+drug_train_test_file_train_id = 0
+drug_test_test_file_train_id = 0
+
+
 def get_instance(category: TrainModel) -> TrainBaseService:
     if category == TrainModel.JoinBeforeSoftmax:
         return JoinBeforeSoftmaxTrainService(category)
@@ -105,90 +109,90 @@ def get_instance(category: TrainModel) -> TrainBaseService:
         return GatLstmMhaDnnTrainService(category)
 
     elif category == TrainModel.Drug_Enc_Con_DNN:
-        return DrugEncConDnnTrainService(category, True)
+        return DrugEncConDnnTrainService(category, True, file_train_id=drug_train_test_file_train_id)
     elif category == TrainModel.Drug_Deep_DDI:
-        return DrugDeepDDITrainService(category, True)
+        return DrugDeepDDITrainService(category, True, file_train_id=drug_train_test_file_train_id)
     elif category == TrainModel.Drug_DDIMDL:
-        return DrugDDIMDLTrainService(category, True)
+        return DrugDDIMDLTrainService(category, True, file_train_id=drug_train_test_file_train_id)
     elif category == TrainModel.Drug_CNN_Siam:
-        return DrugCNNSiamTrainService(category, True)
+        return DrugCNNSiamTrainService(category, True, file_train_id=drug_train_test_file_train_id)
     elif category == TrainModel.Drug_GAT_Enc_Con_DNN:
         return DrugGatEncConDnnTrainService(category, encoding_dim=128, gat_units=64, num_heads=4, dense_units=[512, 256], droprate=0.3,
-                                            compare_train_test=True)
+                                            compare_train_test=True, file_train_id=drug_train_test_file_train_id)
     elif category == TrainModel.Drug_GAT_Enc_Adv_DNN:
         return DrugGatEncAdvDnnTrainService(category, encoding_dim=128, gat_units=32, num_heads=8, dense_units=[512, 256], droprate=0.3, pooling_mode='mean',
-                                            compare_train_test=True)
+                                            compare_train_test=True, file_train_id=drug_train_test_file_train_id)
     elif category == TrainModel.Drug_GAT_Enc_Sum_DNN:
         return DrugGatEncSumDnnTrainService(category, encoding_dim=128, gat_units=64, num_heads=4, dense_units=[512, 256], droprate=0.3,
-                                            compare_train_test=True)
+                                            compare_train_test=True, file_train_id=drug_train_test_file_train_id)
     elif category == TrainModel.Drug_GAT_Enc_V2:
         return DrugGatEncV2DnnTrainService(category, encoding_dim=128, gat_units=64, num_heads=8, dense_units=[512, 256], droprate=0.3, pooling_mode='mean',
-                                           compare_train_test=True)
+                                           compare_train_test=True, file_train_id=drug_train_test_file_train_id)
     elif category == TrainModel.Drug_GAT_MHA_DNN:
-        return DrugGatMhaDnnTrainService(category, True)
+        return DrugGatMhaDnnTrainService(category, True, file_train_id=drug_train_test_file_train_id)
     elif category == TrainModel.Drug_GAT_AE_DNN:
-        return DrugGatAeDnnTrainService(category, True)
+        return DrugGatAeDnnTrainService(category, True, file_train_id=drug_train_test_file_train_id)
     elif category == TrainModel.Drug_GAT_MHA_Reverse:
-        return DrugGatMhaReverseTrainService(category, True)
+        return DrugGatMhaReverseTrainService(category, True, file_train_id=drug_train_test_file_train_id)
     elif category == TrainModel.Drug_GAT_MHA_RD_DNN:
-        return DrugGatMhaRDDnnTrainService(category, True)
+        return DrugGatMhaRDDnnTrainService(category, True, file_train_id=drug_train_test_file_train_id)
     elif category == TrainModel.Drug_GAT_Enc_MHA:
-        return DrugGatEncMhaDnnTrainService(category, True)
+        return DrugGatEncMhaDnnTrainService(category, True, file_train_id=drug_train_test_file_train_id)
     elif category == TrainModel.Drug_GAT_Lstm_MHA:
-        return DrugGatLstmMhaDnnTrainService(category, True)
+        return DrugGatLstmMhaDnnTrainService(category, True, file_train_id=drug_train_test_file_train_id)
     elif category == TrainModel.Drug_DMDDI:
-        return DrugDMDDITrainService(category, True)
+        return DrugDMDDITrainService(category, True, file_train_id=drug_train_test_file_train_id)
     elif category == TrainModel.Drug_KNN:
-        return DrugKnnTrainService(category, True)
+        return DrugKnnTrainService(category, True, file_train_id=drug_train_test_file_train_id)
     elif category == TrainModel.Drug_SVM:
-        return DrugSvmTrainService(category, True)
+        return DrugSvmTrainService(category, True, file_train_id=drug_train_test_file_train_id)
     elif category == TrainModel.Drug_LR:
-        return DrugLrTrainService(category, True)
+        return DrugLrTrainService(category, True, file_train_id=drug_train_test_file_train_id)
     elif category == TrainModel.Drug_RF:
-        return DrugRfTrainService(category, True)
+        return DrugRfTrainService(category, True, file_train_id=drug_train_test_file_train_id)
 
     elif category == TrainModel.Drug_Enc_Con_DNN_Test:
-        return DrugEncConDnnTrainService(category, False)
+        return DrugEncConDnnTrainService(category, False, file_train_id=drug_test_test_file_train_id)
     elif category == TrainModel.Drug_Deep_DDI_Test:
-        return DrugDeepDDITrainService(category, False)
+        return DrugDeepDDITrainService(category, False, file_train_id=drug_test_test_file_train_id)
     elif category == TrainModel.Drug_DDIMDL_Test:
-        return DrugDDIMDLTrainService(category, False)
+        return DrugDDIMDLTrainService(category, False, file_train_id=drug_test_test_file_train_id)
     elif category == TrainModel.Drug_CNN_Siam_Test:
-        return DrugCNNSiamTrainService(category, False)
+        return DrugCNNSiamTrainService(category, False, file_train_id=drug_test_test_file_train_id)
     elif category == TrainModel.Drug_GAT_Enc_Con_DNN_Test:
         return DrugGatEncConDnnTrainService(category, encoding_dim=128, gat_units=64, num_heads=4, dense_units=[512, 256], droprate=0.3,
-                                            compare_train_test=False)
+                                            compare_train_test=False, file_train_id=drug_test_test_file_train_id)
     elif category == TrainModel.Drug_GAT_Enc_Adv_DNN_Test:
         return DrugGatEncAdvDnnTrainService(category, encoding_dim=128, gat_units=32, num_heads=8, dense_units=[512, 256], droprate=0.3, pooling_mode='mean',
-                                            compare_train_test=False)
+                                            compare_train_test=False, file_train_id=drug_test_test_file_train_id)
     elif category == TrainModel.Drug_GAT_Enc_Sum_DNN_Test:
         return DrugGatEncSumDnnTrainService(category, encoding_dim=128, gat_units=64, num_heads=4, dense_units=[512, 256], droprate=0.3,
-                                            compare_train_test=False)
+                                            compare_train_test=False, file_train_id=drug_test_test_file_train_id)
     elif category == TrainModel.Drug_GAT_Enc_V2_Test:
         return DrugGatEncV2DnnTrainService(category, encoding_dim=128, gat_units=64, num_heads=8, dense_units=[512, 256], droprate=0.3, pooling_mode='mean',
-                                           compare_train_test=False)
+                                           compare_train_test=False, file_train_id=drug_test_test_file_train_id)
     elif category == TrainModel.Drug_GAT_MHA_DNN_Test:
-        return DrugGatMhaDnnTrainService(category, False)
+        return DrugGatMhaDnnTrainService(category, False, file_train_id=drug_test_test_file_train_id)
     elif category == TrainModel.Drug_GAT_AE_DNN_Test:
-        return DrugGatAeDnnTrainService(category, False)
+        return DrugGatAeDnnTrainService(category, False, file_train_id=drug_test_test_file_train_id)
     elif category == TrainModel.Drug_GAT_MHA_Reverse_Test:
-        return DrugGatMhaReverseTrainService(category, False)
+        return DrugGatMhaReverseTrainService(category, False, file_train_id=drug_test_test_file_train_id)
     elif category == TrainModel.Drug_GAT_MHA_RD_DNN_Test:
-        return DrugGatMhaRDDnnTrainService(category, False)
+        return DrugGatMhaRDDnnTrainService(category, False, file_train_id=drug_test_test_file_train_id)
     elif category == TrainModel.Drug_GAT_Enc_MHA_Test:
-        return DrugGatEncMhaDnnTrainService(category, False)
+        return DrugGatEncMhaDnnTrainService(category, False, file_train_id=drug_test_test_file_train_id)
     elif category == TrainModel.Drug_GAT_Lstm_MHA_Test:
-        return DrugGatLstmMhaDnnTrainService(category, False)
+        return DrugGatLstmMhaDnnTrainService(category, False, file_train_id=drug_test_test_file_train_id)
     elif category == TrainModel.Drug_DMDDI_Test:
-        return DrugDMDDITrainService(category, False)
+        return DrugDMDDITrainService(category, False, file_train_id=drug_test_test_file_train_id)
     elif category == TrainModel.Drug_KNN_Test:
-        return DrugKnnTrainService(category, False)
+        return DrugKnnTrainService(category, False, file_train_id=drug_test_test_file_train_id)
     elif category == TrainModel.Drug_SVM_Test:
-        return DrugSvmTrainService(category, False)
+        return DrugSvmTrainService(category, False, file_train_id=drug_test_test_file_train_id)
     elif category == TrainModel.Drug_LR_Test:
-        return DrugLrTrainService(category, False)
+        return DrugLrTrainService(category, False, file_train_id=drug_test_test_file_train_id)
     elif category == TrainModel.Drug_RF_Test:
-        return DrugRfTrainService(category, False)
+        return DrugRfTrainService(category, False, file_train_id=drug_test_test_file_train_id)
 
     elif category == TrainModel.Fold_GAT_Enc_Con_DNN:
         return FoldGatEncConDnnTrainService(category, encoding_dim=128, gat_units=64, num_heads=4, dense_units=[512, 256], droprate=0.3)
