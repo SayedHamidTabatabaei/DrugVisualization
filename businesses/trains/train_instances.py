@@ -86,7 +86,7 @@ def get_instance(category: TrainModel) -> TrainBaseService:
     elif category == TrainModel.GAT_Enc_Con_DNN:
         return GatEncConDnnTrainService(category, encoding_dim=128, gat_units=64, num_heads=4, dense_units=[512, 256], droprate=0.3)
     elif category == TrainModel.GAT_Enc_Adv_DNN:
-        return GatEncAdvDnnTrainService(category, encoding_dim=128, gat_units=64, num_heads=4, dense_units=[512, 256], droprate=0.3, pooling_mode='mean')
+        return GatEncAdvDnnTrainService(category, encoding_dim=128, gat_units=32, num_heads=8, dense_units=[512, 256], droprate=0.3, pooling_mode='mean')
     elif category == TrainModel.GAT_Enc_Sum_DNN:
         return GatEncSumDnnTrainService(category, encoding_dim=128, gat_units=64, num_heads=4, dense_units=[512, 256], droprate=0.3)
     elif category == TrainModel.GAT_Enc_V2:
@@ -116,7 +116,7 @@ def get_instance(category: TrainModel) -> TrainBaseService:
         return DrugGatEncConDnnTrainService(category, encoding_dim=128, gat_units=64, num_heads=4, dense_units=[512, 256], droprate=0.3,
                                             compare_train_test=True)
     elif category == TrainModel.Drug_GAT_Enc_Adv_DNN:
-        return DrugGatEncAdvDnnTrainService(category, encoding_dim=128, gat_units=64, num_heads=4, dense_units=[512, 256], droprate=0.3, pooling_mode='mean',
+        return DrugGatEncAdvDnnTrainService(category, encoding_dim=128, gat_units=32, num_heads=8, dense_units=[512, 256], droprate=0.3, pooling_mode='mean',
                                             compare_train_test=True)
     elif category == TrainModel.Drug_GAT_Enc_Sum_DNN:
         return DrugGatEncSumDnnTrainService(category, encoding_dim=128, gat_units=64, num_heads=4, dense_units=[512, 256], droprate=0.3,
@@ -159,7 +159,7 @@ def get_instance(category: TrainModel) -> TrainBaseService:
         return DrugGatEncConDnnTrainService(category, encoding_dim=128, gat_units=64, num_heads=4, dense_units=[512, 256], droprate=0.3,
                                             compare_train_test=False)
     elif category == TrainModel.Drug_GAT_Enc_Adv_DNN_Test:
-        return DrugGatEncAdvDnnTrainService(category, encoding_dim=128, gat_units=64, num_heads=4, dense_units=[512, 256], droprate=0.3, pooling_mode='mean',
+        return DrugGatEncAdvDnnTrainService(category, encoding_dim=128, gat_units=32, num_heads=8, dense_units=[512, 256], droprate=0.3, pooling_mode='mean',
                                             compare_train_test=False)
     elif category == TrainModel.Drug_GAT_Enc_Sum_DNN_Test:
         return DrugGatEncSumDnnTrainService(category, encoding_dim=128, gat_units=64, num_heads=4, dense_units=[512, 256], droprate=0.3,
@@ -193,7 +193,7 @@ def get_instance(category: TrainModel) -> TrainBaseService:
     elif category == TrainModel.Fold_GAT_Enc_Con_DNN:
         return FoldGatEncConDnnTrainService(category, encoding_dim=128, gat_units=64, num_heads=4, dense_units=[512, 256], droprate=0.3)
     elif category == TrainModel.Fold_GAT_Enc_Adv_DNN:
-        return FoldGatEncAdvDnnTrainService(category, encoding_dim=128, gat_units=64, num_heads=4, dense_units=[512, 256], droprate=0.3, pooling_mode='mean')
+        return FoldGatEncAdvDnnTrainService(category, encoding_dim=128, gat_units=32, num_heads=8, dense_units=[512, 256], droprate=0.3, pooling_mode='mean')
     elif category == TrainModel.Fold_GAT_Enc_Sum_DNN:
         return FoldGatEncSumDnnTrainService(category, encoding_dim=128, gat_units=64, num_heads=4, dense_units=[512, 256], droprate=0.3)
     elif category == TrainModel.Fold_GAT_Enc_V2:
@@ -680,76 +680,92 @@ def get_instance(category: TrainModel) -> TrainBaseService:
 
 
     elif category == TrainModel.Drug_GAT_Enc_Adv_DNN_30:
-        return DrugGatEncAdvDnnTrainService(category, encoding_dim=128, gat_units=64, num_heads=4, dense_units=[512, 256], droprate=0.3, pooling_mode='mean',
+        return DrugGatEncAdvDnnTrainService(category, encoding_dim=128, gat_units=64, num_heads=4, dense_units=[1024, 512, 256], droprate=0.3, pooling_mode='mean',
+                                            batch_size=32, lr_rate=1e-4, adam_beta=[0.9, 0.999], alpha=0.0,
                                             compare_train_test=True)
     elif category == TrainModel.Drug_GAT_Enc_Adv_DNN_31:
-        return DrugGatEncAdvDnnTrainService(category, encoding_dim=64, gat_units=64, num_heads=4, dense_units=[512, 256], droprate=0.3, pooling_mode='mean', compare_train_test=True)
+        return DrugGatEncAdvDnnTrainService(category, encoding_dim=128, gat_units=64, num_heads=4, dense_units=[1024, 512, 256], droprate=0.3, pooling_mode='mean',
+                                            batch_size=64, lr_rate=1e-4, adam_beta=[0.9, 0.999], alpha=0.0,
+                                            compare_train_test=True)
     elif category == TrainModel.Drug_GAT_Enc_Adv_DNN_32:
-        return DrugGatEncAdvDnnTrainService(category, encoding_dim=256, gat_units=64, num_heads=4, dense_units=[512, 256], droprate=0.3, pooling_mode='mean',
+        return DrugGatEncAdvDnnTrainService(category, encoding_dim=128, gat_units=64, num_heads=4, dense_units=[1024, 512, 256], droprate=0.3, pooling_mode='mean',
+                                            batch_size=128, lr_rate=1e-4, adam_beta=[0.9, 0.999], alpha=0.0,
                                             compare_train_test=True)
-    elif category == TrainModel.Drug_GAT_Enc_Adv_DNN_33:
-        return DrugGatEncAdvDnnTrainService(category, encoding_dim=128, gat_units=32, num_heads=4, dense_units=[512, 256], droprate=0.3, pooling_mode='mean',
-                                            compare_train_test=True)
+    # elif category == TrainModel.Drug_GAT_Enc_Adv_DNN_33:
+    #     return DrugGatEncAdvDnnTrainService(category, encoding_dim=128, gat_units=64, num_heads=4, dense_units=[1024, 512, 256], droprate=0.3, pooling_mode='mean',
+    #                                         batch_size=128, lr_rate=1e-6, adam_beta=[0.9, 0.999], alpha=0.0,
+    #                                         compare_train_test=True)
     elif category == TrainModel.Drug_GAT_Enc_Adv_DNN_34:
-        return DrugGatEncAdvDnnTrainService(category, encoding_dim=128, gat_units=128, num_heads=4, dense_units=[512, 256], droprate=0.3, pooling_mode='mean',
+        return DrugGatEncAdvDnnTrainService(category, encoding_dim=128, gat_units=64, num_heads=4, dense_units=[1024, 512, 256], droprate=0.3, pooling_mode='mean',
+                                            batch_size=128, lr_rate=1e-4, adam_beta=[0.85, 0.995], alpha=0.0,
                                             compare_train_test=True)
     elif category == TrainModel.Drug_GAT_Enc_Adv_DNN_35:
-        return DrugGatEncAdvDnnTrainService(category, encoding_dim=128, gat_units=64, num_heads=8, dense_units=[512, 256], droprate=0.3, pooling_mode='mean',
+        return DrugGatEncAdvDnnTrainService(category, encoding_dim=128, gat_units=64, num_heads=4, dense_units=[1024, 512, 256], droprate=0.3, pooling_mode='mean',
+                                            batch_size=128, lr_rate=1e-4, adam_beta=[0.95, 0.9995], alpha=0.0,
                                             compare_train_test=True)
     elif category == TrainModel.Drug_GAT_Enc_Adv_DNN_36:
         return DrugGatEncAdvDnnTrainService(category, encoding_dim=128, gat_units=64, num_heads=4, dense_units=[1024, 512, 256], droprate=0.3, pooling_mode='mean',
+                                            batch_size=128, lr_rate=1e-4, adam_beta=[0.9, 0.999], alpha=0.0,
                                             compare_train_test=True)
     elif category == TrainModel.Drug_GAT_Enc_Adv_DNN_37:
-        return DrugGatEncAdvDnnTrainService(category, encoding_dim=128, gat_units=64, num_heads=4, dense_units=[512, 256, 128], droprate=0.3, pooling_mode='mean',
+        return DrugGatEncAdvDnnTrainService(category, encoding_dim=128, gat_units=64, num_heads=4, dense_units=[1024, 512, 256], droprate=0.3, pooling_mode='mean',
+                                            batch_size=128, lr_rate=1e-4, adam_beta=[0.9, 0.999], alpha=0.1,
                                             compare_train_test=True)
     elif category == TrainModel.Drug_GAT_Enc_Adv_DNN_38:
-        return DrugGatEncAdvDnnTrainService(category, encoding_dim=128, gat_units=64, num_heads=4, dense_units=[256, 128], droprate=0.3, pooling_mode='mean',
+        return DrugGatEncAdvDnnTrainService(category, encoding_dim=128, gat_units=64, num_heads=4, dense_units=[1024, 512, 256], droprate=0.3, pooling_mode='mean',
+                                            batch_size=128, lr_rate=1e-4, adam_beta=[0.9, 0.999], alpha=0.0, schedule_number=2,
                                             compare_train_test=True)
     elif category == TrainModel.Drug_GAT_Enc_Adv_DNN_39:
-        return DrugGatEncAdvDnnTrainService(category, encoding_dim=128, gat_units=64, num_heads=4, dense_units=[1024, 512], droprate=0.3, pooling_mode='mean',
+        return DrugGatEncAdvDnnTrainService(category, encoding_dim=128, gat_units=64, num_heads=4, dense_units=[1024, 512, 256], droprate=0.3, pooling_mode='mean',
+                                            batch_size=128, lr_rate=1e-3, adam_beta=[0.9, 0.999], alpha=0.0,
                                             compare_train_test=True)
     elif category == TrainModel.Drug_GAT_Enc_Adv_DNN_40:
-        return DrugGatEncAdvDnnTrainService(category, encoding_dim=128, gat_units=64, num_heads=4, dense_units=[512, 256], droprate=0.2, pooling_mode='mean',
+        return DrugGatEncAdvDnnTrainService(category, encoding_dim=128, gat_units=64, num_heads=4, dense_units=[1024, 512, 256], droprate=0.3, pooling_mode='mean',
+                                            batch_size=256, lr_rate=1e-4, adam_beta=[0.9, 0.999], alpha=0.0,
                                             compare_train_test=True)
     elif category == TrainModel.Drug_GAT_Enc_Adv_DNN_41:
-        return DrugGatEncAdvDnnTrainService(category, encoding_dim=128, gat_units=64, num_heads=4, dense_units=[512, 256], droprate=0.5, pooling_mode='mean',
+        return DrugGatEncAdvDnnTrainService(category, encoding_dim=128, gat_units=64, num_heads=4, dense_units=[1024, 512, 256], droprate=0.3, pooling_mode='mean',
+                                            batch_size=256, lr_rate=1e-4, adam_beta=[0.9, 0.999], alpha=0.1,
                                             compare_train_test=True)
     elif category == TrainModel.Drug_GAT_Enc_Adv_DNN_42:
-        return DrugGatEncAdvDnnTrainService(category, encoding_dim=128, gat_units=32, num_heads=8, dense_units=[512, 256], droprate=0.3, pooling_mode='mean',
+        return DrugGatEncAdvDnnTrainService(category, encoding_dim=128, gat_units=64, num_heads=4, dense_units=[1024, 512, 256], droprate=0.3, pooling_mode='mean',
+                                            batch_size=256, lr_rate=1e-4, adam_beta=[0.9, 0.999], alpha=0.1, schedule_number=2,
                                             compare_train_test=True)
     elif category == TrainModel.Drug_GAT_Enc_Adv_DNN_43:
-        return DrugGatEncAdvDnnTrainService(category, encoding_dim=128, gat_units=32, num_heads=8, dense_units=[1024, 512, 256], droprate=0.5, pooling_mode='mean',
+        return DrugGatEncAdvDnnTrainService(category, encoding_dim=128, gat_units=64, num_heads=4, dense_units=[1024, 512, 256], droprate=0.3, pooling_mode='mean',
+                                            batch_size=64, lr_rate=1e-4, adam_beta=[0.9, 0.999], alpha=0.1,
                                             compare_train_test=True)
     elif category == TrainModel.Drug_GAT_Enc_Adv_DNN_44:
-        return DrugGatEncAdvDnnTrainService(category, encoding_dim=128, gat_units=16, num_heads=4, dense_units=[512, 256], droprate=0.3, pooling_mode='mean',
+        return DrugGatEncAdvDnnTrainService(category, encoding_dim=128, gat_units=64, num_heads=4, dense_units=[1024, 512, 256], droprate=0.3, pooling_mode='mean',
+                                            batch_size=64, lr_rate=1e-4, adam_beta=[0.9, 0.999], alpha=0.1, schedule_number=2,
                                             compare_train_test=True)
-    elif category == TrainModel.Drug_GAT_Enc_Adv_DNN_45:
-        return DrugGatEncAdvDnnTrainService(category, encoding_dim=128, gat_units=64, num_heads=16, dense_units=[512, 256], droprate=0.3, pooling_mode='mean',
-                                            compare_train_test=True)
-    elif category == TrainModel.Drug_GAT_Enc_Adv_DNN_46:
-        return DrugGatEncAdvDnnTrainService(category, encoding_dim=128, gat_units=32, num_heads=16, dense_units=[1024, 512, 256], droprate=0.5, pooling_mode='mean',
-                                            compare_train_test=True)
-    elif category == TrainModel.Drug_GAT_Enc_Adv_DNN_47:
-        return DrugGatEncAdvDnnTrainService(category, encoding_dim=256, gat_units=32, num_heads=16, dense_units=[1024, 512, 256], droprate=0.5, pooling_mode='mean',
-                                            compare_train_test=True)
-    elif category == TrainModel.Drug_GAT_Enc_Adv_DNN_48:
-        return DrugGatEncAdvDnnTrainService(category, encoding_dim=128, gat_units=32, num_heads=8, dense_units=[512, 256], droprate=0.5, pooling_mode='mean',
-                                            compare_train_test=True)
-    elif category == TrainModel.Drug_GAT_Enc_Adv_DNN_49:
-        return DrugGatEncAdvDnnTrainService(category, encoding_dim=128, gat_units=32, num_heads=8, dense_units=[512, 256], droprate=0.5, pooling_mode='max',
-                                            compare_train_test=True)
-    elif category == TrainModel.Drug_GAT_Enc_Adv_DNN_50:
-        return DrugGatEncAdvDnnTrainService(category, encoding_dim=128, gat_units=32, num_heads=8, dense_units=[512, 256], droprate=0.5, pooling_mode='sum',
-                                            compare_train_test=True)
-    elif category == TrainModel.Drug_GAT_Enc_Adv_DNN_51:
-        return DrugGatEncAdvDnnTrainService(category, encoding_dim=256, gat_units=32, num_heads=8, dense_units=[256, 128], droprate=0.5, pooling_mode='mean',
-                                            compare_train_test=True)
-    elif category == TrainModel.Drug_GAT_Enc_Adv_DNN_52:
-        return DrugGatEncAdvDnnTrainService(category, encoding_dim=256, gat_units=32, num_heads=8, dense_units=[256, 128], droprate=0.5, pooling_mode='max',
-                                            compare_train_test=True)
-    elif category == TrainModel.Drug_GAT_Enc_Adv_DNN_53:
-        return DrugGatEncAdvDnnTrainService(category, encoding_dim=256, gat_units=32, num_heads=8, dense_units=[256, 128], droprate=0.5, pooling_mode='sum',
-                                            compare_train_test=True)
+    # elif category == TrainModel.Drug_GAT_Enc_Adv_DNN_45:
+    #     return DrugGatEncAdvDnnTrainService(category, ,
+    #                                         compare_train_test=True)
+    # elif category == TrainModel.Drug_GAT_Enc_Adv_DNN_46:
+    #     return DrugGatEncAdvDnnTrainService(category, ,
+    #                                         compare_train_test=True)
+    # elif category == TrainModel.Drug_GAT_Enc_Adv_DNN_47:
+    #     return DrugGatEncAdvDnnTrainService(category, encoding_dim=256, gat_units=32, num_heads=16, dense_units=[1024, 512, 256], droprate=0.5, pooling_mode='mean',
+    #                                         compare_train_test=True)
+    # elif category == TrainModel.Drug_GAT_Enc_Adv_DNN_48:
+    #     return DrugGatEncAdvDnnTrainService(category, ,
+    #                                         compare_train_test=True)
+    # elif category == TrainModel.Drug_GAT_Enc_Adv_DNN_49:
+    #     return DrugGatEncAdvDnnTrainService(category, ,
+    #                                         compare_train_test=True)
+    # elif category == TrainModel.Drug_GAT_Enc_Adv_DNN_50:
+    #     return DrugGatEncAdvDnnTrainService(category, ,
+    #                                         compare_train_test=True)
+    # elif category == TrainModel.Drug_GAT_Enc_Adv_DNN_51:
+    #     return DrugGatEncAdvDnnTrainService(category, encoding_dim=128, gat_units=32, num_heads=8, dense_units=[2048, 1024, 512, 256], droprate=0.5, pooling_mode='mean',
+    #                                         compare_train_test=True)
+    # elif category == TrainModel.Drug_GAT_Enc_Adv_DNN_52:
+    #     return DrugGatEncAdvDnnTrainService(category, ,
+    #                                         compare_train_test=True)
+    # elif category == TrainModel.Drug_GAT_Enc_Adv_DNN_53:
+    #     return DrugGatEncAdvDnnTrainService(category, ,
+    #                                         compare_train_test=True)
 
 
     else:

@@ -21,7 +21,8 @@ class DrugLrTrainService(TrainBaseService):
         results = []
 
         for x_train, x_test, y_train, y_test in super().manual_k_fold_train_test_data(parameters.drug_data, parameters.interaction_data,
-                                                                                      padding=True, flat=True, compare_train_test=self.compare_train_test):
+                                                                                      padding=True, flat=True, compare_train_test=self.compare_train_test,
+                                                                                      categorical_labels=False):
 
             model = LRModel(parameters.train_id, self.num_classes, parameters.interaction_data, training_params=training_params)
             result = model.fit_model(x_train, y_train, x_test, y_test, x_test, y_test)

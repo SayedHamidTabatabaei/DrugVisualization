@@ -77,7 +77,7 @@ class TrainModel(Enum):
                                                                                  'Pathway, Target, Enzyme) and then DNN.')
     Drug_GAT_Enc_Adv_DNN_Test = (322, Scenarios.SplitDrugsTestWithTest, 'NotFound', 'GAT On SMILES, AutoEncoder, Concat AutoEncoders and then DNN')
 
-    Drug_DMDDI_Test = (351, Scenarios.SplitDrugsTestWithTest, 'NotFound', '.')
+    Drug_DMDDI_Test = (350, Scenarios.SplitDrugsTestWithTest, 'NotFound', '.')
     Drug_KNN_Test = (351, Scenarios.SplitDrugsTestWithTest, 'NotFound', 'This network learns by KNN.')
     Drug_SVM_Test = (352, Scenarios.SplitDrugsTestWithTest, 'NotFound', 'This network learns by SVM.')
     Drug_LR_Test = (353, Scenarios.SplitDrugsTestWithTest, 'NotFound', 'Logistic Regression.')

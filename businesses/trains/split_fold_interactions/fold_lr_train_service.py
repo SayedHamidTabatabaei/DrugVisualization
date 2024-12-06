@@ -17,7 +17,8 @@ class FoldLrTrainService(TrainBaseService):
         results = []
 
         for x_train, x_test, y_train, y_test in super().fold_on_interaction(parameters.drug_data, parameters.interaction_data,
-                                                                            train_id=parameters.train_id, padding=True, flat=True):
+                                                                            train_id=parameters.train_id, padding=True, flat=True,
+                                                                            categorical_labels=False):
 
             model = LRModel(parameters.train_id, self.num_classes, parameters.interaction_data, training_params=training_params)
             result = model.fit_model(x_train, y_train, x_test, y_test, x_test, y_test)

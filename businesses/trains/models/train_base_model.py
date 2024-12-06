@@ -117,13 +117,13 @@ class TrainBaseModel:
         loss = log_loss(y_test, y_pred)
         training_results.append(TrainingResultSummaryDTO(TrainingResultType.loss, loss))
 
-        f1_score_weighted = f1_score(y_test_classes, y_pred_classes, average='weighted')
+        f1_score_weighted = f1_score(y_test_classes, y_pred_classes, average='weighted', zero_division=0)
         training_results.append(TrainingResultSummaryDTO(TrainingResultType.f1_score_weighted, f1_score_weighted))
 
-        f1_score_micor = f1_score(y_test_classes, y_pred_classes, average='micro')
+        f1_score_micor = f1_score(y_test_classes, y_pred_classes, average='micro', zero_division=0)
         training_results.append(TrainingResultSummaryDTO(TrainingResultType.f1_score_micro, f1_score_micor))
 
-        f1_score_macro = f1_score(y_test_classes, y_pred_classes, average='macro')
+        f1_score_macro = f1_score(y_test_classes, y_pred_classes, average='macro', zero_division=0)
         training_results.append(TrainingResultSummaryDTO(TrainingResultType.f1_score_macro, f1_score_macro))
 
         # For multi-class AUC and AUPR, you need to binarize the labels
@@ -148,22 +148,22 @@ class TrainBaseModel:
         aupr_macro = average_precision_score(y_test_bin, y_pred, average='macro')
         training_results.append(TrainingResultSummaryDTO(TrainingResultType.aupr_macro, aupr_macro))
 
-        precision_weighted = precision_score(y_test_classes, y_pred_classes, average='weighted')
+        precision_weighted = precision_score(y_test_classes, y_pred_classes, average='weighted', zero_division=0)
         training_results.append(TrainingResultSummaryDTO(TrainingResultType.precision_weighted, precision_weighted))
 
-        precision_micro = precision_score(y_test_classes, y_pred_classes, average='micro')
+        precision_micro = precision_score(y_test_classes, y_pred_classes, average='micro', zero_division=0)
         training_results.append(TrainingResultSummaryDTO(TrainingResultType.precision_micro, precision_micro))
 
-        precision_macro = precision_score(y_test_classes, y_pred_classes, average='macro')
+        precision_macro = precision_score(y_test_classes, y_pred_classes, average='macro', zero_division=0)
         training_results.append(TrainingResultSummaryDTO(TrainingResultType.precision_macro, precision_macro))
 
-        recall_weighted = recall_score(y_test_classes, y_pred_classes, average='weighted')
+        recall_weighted = recall_score(y_test_classes, y_pred_classes, average='weighted', zero_division=0)
         training_results.append(TrainingResultSummaryDTO(TrainingResultType.recall_weighted, recall_weighted))
 
-        recall_micro = recall_score(y_test_classes, y_pred_classes, average='micro')
+        recall_micro = recall_score(y_test_classes, y_pred_classes, average='micro', zero_division=0)
         training_results.append(TrainingResultSummaryDTO(TrainingResultType.recall_micro, recall_micro))
 
-        recall_macro = recall_score(y_test_classes, y_pred_classes, average='macro')
+        recall_macro = recall_score(y_test_classes, y_pred_classes, average='macro', zero_division=0)
         training_results.append(TrainingResultSummaryDTO(TrainingResultType.recall_macro, recall_macro))
 
         # Binarize the labels for AUC and AUPR calculation
@@ -172,8 +172,8 @@ class TrainBaseModel:
 
         print('Calculate classes Evaluations!')
 
-        precision_per_class = precision_score(y_test_classes, y_pred_classes, average=None)
-        recall_per_class = recall_score(y_test_classes, y_pred_classes, average=None)
+        precision_per_class = precision_score(y_test_classes, y_pred_classes, average=None, zero_division=0)
+        recall_per_class = recall_score(y_test_classes, y_pred_classes, average=None, zero_division=0)
 
         for i in range(self.num_classes):
             class_accuracy = accuracy_score(y_test_classes == i, y_pred_classes == i)
@@ -231,7 +231,8 @@ class TrainBaseModel:
 
         return [{i: c} for i, c in enumerate(counts)]
 
-    def get_data_report_split(self, interactions: list[TrainingDrugInteractionDTO], y_train, y_test, is_labels_categorical: bool = False):
+    def get_data_report_split(self, interactions: list[TrainingDrugInteractionDTO], y_train, y_test,
+                              is_labels_categorical: bool = False):
         return {
             "total_count": len(interactions),
             "train_count": len(y_train),

@@ -13,9 +13,9 @@ train_model = TrainModel.Drug_GAT_Enc_Adv_DNN or TrainModel.Drug_GAT_Enc_Adv_DNN
 
 class DrugGatEncAdvDnnTrainService(TrainBaseService):
 
-    def __init__(self, category, encoding_dim, gat_units, num_heads, dense_units, droprate, pooling_mode=None, compare_train_test: bool = True):
+    def __init__(self, category, encoding_dim, gat_units, num_heads, dense_units, droprate, pooling_mode=None, batch_size=128, lr_rate=1e-4, adam_beta=None, alpha=0.0, schedule_number=1, compare_train_test: bool = True):
         super().__init__(category)
-        self.hyper_params = HyperParams(encoding_dim, gat_units, num_heads, dense_units, droprate, pooling_mode)
+        self.hyper_params = HyperParams(encoding_dim, gat_units, num_heads, dense_units, droprate, pooling_mode, batch_size, lr_rate, adam_beta, alpha, schedule_number)
         self.compare_train_test = compare_train_test
 
     def train(self, parameters: SplitDrugsTestWithTrainTrainingParameterModel) -> TrainingSummaryDTO:
@@ -28,6 +28,7 @@ class DrugGatEncAdvDnnTrainService(TrainBaseService):
         fold = 1
 
         for x_train, x_test, y_train, y_test in super().manual_k_fold_train_test_data(parameters.drug_data, parameters.interaction_data,
+                                                                                      train_id=parameters.train_id,
                                                                                       is_deep_face=True, compare_train_test=self.compare_train_test):
             model = GatEncAdvTrainModel(parameters.train_id, categories, self.num_classes, parameters.interaction_data, training_params=training_params,
                                         hyper_params=self.hyper_params)

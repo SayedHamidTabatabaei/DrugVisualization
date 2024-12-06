@@ -33,7 +33,7 @@ def f1_score(y_true, y_pred):
 
 class GatEncAdvTrainModel(TrainBaseModel):
     def __init__(self, train_id: int, categories: dict, num_classes: int, interaction_data: list[TrainingDrugInteractionDTO],
-                 training_params: TrainingParams, hyper_params: HyperParams):
+                 training_params: TrainingParams, hyper_params: HyperParams, fold_index: int = None):
         super().__init__(train_id, num_classes)
         self.categories = categories
         self.interaction_data = interaction_data
@@ -46,6 +46,13 @@ class GatEncAdvTrainModel(TrainBaseModel):
         self.pooling_mode = hyper_params.pooling_mode
 
         self.training_params.metrics = ['accuracy', Precision(), Recall()]  # ['accuracy', f1_score]
+        self.fold_index = fold_index
+        self.batch_size = hyper_params.batch_size
+        self.lr_rate = hyper_params.lr_rate
+        self.adam_beta_1 = hyper_params.adam_beta[0]
+        self.adam_beta_2 = hyper_params.adam_beta[1]
+        self.alpha = hyper_params.alpha
+        self.schedule_number = hyper_params.schedule_number
 
     def build_model(self, data_categories: dict, x_train_shapes, has_interaction_description: bool = False):
         output_models_1 = []
@@ -143,24 +150,39 @@ class GatEncAdvTrainModel(TrainBaseModel):
         else:
             class_weights = None
 
-        initial_lr = 1e-4
-        lr_schedule = schedules.CosineDecay(
-            initial_learning_rate=initial_lr,
-            decay_steps=100 * len(y_train),
-            alpha=0.0
-        )
+        initial_lr = self.lr_rate
+        if self.schedule_number == 1:
 
-        optimizer = Adam(learning_rate=lr_schedule)
+            lr_schedule = schedules.CosineDecay(
+                initial_learning_rate=initial_lr,
+                decay_steps=100 * (len(y_train) // self.batch_size),
+                alpha=self.alpha
+            )
+        else:
+            lr_schedule = schedules.CosineDecayRestarts(
+                initial_learning_rate=initial_lr,
+                first_decay_steps=100 * (len(y_train) // self.batch_size),
+                t_mul=2.0,
+                m_mul=1.0,
+                alpha=self.alpha
+            )
+
+        optimizer = Adam(learning_rate=lr_schedule, beta_1=self.adam_beta_1, beta_2=self.adam_beta_2)
 
         model.compile(optimizer=optimizer,
                       loss=loss_helper.get_loss_function(self.training_params.loss, class_weights),
                       metrics=self.training_params.metrics)
 
-        early_stopping = EarlyStopping(monitor='val_loss', patience=10, verbose=0, mode='auto')
+        early_stopping_acc = EarlyStopping(monitor='val_accuracy', patience=10, verbose=1, mode='max',
+                                           restore_best_weights=True)
 
-        history = model.fit(x_train, y_train, epochs=self.training_params.epoch_num, batch_size=128, validation_data=(x_val, y_val), callbacks=early_stopping)
+        history = model.fit(x_train, y_train, epochs=self.training_params.epoch_num, batch_size=self.batch_size, validation_data=(x_val, y_val),
+                            callbacks=[early_stopping_acc])
 
-        self.save_plots(history, self.train_id)
+        if self.fold_index:
+            self.save_plots(history, self.train_id, self.fold_index)
+        else:
+            self.save_plots(history, self.train_id)
 
         y_pred = model.predict(x_test)
 

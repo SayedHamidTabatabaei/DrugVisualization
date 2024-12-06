@@ -222,12 +222,15 @@ class TrainBaseService:
 
     # region split data
     def manual_k_fold_train_test_data(self, drug_data: list[TrainingDrugDataDTO], interaction_data: list[TrainingDrugInteractionDTO],
+                                      train_id: int = None,
                                       categorical_labels: bool = True, padding: bool = False, flat: bool = False,
                                       pca_generating: bool = False, pca_components: int = None,
                                       is_deep_face: bool = False, is_cnn: bool = False,
-                                      compare_train_test: bool = True, mean_of_text_embeddings: bool = True, output_as_array: bool = True):
+                                      compare_train_test: bool = True, mean_of_text_embeddings: bool = True,
+                                      output_as_array: bool = True):
 
         self.num_classes = len(set(item.interaction_type for item in interaction_data))
+        fold_data = []
 
         all_drugs = [drug.drug_id for drug in drug_data]
         # min_test_drugs_in_folds = math.floor(len(drug_data) / self.num_folds)
@@ -290,6 +293,16 @@ class TrainBaseService:
                     if interaction.drug_1 in test_drug_ids and interaction.drug_2 in test_drug_ids
                 ]
 
+            # Save fold data to list
+            fold_data.append({
+                'fold': k,
+                "train_interaction_ids": [f_data.id for f_data in train_interactions],
+                "test_interaction_ids": [f_data.id for f_data in test_interactions]
+            })
+
+            if train_id and k == self.num_folds:
+                self.save_seed_fold_data(train_id, fold_data)
+
             y_train = [i.interaction_type for i in train_interactions]
             y_test = [i.interaction_type for i in test_interactions]
 
@@ -314,7 +327,7 @@ class TrainBaseService:
                 x_train, x_test = self.create_input_tensors_flat(x_train, x_test)
 
             if output_as_array:
-                yield [np.array(x) for x in x_train], [np.array(x) for x in x_test], y_train, y_test
+                yield [np.array(x) for x in x_train], [np.array(x) for x in x_test], np.array(y_train), np.array(y_test)
             else:
                 yield x_train, x_test, y_train, y_test
 
