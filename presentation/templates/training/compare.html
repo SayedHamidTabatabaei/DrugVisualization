@@ -147,9 +147,9 @@
 
 <div class="tab-container">
     <div class="tab-row">
-        <div class="tab-label" style="flex-basis: 7%;">Data results</div>
-        <div class="tab-label" style="flex-basis: 50%;">Main results</div>
-        <div class="tab-label" style="flex-basis: 43%;">Per Category results</div>
+        <div class="tab-label" style="flex-basis: 6.7%;">Data results</div>
+        <div class="tab-label" style="flex-basis: 53.3%;">Main results</div>
+        <div class="tab-label" style="flex-basis: 40%;">Per Category results</div>
     </div>
 
     <div class="tab-row">
@@ -161,6 +161,7 @@
         <div id="aupr" class="tab" onclick="openTab(event, 'aupr-tab');fill_comparing_plot('aupr', 'aupr_radio_group');">AUPR</div>
         <div id="recall" class="tab" onclick="openTab(event, 'recall-tab');fill_comparing_plot('recall', 'recall_radio_group');">Recall</div>
         <div id="precision" class="tab" onclick="openTab(event, 'precision-tab');fill_comparing_plot('precision', 'precision_radio_group');">Precision</div>
+        <div id="multi-chart" class="tab" onclick="openTab(event, 'multi-chart-tab');fill_comparing_multi_plots();">Multi-Chart</div>
 
         <div id="details_accuracy" class="tab"
              onclick="openTab(event, 'details_accuracy-tab');fill_comparing_plot('details_accuracy');fill_grid('details_accuracy');">Accuracy</div>
@@ -318,6 +319,52 @@
                 </span>
             </p>
             <img id="precision-plot"/>
+        </div>
+    </div>
+    <div id="multi-chart-tab" class="tab-content">
+        <div id="multi-chart-container">
+            <div id="multi-chartSelectContainer" class="checkbox-container">
+                <label id="accuracy-label" class="checkbox-label">
+                    <input type="checkbox" value="accuracy" id="accuracy-check" onclick="fill_comparing_multi_plots();">
+                    <span class="checkbox-custom"></span>
+                    Accuracy
+                </label>
+                <label id="f1-score-label" class="checkbox-label">
+                    <input type="checkbox" value="f1_score" id="f1-score-check" onclick="fill_comparing_multi_plots();">
+                    <span class="checkbox-custom"></span>
+                    F1-Score
+                </label>
+                <label id="recall-label" class="checkbox-label">
+                    <input type="checkbox" value="recall" id="recall-check" onclick="fill_comparing_multi_plots();">
+                    <span class="checkbox-custom"></span>
+                    Recall
+                </label>
+                <label id="precision-label" class="checkbox-label">
+                    <input type="checkbox" value="precision" id="precision-check" onclick="fill_comparing_multi_plots();">
+                    <span class="checkbox-custom"></span>
+                    Precision
+                </label>
+                <label id="auc-label" class="checkbox-label">
+                    <input type="checkbox" value="auc" id="auc-check" onclick="fill_comparing_multi_plots();">
+                    <span class="checkbox-custom"></span>
+                    AUC
+                </label>
+                <label id="aupr-label" class="checkbox-label">
+                    <input type="checkbox" value="aupr" id="aupr-check" onclick="fill_comparing_multi_plots();">
+                    <span class="checkbox-custom"></span>
+                    AUPR
+                </label>
+            </div>
+            <div id="multi-chartRadioContainer" class="radioButtonsContainer">
+                <input type="radio" id="multi-chart_weighted" name="multi-chart_radio_group" value="weighted" checked onclick="fill_comparing_multi_plots();">
+                <label for="multi-chart_weighted">Weighted</label><br>
+                <input type="radio" id="multi-chart_micro" name="multi-chart_radio_group" value="micro" onclick="fill_comparing_multi_plots();">
+                <label for="multi-chart_micro">Micro</label><br>
+                <input type="radio" id="multi-chart_macro" name="multi-chart_radio_group" value="macro" onclick="fill_comparing_multi_plots();">
+                <label for="multi-chart_macro">Macro</label><br>
+            </div>
+            <hr/>
+            <img id="multi-chart-plot"/>
         </div>
     </div>
     <div id="details_accuracy-tab" class="tab-content">

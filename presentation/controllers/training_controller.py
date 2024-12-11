@@ -286,6 +286,25 @@ class TrainingController(MethodView):
         else:
             return jsonify({'image': image, 'message': "No images found!", 'status': False})
 
+    @route('get_comparing_multi_plots', methods=['GET'])
+    def get_comparing_multi_plots(self):
+
+        train_ids = request.args.get('trainHistoryIds')
+        evaluations_str = request.args.get('evaluations')
+        evaluations = [ComparePlotType.get_enum_from_string(x) for x in evaluations_str.split(',')]
+
+        if not train_ids:
+            return jsonify({'message': "No images found!", 'status': False})
+
+        image = self.training_business.get_comparing_multi_plots([int(train_id) for train_id in
+                                                                  train_ids.split(',')],
+                                                                 evaluations)
+
+        if image:
+            return jsonify({'image': image, 'status': True})
+        else:
+            return jsonify({'image': image, 'message': "No images found!", 'status': False})
+
     @route('get_saved_plots', methods=['GET'])
     def get_saved_plots(self):
         train_id = request.args.get('trainId')

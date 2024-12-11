@@ -384,6 +384,25 @@ class TrainingBusiness(BaseBusiness):
 
         return ImageInfoViewModel(path=image_base64, name=plot_info.compare_plot_type.name)
 
+    def get_comparing_multi_plots(self, train_result_ids: list[int], compare_plot_types: list[ComparePlotType]) \
+            -> ImageInfoViewModel:
+        if not compare_plot_types:
+            compare_plot_types = [ComparePlotType.Accuracy]
+
+        plot_infos = [self.get_plot_info(compare_plot_type, train_result_ids) for compare_plot_type in compare_plot_types]
+
+        generate_plt = self.multi_bar_plots(plot_infos)
+
+        buf = io.BytesIO()
+        generate_plt.savefig(buf, format='png')
+        buf.seek(0)
+
+        generate_plt.close()
+
+        image_base64 = base64.b64encode(buf.getvalue()).decode('utf8')
+
+        return ImageInfoViewModel(path=image_base64, name="Multiple Plots")
+
     def get_per_category_result_details(self, train_result_ids: list[int], compare_plot_type: ComparePlotType):
 
         result_details = self.training_result_detail_repository.find_training_result_details_by_training_ids(train_result_ids)
@@ -605,6 +624,52 @@ class TrainingBusiness(BaseBusiness):
             return self.plot_bar(plot)
         elif plot.compare_plot_type.plot_name == 'radial':
             return self.plot_radial(plot)
+
+    @staticmethod
+    def multi_bar_plots(plot_data: list[ComparePlotDTO]):
+
+        categories = plot_data[0].labels
+        metric_labels = [c.compare_plot_type.name for c in plot_data]
+        metrics = list(map(list, zip(*[c.datas for c in plot_data])))
+
+        num_groups = len(categories)
+        num_metrics = len(metric_labels)
+
+        total_group_width = 0.8  # Total width for all bars in a group (including spacing within the group)
+        bar_spacing = 0.05  # Spacing between individual bars within a group
+        bar_width = (total_group_width - (num_metrics - 1) * bar_spacing) / num_metrics  # Width of each bar
+
+        # Compute positions for each group
+        group_positions = np.arange(num_groups)
+
+        fig, ax = plt.subplots(figsize=(15, 6))
+
+        # Plot each metric as a separate set of bars
+        for i, metric_label in enumerate(metric_labels):
+            # Add spacing between bars in the group
+            bar_positions = group_positions + i * (bar_width + bar_spacing) - (num_metrics - 1) * (bar_width + bar_spacing) / 2
+            ax.bar(bar_positions, [row[i] for row in metrics], bar_width, label=metric_label)
+
+        # Add labels, title, and custom x-axis tick labels
+        ax.set_ylabel('Scores')
+        ax.set_title('Performance Comparison with Internal Bar Spacing')
+        ax.set_xticks(group_positions)
+        ax.set_xticklabels(categories, rotation=45, ha='right')
+        ax.legend()
+
+        # Add values above the bars
+        for i, metric_label in enumerate(metric_labels):
+            for j, value in enumerate([row[i] for row in metrics]):
+                bar_x_position = group_positions[j] + i * (bar_width + bar_spacing) - (num_metrics - 1) * (bar_width + bar_spacing) / 2
+                ax.text(bar_x_position, value + 0.01, f'{value:.5f}', ha='center', va='bottom')
+
+        plt.ylim(min([d for p in plot_data for d in p.datas]) * 0.9, math_helper.round_up(max([d for p in plot_data for d in p.datas]), 1))
+
+        plt.legend(loc='upper left', bbox_to_anchor=(1, 1))
+
+        plt.tight_layout()
+
+        return plt
 
     @staticmethod
     def plot_bar(plot_data: ComparePlotDTO):

@@ -54,3 +54,12 @@ input[type="checkbox"] {
 .checkbox-label input[type="checkbox"]:checked + .checkbox-custom::after {
     display: block;
 }
+
+.checkbox-container {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+}
+.checkbox-container label {
+    margin-right: 10px;
+}

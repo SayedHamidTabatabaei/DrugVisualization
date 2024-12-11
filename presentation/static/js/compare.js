@@ -601,6 +601,62 @@ function fill_comparing_plot(comparing_plot_type, radio_group){
     });
 }
 
+function fill_comparing_multi_plots(){
+
+    let comparing_plot_type = document.querySelector(`input[name="multi-chart_radio_group"]:checked`).value;
+    const checkboxes = document.querySelectorAll('#multi-chartSelectContainer input[type="checkbox"]');
+
+    let checkedValues = [];
+    checkboxes.forEach(checkbox => {
+        if (checkbox.checked) {
+            if (checkbox.value === 'accuracy'){
+                checkedValues.push(checkbox.value);
+            } else {
+                checkedValues.push(checkbox.value + '_' + comparing_plot_type);
+            }
+        }
+    });
+
+    const evaluations = checkedValues.length > 0 ? checkedValues.join(',') : '';
+
+    let selectedIds = [];
+    $('input.row-checkbox:checked').each(function() {
+
+        const [id, name] = $(this).val().split('|'); // Get the value of the checked checkbox
+        selectedIds.push(id);
+    });
+
+    if (selectedIds.length === 0 || evaluations.length === 0) {
+        return
+    }
+
+    debugger;
+    fetch(`/training/get_comparing_multi_plots?trainHistoryIds=${selectedIds}&evaluations=${evaluations}`, {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status) {
+            const plot = document.getElementById(`multi-chart-plot`);
+
+            plot.src = `data:image/png;base64,${data.image.path}`;
+            plot.alt = data.image.name;
+            plot.style.maxWidth = '110%';
+
+        } else {
+            console.log('Error: No data found.');
+        }
+        hideSpinner(true);
+    })
+    .catch(error => {
+        console.log('Error:', error)
+        hideSpinner(false);
+    });
+}
+
 function fill_accuracy_plots(){
     fill_saved_plots('accuracy', 'accuracyPlotsGridContainer')
 }
