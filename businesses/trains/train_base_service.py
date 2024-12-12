@@ -219,7 +219,8 @@ class TrainBaseService:
                     precision=np.mean([r.precision for result in fold_results for r in result.training_result_details if r.training_label == training_label])
                 )
                 for training_label in {r.training_label for result in fold_results for r in result.training_result_details}
-            ]
+            ],
+            incorrect_predictions={(idx + 1): result.incorrect_predictions for idx, result in enumerate(fold_results)}
         )
 
     # region split data
@@ -229,7 +230,7 @@ class TrainBaseService:
                                       pca_generating: bool = False, pca_components: int = None,
                                       is_deep_face: bool = False, is_cnn: bool = False,
                                       compare_train_test: bool = True, mean_of_text_embeddings: bool = True,
-                                      output_as_array: bool = True, file_train_id: int = None):
+                                      output_as_array: bool = True):
 
         self.num_classes = len(set(item.interaction_type for item in interaction_data))
         fold_data = []
@@ -242,12 +243,12 @@ class TrainBaseService:
             {key: math.floor(len(value) / self.num_folds) if len(value) < 50 else math.ceil(len(value) / self.num_folds)
              for key, value in sorted(interaction_drugs.items(), reverse=True)}
 
-        if file_train_id:
-            with open(f'{file_train_id}.json', 'r') as file:
+        if self.file_train_id:
+            with open(f'seeds/{self.file_train_id}.json', 'r') as file:
                 fold_file_data = json.load(file)
 
         for k in range(1, self.num_folds + 1):
-            if not file_train_id:
+            if not self.file_train_id:
                 active_drugs_on_test = {
                     key: {drug for drug in drugs if drug not in previous_fold_tests}
                     for key, drugs in sorted(interaction_drugs.items(), reverse=True)
@@ -300,14 +301,14 @@ class TrainBaseService:
                         if interaction.drug_1 in test_drug_ids and interaction.drug_2 in test_drug_ids
                     ]
             else:
-                file_data = [entry for entry in fold_file_data if entry['fold'] == k]
+                file_data =  next((entry for entry in fold_file_data if entry['fold'] == k), None)
                 train_interaction_ids = file_data['train_interaction_ids']
                 test_interaction_ids = file_data['test_interaction_ids']
 
-                train_interactions = [interaction for interaction in interaction_data if interaction.id in train_interaction_ids]
-                test_interactions = [interaction for interaction in interaction_data if interaction.id in test_interaction_ids]
+                train_interactions = [interaction for interaction in tqdm(interaction_data, 'Read from file') if interaction.id in train_interaction_ids]
+                test_interactions = [interaction for interaction in tqdm(interaction_data, 'Read from file') if interaction.id in test_interaction_ids]
 
-                train_drug_ids = [t.drug_1 for t in train_interactions] + [t.drug_2 for t in train_interactions]
+                train_drug_ids = list({drug for t in train_interactions for drug in [t.drug_1, t.drug_2]})
 
             # Save fold data to list
             fold_data.append({
