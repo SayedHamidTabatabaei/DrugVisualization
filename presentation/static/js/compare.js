@@ -108,7 +108,7 @@ function get_history()
                     {
                         data: 'accuracy',
                         render: function(data, type, row) {
-                            const formatted_accuracy = row.accuracy ? row.accuracy.toFixed(2) : '0.00';
+                            const formatted_accuracy = row.accuracy ? (row.accuracy * 100).toFixed(1) : '0.0';
 
                             if (row.accuracy === maxAccuracy) {
 
@@ -133,7 +133,7 @@ function get_history()
                     {
                         data: 'f1_score_weighted',
                         render: function(data, type, row) {
-                            const formatted_f1_score_weighted = row.f1_score_weighted ? row.f1_score_weighted.toFixed(2) : '0.00';
+                            const formatted_f1_score_weighted = row.f1_score_weighted ? (row.f1_score_weighted * 100).toFixed(1) : '0.0%';
 
                             if (row.f1_score_weighted === maxF1Score_Weighted) {
                                 return '<strong>' + formatted_f1_score_weighted + '</strong>';
@@ -145,7 +145,7 @@ function get_history()
                     {
                         data: 'f1_score_micro',
                         render: function(data, type, row) {
-                            const formatted_f1_score_micro = row.f1_score_micro ? row.f1_score_micro.toFixed(2) : '0.00';
+                            const formatted_f1_score_micro = row.f1_score_micro ? (row.f1_score_micro * 100).toFixed(1) : '0.0%';
 
                             if (row.f1_score_micro === maxF1Score_Micro) {
                                 return '<strong>' + formatted_f1_score_micro + '</strong>';
@@ -157,7 +157,7 @@ function get_history()
                     {
                         data: 'f1_score_macro',
                         render: function(data, type, row) {
-                            const formatted_f1_score_macro = row.f1_score_macro ? row.f1_score_macro.toFixed(2) : '0.00';
+                            const formatted_f1_score_macro = row.f1_score_macro ? (row.f1_score_macro * 100).toFixed(1) : '0.0%';
 
                             if (row.f1_score_macro === maxF1Score_Macro) {
                                 return '<strong>' + formatted_f1_score_macro + '</strong>';
@@ -169,7 +169,7 @@ function get_history()
                     {
                         data: 'auc_weighted',
                         render: function(data, type, row) {
-                            const formatted_auc_weighted = row.auc_weighted ? row.auc_weighted.toFixed(2) : '0.00';
+                            const formatted_auc_weighted = row.auc_weighted ? (row.auc_weighted * 100).toFixed(1) : '0.0%';
 
                             if (row.auc_weighted === maxAuc_Weighted) {
                                 return '<strong>' + formatted_auc_weighted + '</strong>';
@@ -181,7 +181,7 @@ function get_history()
                     {
                         data: 'auc_micro',
                         render: function(data, type, row) {
-                            const formatted_auc_micro = row.auc_micro ? row.auc_micro.toFixed(2) : '0.00';
+                            const formatted_auc_micro = row.auc_micro ? (row.auc_micro * 100).toFixed(1) : '0.0%';
 
                             if (row.auc_micro === maxAuc_Micro) {
                                 return '<strong>' + formatted_auc_micro + '</strong>';
@@ -193,7 +193,7 @@ function get_history()
                     {
                         data: 'auc_macro',
                         render: function(data, type, row) {
-                            const formatted_auc_macro = row.auc_macro ? row.auc_macro.toFixed(2) : '0.00';
+                            const formatted_auc_macro = row.auc_macro ? (row.auc_macro * 100).toFixed(1) : '0.0%';
 
                             if (row.auc_macro === maxAuc_Macro) {
                                 return '<strong>' + formatted_auc_macro + '</strong>';
@@ -205,7 +205,7 @@ function get_history()
                     {
                         data: 'aupr_weighted',
                         render: function(data, type, row) {
-                            const formatted_aupr_weighted = row.aupr_weighted ? row.aupr_weighted.toFixed(2) : '0.00';
+                            const formatted_aupr_weighted = row.aupr_weighted ? (row.aupr_weighted * 100).toFixed(1) : '0.0%';
 
                             if (row.aupr_weighted === maxAupr_Weighted) {
                                 return '<strong>' + formatted_aupr_weighted + '</strong>';
@@ -217,7 +217,7 @@ function get_history()
                     {
                         data: 'aupr_micro',
                         render: function(data, type, row) {
-                            const formatted_aupr_micro = row.aupr_micro ? row.aupr_micro.toFixed(2) : '0.00';
+                            const formatted_aupr_micro = row.aupr_micro ? (row.aupr_micro * 100).toFixed(1) : '0.0%';
 
                             if (row.aupr_micro === maxAupr_Micro) {
                                 return '<strong>' + formatted_aupr_micro + '</strong>';
@@ -229,7 +229,7 @@ function get_history()
                     {
                         data: 'aupr_macro',
                         render: function(data, type, row) {
-                            const formatted_aupr_macro = row.aupr_macro ? row.aupr_macro.toFixed(2) : '0.00';
+                            const formatted_aupr_macro = row.aupr_macro ? (row.aupr_macro * 100).toFixed(1) : '0.0%';
 
                             if (row.aupr_macro === maxAupr_Macro) {
                                 return '<strong>' + formatted_aupr_macro + '</strong>';
@@ -241,7 +241,7 @@ function get_history()
                     {
                         data: 'recall_weighted',
                         render: function(data, type, row) {
-                            const formatted_recall_weighted = row.recall_weighted ? row.recall_weighted.toFixed(2) : '0.00';
+                            const formatted_recall_weighted = row.recall_weighted ? (row.recall_weighted * 100).toFixed(1) : '0.0%';
 
                             if (row.recall_weighted === maxRecall_Weighted) {
                                 return '<strong>' + formatted_recall_weighted + '</strong>';
@@ -253,7 +253,7 @@ function get_history()
                     {
                         data: 'recall_micro',
                         render: function(data, type, row) {
-                            const formatted_recall_micro = row.recall_micro ? row.recall_micro.toFixed(2) : '0.00';
+                            const formatted_recall_micro = row.recall_micro ? (row.recall_micro * 100).toFixed(1) : '0.0%';
 
                             if (row.recall_micro === maxRecall_Micro) {
                                 return '<strong>' + formatted_recall_micro + '</strong>';
@@ -265,7 +265,7 @@ function get_history()
                     {
                         data: 'recall_macro',
                         render: function(data, type, row) {
-                            const formatted_recall_macro = row.recall_macro ? row.recall_macro.toFixed(2) : '0.00';
+                            const formatted_recall_macro = row.recall_macro ? (row.recall_macro * 100).toFixed(1) : '0.0%';
 
                             if (row.recall_macro === maxRecall_Macro) {
                                 return '<strong>' + formatted_recall_macro + '</strong>';
@@ -277,7 +277,7 @@ function get_history()
                     {
                         data: 'precision_weighted',
                         render: function(data, type, row) {
-                            const formatted_precision_weighted = row.precision_weighted ? row.precision_weighted.toFixed(2) : '0.00';
+                            const formatted_precision_weighted = row.precision_weighted ? (row.precision_weighted * 100).toFixed(1) : '0.0%';
 
                             if (row.precision_weighted === maxPrecision_Weighted) {
                                 return '<strong>' + formatted_precision_weighted + '</strong>';
@@ -289,7 +289,7 @@ function get_history()
                     {
                         data: 'precision_micro',
                         render: function(data, type, row) {
-                            const formatted_precision_micro = row.precision_micro ? row.precision_micro.toFixed(2) : '0.00';
+                            const formatted_precision_micro = row.precision_micro ? (row.precision_micro * 100).toFixed(1) : '0.0%';
 
                             if (row.precision_micro === maxPrecision_Micro) {
                                 return '<strong>' + formatted_precision_micro + '</strong>';
@@ -301,7 +301,7 @@ function get_history()
                     {
                         data: 'precision_macro',
                         render: function(data, type, row) {
-                            const formatted_precision_macro = row.precision_macro ? row.precision_macro.toFixed(2) : '0.00';
+                            const formatted_precision_macro = row.precision_macro ? (row.precision_macro * 100).toFixed(1) : '0.0%';
 
                             if (row.precision_macro === maxPrecision_Macro) {
                                 return '<strong>' + formatted_precision_macro + '</strong>';

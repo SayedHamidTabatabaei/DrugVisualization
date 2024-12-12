@@ -16,9 +16,10 @@ train_model = TrainModel.GAT_Enc_Adv_DNN
 
 class GatEncAdvDnnTrainService(TrainBaseService):
 
-    def __init__(self, category: TrainModel, encoding_dim, gat_units, num_heads, dense_units, droprate, pooling_mode=None):
+    def __init__(self, category: TrainModel, encoding_dim, gat_units, num_heads, dense_units, droprate, pooling_mode=None, batch_size=128, lr_rate=1e-4, adam_beta=None,
+                 alpha=0.0, schedule_number=1):
         super().__init__(category)
-        self.hyper_params = HyperParams(encoding_dim, gat_units, num_heads, dense_units, droprate, pooling_mode)
+        self.hyper_params = HyperParams(encoding_dim, gat_units, num_heads, dense_units, droprate, pooling_mode, batch_size, lr_rate, adam_beta, alpha, schedule_number)
 
     def train(self, parameters: SplitInteractionSimilaritiesTrainingParameterModel) -> (TrainingSummaryDTO, object):
         categories = self.unique_category(parameters.drug_data[0].train_values)
