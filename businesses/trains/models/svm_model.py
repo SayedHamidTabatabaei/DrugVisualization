@@ -25,7 +25,7 @@ class SVMModel(TrainBaseModel):
 
             model = SVC(kernel='linear', class_weight=class_weight)
         else:
-            model = SVC(kernel='linear')
+            model = SVC(kernel='linear', C=1.0)
 
         model.fit(x_train, y_train)
 
