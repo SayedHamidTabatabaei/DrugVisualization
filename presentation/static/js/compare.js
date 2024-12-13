@@ -934,18 +934,44 @@ function fill_data_summary_grid(){
 }
 
 function generateLatexCode(columns, data) {
+    debugger;
+    const descriptionValue = document.querySelector('input[name="description"]:checked')?.value || 'None';
+
+    columns = [];
+    columns.push("name");
+
+    if (descriptionValue === 'underName' || descriptionValue === 'inColumn'){
+        columns.push("description");
+    }
+
+    columns.push(...["accuracy", "precision_micro", "precision_macro", "precision_weighted", "recall_micro", "recall_macro", "recall_weighted",
+        "f1_score_micro", "f1_score_macro", "f1_score_weighted", "auc_micro", "auc_macro", "auc_weighted", "aupr_micro", "aupr_macro", "aupr_weighted"])
+
     let latexCode = "\\begin{tabular}{|" + "c|".repeat(columns.length) + "} \\hline\n";
 
     latexCode += columns.join(' & ') + " \\\\ \\hline\n";
 
     data.forEach(row => {
-        latexCode += columns.map(col => row[col] || "").join(' & ') + " \\\\ \\hline\n";
+        latexCode += columns.map(col => (typeof row[col] === "number" ? (row[col] * 100).toFixed(1) : (row[col] || ""))).join(' & ') + " \\\\ \\hline\n";
     });
 
     latexCode += "\\end{tabular}";
 
     console.log(latexCode);
-    alert("LaTeX Code:\n\n" + latexCode);
+
+    // Create a Blob object with the LaTeX code
+    const blob = new Blob([latexCode], { type: "text/plain" });
+
+    // Create a download link
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    link.download = "latexCode.latex"; // The name of the file to save
+
+    // Programmatically click the link to trigger the download
+    link.click();
+
+    // Clean up the URL object
+    URL.revokeObjectURL(link.href);
 }
 
 function exportSelected(){
