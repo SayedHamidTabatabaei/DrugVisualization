@@ -938,21 +938,37 @@ function generateLatexCode(columns, data) {
     const descriptionValue = document.querySelector('input[name="description"]:checked')?.value || 'None';
 
     columns = [];
+    let columnMerged = [];
+    let columnHeader = [];
+    let columnHeader2 = [];
+
     columns.push("name");
+    columnMerged.push("l");
+    columnHeader.push("\\textbf{Model}");
+    columnHeader2.push("")
 
     if (descriptionValue === 'underName' || descriptionValue === 'inColumn'){
         columns.push("description");
+        columnMerged.push("l");
+        columnHeader.push("\\textbf{Description}");
+        columnHeader2.push("")
     }
 
     columns.push(...["accuracy", "precision_micro", "precision_macro", "precision_weighted", "recall_micro", "recall_macro", "recall_weighted",
         "f1_score_micro", "f1_score_macro", "f1_score_weighted", "auc_micro", "auc_macro", "auc_weighted", "aupr_micro", "aupr_macro", "aupr_weighted"])
+    columnMerged.push(...["c", "ccc", "ccc", "ccc", "ccc", "ccc"]);
+    columnHeader.push(...["\\textbf{Acc}", "\\multicolumn{3}{c|}{\\textbf{Precision}}", " \\multicolumn{3}{c|}{\\textbf{Recall}}",
+        "\\multicolumn{3}{c|}{\\textbf{F1-Score}}", "\\multicolumn{3}{c|}{\\textbf{AUC}}", "\\multicolumn{3}{c|}{\\textbf{AUPR}}"])
+    columnHeader2.push(...["", "Mi", "Ma", "W", "Mi", "Ma", "W", "Mi", "Ma", "W", "Mi", "Ma", "W", "Mi", "Ma", "W"])
+    const countEmpty = columnHeader2.filter(item => item === "").length;
 
-    let latexCode = "\\begin{tabular}{|" + "c|".repeat(columns.length) + "} \\hline\n";
+    let latexCode = "\\begin{tabular}{|" + columnMerged.join('|') + "|} \\hline\n";
 
-    latexCode += columns.join(' & ') + " \\\\ \\hline\n";
+    latexCode += columnHeader.join(' & ') + '\\\\\n' + `\\cline{${countEmpty + 1}-${columnHeader2.length}}\n` + columnHeader2.join(' & ') + " \\\\\n \\hline\n";
 
     data.forEach(row => {
-        latexCode += columns.map(col => (typeof row[col] === "number" ? (row[col] * 100).toFixed(1) : (row[col] || ""))).join(' & ') + " \\\\ \\hline\n";
+        latexCode += columns.map(col => (typeof row[col] === "number" ? `\\lr{${(row[col] * 100).toFixed(1)}}` : (`\\LR{${row[col]}}` || ""))).join(' & ') + " \\\\" +
+            " \\hline\n";
     });
 
     latexCode += "\\end{tabular}";
