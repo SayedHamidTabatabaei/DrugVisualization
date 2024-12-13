@@ -629,7 +629,7 @@ class TrainingBusiness(BaseBusiness):
     def multi_bar_plots(plot_data: list[ComparePlotDTO]):
 
         categories = plot_data[0].labels
-        metric_labels = [c.compare_plot_type.name for c in plot_data]
+        metric_labels = [c.compare_plot_type.title for c in plot_data]
         metrics = list(map(list, zip(*[c.datas for c in plot_data])))
 
         num_groups = len(categories)
@@ -652,7 +652,7 @@ class TrainingBusiness(BaseBusiness):
 
         # Add labels, title, and custom x-axis tick labels
         ax.set_ylabel('Scores')
-        ax.set_title('Performance Comparison with Internal Bar Spacing')
+        # ax.set_title('Performance Comparison with Internal Bar Spacing')
         ax.set_xticks(group_positions)
         ax.set_xticklabels(categories, rotation=45, ha='right')
         ax.legend()
