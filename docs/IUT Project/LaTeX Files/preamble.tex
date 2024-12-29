@@ -1,0 +1,145 @@
+%*************************************************
+% All the packages and definitions required for this 
+% project are included here.
+%*************************************************
+% Iman Izadi, 1395
+% Dept. of Electrical and Computer Engineering, IUT
+%*************************************************
+
+
+\usepackage{amsthm,amssymb,amsmath}			% Writing math
+\usepackage{epsf,graphicx}									% Including graphics
+\usepackage[a4paper]{geometry}							% Fixing page layout and margins
+\usepackage{titlesec}											% Change chapter and section titles
+\usepackage{setspace}											% Change line spacing
+\usepackage[stable,bottom]{footmisc}					% Move footnotes to the bottom of page
+\usepackage{subcaption}
+\usepackage{float}
+
+\usepackage{hyperref}
+\usepackage{array}
+\usepackage{longtable}
+\usepackage[table]{xcolor}
+\usepackage{multirow}
+\usepackage{booktabs}  % برای طراحی زیباتر جدول‌ها
+
+\usepackage{zref-perpage}
+\zmakeperpage[1]{footnote}
+
+\usepackage{xepersian}	
+\usepackage{fontspec}									% Persian
+\settextfont{XB Zar}[Path=../Fonts/]					% Persian font
+\newfontface\boldfont{XB ZarBd.ttf}[Path=../Fonts/]
+\newfontface\italicfont{XB ZarIt.ttf}[Path=../Fonts/]
+
+
+
+\usepackage{bidi}  % برای مدیریت نوشتار دو جهته
+
+
+% Use English digits in equations
+% \DefaultMathsDigits
+
+% Default footnotes from left to right
+\setfootnoteLR
+
+% Use English numbers for English footnotes
+\makeatletter
+\def\@makeLTRfnmark{\hbox{\@textsuperscript{\latinfont\@thefnmark}}}
+\renewcommand\@makefntext[1]{%
+	\parindent 1em%
+	\noindent
+	\hb@xt@1.8em{\hss\if@RTL\@makefnmark\else\@makeLTRfnmark\fi}#1}
+\makeatother
+
+% Use dash instead of dot in section numbers
+\SepMark{-}										
+
+
+% Change fonts and margins of section and subsection titles
+% For chapters please see firstpages.tex
+
+% Define Persian numbers for section numbering
+\renewcommand{\thesection}{\persianfont\arabic{section}-\persianfont\arabic{chapter}}
+\renewcommand{\thesubsection}{\persianfont\arabic{subsection}-\persianfont\arabic{section}-\persianfont\arabic{chapter}}
+
+
+% تنظیمات برای پیوست‌ها
+
+% Initialize a counter for appendices
+\newcounter{appendixcount}
+
+% Define a variable to hold the current appendix prefix
+% Define a variable to hold the current appendix prefix
+\newcommand{\appendixprefix}{آ} % Default is آ for the first appendix
+
+% Command to update the appendix prefix based on the counter
+\newcommand{\setappendixprefix}{%
+	\ifnum\value{appendixcount}=1
+		\renewcommand{\appendixprefix}{آ} % First appendix
+	\else
+		\ifnum\value{appendixcount}=2
+			\renewcommand{\appendixprefix}{ب} % Second appendix
+		\else
+			\renewcommand{\appendixprefix}{ج} % Third appendix
+		\fi
+	\fi
+}
+
+% Define a command to globally set numbering for appendices
+\newcommand{\setpersiannumbering}{
+	% Use \appendixprefix for numbering in all counters
+	\renewcommand{\thechapter}{\persianfont \appendixprefix-\arabic{chapter}}
+	\renewcommand{\thesection}{\persianfont \appendixprefix-\arabic{section}}
+	\renewcommand{\thesubsection}{\persianfont \appendixprefix-\arabic{section}-\arabic{subsection}}
+	\renewcommand{\theequation}{\persianfont \appendixprefix-\arabic{equation}}
+	\renewcommand{\thetable}{\persianfont \appendixprefix-\arabic{table}}
+	\renewcommand{\thefigure}{\persianfont \appendixprefix-\arabic{figure}}
+}
+
+% Command to start an appendix
+\newcommand{\appendixchapter}[1]{%
+	\setcounter{section}{0}     % Reset section numbering
+	\setcounter{subsection}{0}  % Reset subsection numbering
+	\setcounter{equation}{0}    % Reset equation numbering
+	\setcounter{table}{0}       % Reset table numbering
+	\setcounter{figure}{0}      % Reset figure numbering
+	\addtocounter{appendixcount}{1} % Increment appendix counter
+	\setappendixprefix          % Update the appendix prefix based on the counter
+	\setpersiannumbering        % Apply numbering rules globally
+	\chapter{#1}                % Create a new chapter
+}
+
+
+
+% Force bold text for section titles
+\titlespacing*{\section}{0pt}{1cm}{0.2cm}
+\titleformat{\section}
+{\boldfont\fontsize{12}{6}\scshape}{\thesection}{1em}{}
+
+\titlespacing*{\subsection}{0pt}{.8cm}{0cm}
+\titleformat{\subsection}
+{\boldfont\fontsize{11}{6}\scshape}{\thesubsection}{1em}{}
+
+\titlespacing*{\subsubsection}{0pt}{.8cm}{0cm}
+\titleformat{\subsubsection}
+{\boldfont\fontsize{10}{6}\scshape}{\thesubsubsection}{1em}{}
+
+% Fix table of contents for chapters
+\makeatletter 
+\def\@chapter[#1]#2{\ifnum \c@secnumdepth >\m@ne
+	\refstepcounter{chapter}%
+	\typeout{\@chapapp\space\thechapter.}%
+	\addcontentsline{toc}{chapter}%
+	{\@chapapp~\protect\numberline{\tartibi{chapter}\,:\space #1}}
+	\else
+	\addcontentsline{toc}{chapter}{#1}%
+	\fi
+	\chaptermark{#1}%
+	\addtocontents{lof}{\protect\addvspace{10\p@}}%
+	\addtocontents{lot}{\protect\addvspace{10\p@}}%
+	\@makechapterhead{#2}%
+	\@afterheading}
+\let\stdl@chapter\l@chapter
+\renewcommand*{\l@chapter}[2]{\stdl@chapter{{#1}}{}}
+\makeatother

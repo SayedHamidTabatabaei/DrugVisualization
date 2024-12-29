@@ -1,0 +1,160 @@
+%*************************************************
+% In this file the first few pages are typeset.
+% Make changes accordingly.
+%*************************************************
+
+% شماره صفحات با حروف
+\pagenumbering{adadi}
+
+%***************************
+% 1st page: Blank
+%***************************
+\thispagestyle{empty}
+\mbox{}
+\pagebreak
+
+%***************************
+% Page 1: Besmelah
+%***************************
+\thispagestyle{empty}
+\begin{center}
+	~\vfill
+	\includegraphics[scale=1]{besm.jpg}
+	~\vfill
+\end{center}
+\pagebreak
+
+%***************************
+% Page 2: Title
+%***************************
+\thispagestyle{empty}
+\newgeometry{left=3cm,right=3cm,top=2cm}
+\begin{center}
+\includegraphics[height=3cm]{iut_logo.png}
+\vspace{0.4cm}
+
+{\large
+	\textbf{دانشگاه صنعتی اصفهان}\\
+	دانشکده مهندسی برق و کامپیوتر
+}
+\vspace{3.5cm}
+
+{\LARGE
+	\textbf{پیش‌بینی تداخلات دارویی با استفاده از روش‌های یادگیری عمیق}\\
+}
+\vspace{3.5cm}
+
+{\large
+	\textbf{کارشناسی ارشد مهندسی کامپیوتر - هوش مصنوعی}\\
+}
+\vspace{1cm}
+
+{\Large
+	\textbf{سید حمید طباطبائی}\\
+}
+\vspace{2.5cm}
+
+{\large
+	استادراهنما\\
+}
+\vspace{0.5cm}
+
+{\Large
+	\textbf{دکتر مهران صفایانی}\\
+}
+\vspace{3.5cm}
+
+{\Large
+	\textbf{1403}
+}
+
+\end{center}
+\restoregeometry
+\pagebreak
+
+%***************************
+% 5th page: Acknowledgment
+%***************************
+\thispagestyle{empty}
+\newgeometry{left=3cm,right=4cm,top=4cm}
+\vspace*{1.5cm}
+
+{\large
+	\textbf{تشکر و قدردانی}\\
+	
+	
+	با تمام وجود از استاد راهنمای گرامی‌ام، جناب آقای دکتر مهران صفایانی، سپاسگزارم. راهنمایی‌ها و حمایت‌های بی‌دریغ ایشان در تمام مراحل این پژوهش به من کمک کرد تا این مسیر را با موفقیت طی کنم. صبر، دقت و توجهی که همیشه به من داشتند، برایم بسیار ارزشمند بود.
+	
+	همچنین از خانواده عزیزم که همواره در کنارم بودند و با حمایت‌های بی‌پایان‌شان به من انگیزه دادند، صمیمانه تشکر می‌کنم. حضور شما در کنارم باعث شد حتی در لحظات دشوار هم انگیزه‌ام را حفظ کنم و به هدفم نزدیک‌تر شوم. برای تمام محبت‌ها و حمایت‌های بی‌پایان‌تان، بی‌نهایت سپاسگزارم.
+	
+}
+\restoregeometry
+\pagebreak
+
+%***************************
+% 6th page: Rights
+%***************************
+\thispagestyle{empty}
+\newgeometry{left=6cm,right=6cm}
+
+\begin{spacing}{3}
+	\leavevmode
+	\vfill
+	\parbox{8 cm}{
+		
+		\textbf{\Large کلیه حقوق مالکیت مادی و معنوی مربوط به اين پايان نامه متعلق به دانشگاه صنعتی اصفهان و پدیدآورندگان است. این حقوق توسط دانشگاه صنعتي اصفهان و بر اساس خط مشی مالکیت فکری این دانشگاه، ارزش‌گذاری و سهم بندي خواهد شد.
+			هر گونه بهره برداري از محتوا، نتايج یا اقدام براي تجاري‌سازي دستاوردهاي اين پايان نامه تنها با مجوز کتبی دانشگاه صنعتی اصفهان امکان‌پذیر است.
+			}
+		
+	}
+	\vfill
+\end{spacing}
+\restoregeometry
+\pagebreak
+
+%***************************
+% 7th page: Dedication
+%***************************
+%\thispagestyle{empty}
+%\vspace*{4cm}
+
+%{\LARGE
+%	\centering
+%	\textbf{تقدیم به \\ پدر، مادر و خواهر عزیزم }
+	
+%}
+%\pagebreak
+
+%***************************
+% 8th page: Table of contents
+%***************************
+
+\titleformat{\chapter}[display]
+	{\normalfont\LARGE\bfseries\centering}{\chaptertitlename ~ \tartibi{chapter}}{20pt}{\LARGE}
+\newgeometry{left=2.5cm,right=3cm,top=3cm,bottom=2.5cm,includehead=false,headsep=1cm,footnotesep=.5cm}
+\baselineskip=.7cm
+
+\addtocontents{toc}{\textbf{\underline{عنوان}}}
+\addtocontents{toc}{\hfill\textbf{\underline{صفحه}}\par}
+\addcontentsline{toc}{section}{فهرست مطالب}
+\tableofcontents
+\pagebreak
+
+
+\renewcommand\listfigurename{فهرست شکل‌ها}
+\addcontentsline{toc}{section}{فهرست شکل‌ها}
+\listoffigures
+\pagebreak
+
+\renewcommand\listtablename{فهرست جداول}
+\addcontentsline{toc}{section}{فهرست جداول}
+\listoftables
+\pagebreak
+
+% change the font and margins of a chapter title
+\titlespacing*{\chapter}{0pt}{3.5cm}{6cm}
+\titleformat{\chapter}[display]
+	{\normalfont\LARGE\bfseries\raggedright}{\chaptertitlename ~ \tartibi{chapter}}{20pt}{\LARGE}
+
+% No page numbers on the first page of a chapter
+\assignpagestyle{\chapter}{empty}

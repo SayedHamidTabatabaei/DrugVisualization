@@ -1,0 +1,76 @@
+\textbf {\relax $\@@underline {\hbox {\beginR عنوان\endR }}\mathsurround \z@ $\relax }
+\hfill \textbf {\relax $\@@underline {\hbox {\beginR صفحه\endR }}\mathsurround \z@ $\relax }\par 
+\contentsline {section}{فهرست مطالب}{شش}{Doc-Start}%
+\contentsline {section}{فهرست شکل‌ها}{نه}{chapter*.1}%
+\contentsline {section}{فهرست جداول}{ده}{chapter*.2}%
+\contentsline {section}{چکیده}{1}{chapter*.3}%
+\contentsline {chapter}{فصل~\numberline {اول\,: مقدمه}}{2}{chapter.1}%
+\contentsline {section}{\numberline {\persianfont 1-\persianfont 1}پیش‌زمینه}{2}{section.1.1}%
+\contentsline {section}{\numberline {\persianfont 2-\persianfont 1}دامنه و محدودیت‌ها}{4}{section.1.2}%
+\contentsline {subsection}{\numberline {\persianfont 1-\persianfont 2-\persianfont 1}منابع داده‌های مورد استفاده}{4}{subsection.1.2.1}%
+\contentsline {subsection}{\numberline {\persianfont 2-\persianfont 2-\persianfont 1}تمرکز بر نوع خاصی از تداخلات دارویی}{4}{subsection.1.2.2}%
+\contentsline {subsection}{\numberline {\persianfont 3-\persianfont 2-\persianfont 1}محدودیت‌های موجود در پیش‌بینی تداخلات دارویی}{5}{subsection.1.2.3}%
+\contentsline {subsection}{\numberline {\persianfont 4-\persianfont 2-\persianfont 1}راه‌حل‌های پیشنهادی برای حل محدودیت‌ها}{5}{subsection.1.2.4}%
+\contentsline {section}{\numberline {\persianfont 3-\persianfont 1}ساختار پایان‌نامه}{7}{section.1.3}%
+\contentsline {chapter}{فصل~\numberline {دوم\,: مفاهیم پایه و پیشینه پژوهش}}{8}{chapter.2}%
+\contentsline {section}{\numberline {\persianfont 1-\persianfont 2}مفاهیم پایه تداخلات دارویی}{9}{section.2.1}%
+\contentsline {section}{\numberline {\persianfont 2-\persianfont 2}روش‌های موجود برای شناسایی تداخلات دارویی}{10}{section.2.2}%
+\contentsline {section}{\numberline {\persianfont 3-\persianfont 2}کاربرد یادگیری ماشین در شناسایی تداخلات دارویی}{11}{section.2.3}%
+\contentsline {subsection}{\numberline {\persianfont 1-\persianfont 3-\persianfont 2}روش‌های مبتنی بر شبکه‌های عصبی}{11}{subsection.2.3.1}%
+\contentsline {subsection}{\numberline {\persianfont 2-\persianfont 3-\persianfont 2}روش‌های مبتنی بر گراف}{13}{subsection.2.3.2}%
+\contentsline {subsection}{\numberline {\persianfont 3-\persianfont 3-\persianfont 2}روش‌های مبتنی بر ترکیب اطلاعات ساختاری و متنی}{13}{subsection.2.3.3}%
+\contentsline {section}{\numberline {\persianfont 4-\persianfont 2}شکاف تحقیقاتی}{16}{section.2.4}%
+\contentsline {chapter}{فصل~\numberline {سوم\,: مدل پیشنهادی}}{18}{chapter.3}%
+\contentsline {section}{\numberline {\persianfont 1-\persianfont 3}مرور کلی مدل پیشنهادی}{19}{section.3.1}%
+\contentsline {section}{\numberline {\persianfont 2-\persianfont 3}جمع‌آوری و پیش‌پردازش داده‌ها}{19}{section.3.2}%
+\contentsline {subsection}{\numberline {\persianfont 1-\persianfont 2-\persianfont 3}منابع داده}{21}{subsection.3.2.1}%
+\contentsline {subsection}{\numberline {\persianfont 2-\persianfont 2-\persianfont 3}طبقه‌بندی تداخلات دارویی}{22}{subsection.3.2.2}%
+\contentsline {subsection}{\numberline {\persianfont 3-\persianfont 2-\persianfont 3}تبدیل SMILES به گراف با استفاده از RDKit}{22}{subsection.3.2.3}%
+\contentsline {subsection}{\numberline {\persianfont 4-\persianfont 2-\persianfont 3}پیش‌پردازش ویژگی‌های شباهت دارویی}{24}{subsection.3.2.4}%
+\contentsline {subsection}{\numberline {\persianfont 5-\persianfont 2-\persianfont 3}تبدیل ویژگی‌های متنی با استفاده از SciBERT}{25}{subsection.3.2.5}%
+\contentsline {section}{\numberline {\persianfont 3-\persianfont 3}ویژگی‌ها و معماری مدل پیشنهادی}{27}{section.3.3}%
+\contentsline {subsection}{\numberline {\persianfont 1-\persianfont 3-\persianfont 3}مدل استخراج ویژگی و ادغام ویژگی‌ها}{27}{subsection.3.3.1}%
+\contentsline {subsection}{\numberline {\persianfont 2-\persianfont 3-\persianfont 3}جزئیات شبکه توجه گراف در بخش ساختاری}{27}{subsection.3.3.2}%
+\contentsline {subsection}{\numberline {\persianfont 3-\persianfont 3-\persianfont 3}جزئیات شبکه‌ پرسپترون چندلایه در بخش‌های شباهت و متنی}{29}{subsection.3.3.3}%
+\contentsline {subsection}{\numberline {\persianfont 4-\persianfont 3-\persianfont 3}پیش‌بینی تداخل دارویی}{30}{subsection.3.3.4}%
+\contentsline {subsection}{\numberline {\persianfont 5-\persianfont 3-\persianfont 3}مزایای اشتراک‌گذاری پارامترها در بهبود عملکرد مدل}{31}{subsection.3.3.5}%
+\contentsline {subsection}{\numberline {\persianfont 6-\persianfont 3-\persianfont 3}چالش‌ها و نوآوری‌های مدل پیشنهادی}{32}{subsection.3.3.6}%
+\contentsline {chapter}{فصل~\numberline {چهارم\,: نتایج}}{34}{chapter.4}%
+\contentsline {section}{\numberline {\persianfont 1-\persianfont 4}سناریوهای ارزیابی مدل}{35}{section.4.1}%
+\contentsline {subsection}{\numberline {\persianfont 1-\persianfont 1-\persianfont 4}سناریوی اول: اعتبارسنجی متقاطع K-Fold}{35}{subsection.4.1.1}%
+\contentsline {subsection}{\numberline {\persianfont 2-\persianfont 1-\persianfont 4}سناریوی دوم: تقسیم‌بندی بر اساس داروها با داده‌های جدید در آزمون}{36}{subsection.4.1.2}%
+\contentsline {subsection}{\numberline {\persianfont 3-\persianfont 1-\persianfont 4}سناریوی سوم: تقسیم‌بندی بر اساس داروها با هر دو دارو از مجموعه آزمون}{37}{subsection.4.1.3}%
+\contentsline {section}{\numberline {\persianfont 2-\persianfont 4}مقایسه با روش‌های موجود}{38}{section.4.2}%
+\contentsline {subsection}{\numberline {\persianfont 1-\persianfont 2-\persianfont 4}نتایج در سناریوی اول}{39}{subsection.4.2.1}%
+\contentsline {subsection}{\numberline {\persianfont 2-\persianfont 2-\persianfont 4}نتایج در سناریوی دوم}{39}{subsection.4.2.2}%
+\contentsline {subsection}{\numberline {\persianfont 3-\persianfont 2-\persianfont 4}نتایج در سناریوی سوم}{40}{subsection.4.2.3}%
+\contentsline {subsection}{\numberline {\persianfont 4-\persianfont 2-\persianfont 4}تحلیل مقایسه‌ای نتایج}{41}{subsection.4.2.4}%
+\contentsline {section}{\numberline {\persianfont 3-\persianfont 4}مطالعه تقطیعی}{43}{section.4.3}%
+\contentsline {subsection}{\numberline {\persianfont 1-\persianfont 3-\persianfont 4}بررسی تأثیر ویژگی‌های مختلف در سناریوی اول}{43}{subsection.4.3.1}%
+\contentsline {subsection}{\numberline {\persianfont 2-\persianfont 3-\persianfont 4}بررسی تأثیر ویژگی‌های مختلف در سناریوی دوم}{45}{subsection.4.3.2}%
+\contentsline {subsection}{\numberline {\persianfont 3-\persianfont 3-\persianfont 4}بررسی تأثیر ویژگی‌های مختلف در سناریوی سوم}{46}{subsection.4.3.3}%
+\contentsline {subsection}{\numberline {\persianfont 4-\persianfont 3-\persianfont 4}تحلیل جامع نتایج مطالعه تقطیعی}{48}{subsection.4.3.4}%
+\contentsline {section}{\numberline {\persianfont 4-\persianfont 4}تفسیر نتایج}{49}{section.4.4}%
+\contentsline {section}{\numberline {\persianfont 5-\persianfont 4}چالش‌های موجود}{49}{section.4.5}%
+\contentsline {chapter}{فصل~\numberline {پنجم\,: نتیجه‌گیری و پیشنهادات برای کارهای آینده}}{51}{chapter.5}%
+\contentsline {section}{\numberline {\persianfont 1-\persianfont 5}خلاصه یافته‌ها}{51}{section.5.1}%
+\contentsline {section}{\numberline {\persianfont 2-\persianfont 5}دستاوردها}{52}{section.5.2}%
+\contentsline {section}{\numberline {\persianfont 3-\persianfont 5}پیشنهادات برای تحقیقات آینده}{53}{section.5.3}%
+\contentsline {subsection}{\numberline {\persianfont 1-\persianfont 3-\persianfont 5}بهبود پردازش داده‌های متنی}{53}{subsection.5.3.1}%
+\contentsline {subsection}{\numberline {\persianfont 2-\persianfont 3-\persianfont 5}بهینه‌سازی کاهش ابعاد}{54}{subsection.5.3.2}%
+\contentsline {subsection}{\numberline {\persianfont 3-\persianfont 3-\persianfont 5}استفاده از اطلاعات ساختار سه‌بعدی داروها}{55}{subsection.5.3.3}%
+\contentsline {subsection}{\numberline {\persianfont 4-\persianfont 3-\persianfont 5}بهبود معماری کلی مدل}{55}{subsection.5.3.4}%
+\contentsline {chapter}{پیوست~\numberline {اول\,: انواع تداخلات دارویی}}{57}{appendix.Alph1}%
+\contentsline {chapter}{پیوست~\numberline {دوم\,: معیارهای ارزیابی}}{62}{appendix.Alph2}%
+\contentsline {section}{\numberline {\persianfont ب-1}دقت}{62}{section.Alph2.1}%
+\contentsline {subsubsection}{کاربرد دقت در پروژه شناسایی تداخلات دارویی}{63}{subsubsection*.20}%
+\contentsline {section}{\numberline {\persianfont ب-2}بازخوانی}{63}{section.Alph2.2}%
+\contentsline {subsubsection}{انواع بازخوانی برای مسائل چندکلاسی}{64}{subsubsection*.21}%
+\contentsline {section}{\numberline {\persianfont ب-3}صحت}{65}{section.Alph2.3}%
+\contentsline {subsubsection}{انواع صحت برای مسائل چندکلاسی}{65}{subsubsection*.22}%
+\contentsline {section}{\numberline {\persianfont ب-4}امتیاز F1}{66}{section.Alph2.4}%
+\contentsline {subsubsection}{انواع امتیاز F1}{66}{subsubsection*.23}%
+\contentsline {subsubsection}{استفاده از F1-Score در شناسایی تداخلات دارویی}{67}{subsubsection*.24}%
+\contentsline {section}{\numberline {\persianfont ب-5}نتیجه‌گیری}{68}{section.Alph2.5}%
+\contentsline {chapter}{پیوست~\numberline {سوم\,: معادل‌های فارسی واژگان تخصصی}}{69}{appendix.Alph3}%
+\contentsline {section}{مراجع}{71}{table.ج.1}%
