@@ -5,7 +5,7 @@ This repository contains the code and resources for a machine learning model to 
 - Drug data sourced from DrugBank and KEGG databases
 - 936 drugs and over 103,000 known drug-drug interactions
 - Interactions classified into 65 types based on work by Ryu et al. (2018)
-- MySQL backup: [Google Drive Link]
+- MySQL backup: [Google Drive Link](https://drive.google.com/file/d/19y6AuItwCijTmAhRmFI8UoOHwVcIEIEK/view?usp=sharing)
 
 ## Model Architecture 
 - Graph Attention Network (GAT) to process molecular structure graphs
@@ -32,28 +32,42 @@ This repository contains the code and resources for a machine learning model to 
 2. Install required dependencies listed in `requirements.txt` 
 3. Get MySQL backup: [Google Drive Link](https://drive.google.com/file/d/19y6AuItwCijTmAhRmFI8UoOHwVcIEIEK/view?usp=sharing)
 4. Restore database
-5. Preprocess data: `python src/preprocess.py`
-6. Train model: `python src/train.py`
-7. Evaluate model: `python src/evaluate.py`
+5. Set Configuration in `configs` 
+6. Run
 
 See the notebooks in `notebooks/` for examples of using the trained model to predict drug-drug interactions.
 
 ## Application Screenshots
 
-![Screenshot 1](screenshots/screenshot1.png)
-*Main application screen*
+![Target Similarities](screenshots/target-similarity.png)
+*Target Similarities screen*
 
-![Screenshot 2](screenshots/screenshot2.png) 
-*Drug interaction visualization*
+![Text Embedding](screenshots/text-embedding.png)
+*Text Embedding screen*  
 
-![Screenshot 3](screenshots/screenshot3.png)
-*New drug interaction prediction*
+![SMILES Similarities](screenshots/drug-similarity.png)
+*SMILES Similarities screen*
+
+![Enzyme Similarities](screenshots/enzyme-similarity.png) 
+*Enzyme Similarities screen*
+
+![Pathway Similarities](screenshots/pathway-similarity.png)
+*Pathway Similarities screen*
+
+![Scheduled Trainings](screenshots/training-scheduled-training.png)
+*Scheduled Trainings screen*
+
+![Train](screenshots/train.png)
+*Train screen*
+
+![Training Compare.png](screenshots/training-compare.png)
+*Training Compare screen*
 
 ## Citation
 
 If you use this code or model in your research, please cite my thesis:
 
-Hamid Tabatabaei. [Thesis Title]. 
+Hamid Tabatabaei. Predicting the drug interactions using deep learning methods. 
 [Isfahan University of Technology](https://www.iut.ac.ir), 2025.
 
 ## Contact
