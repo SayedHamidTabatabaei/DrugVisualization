@@ -5,7 +5,7 @@ This repository contains the code and resources for a machine learning model to 
 - Drug data sourced from DrugBank and KEGG databases
 - 936 drugs and over 103,000 known drug-drug interactions
 - Interactions classified into 65 types based on work by Ryu et al. (2018)
-- MySQL backup: [Google Drive Link](https://drive.google.com/file/d/19y6AuItwCijTmAhRmFI8UoOHwVcIEIEK/view?usp=sharing)
+- MySQL backup: [Google Drive Link](https://drive.google.com/file/d/1Mfn9kSZr8s1wvfTDRZHdz8pKgg8KpZZs/view?usp=sharing)
 
 ## Model Architecture 
 - Graph Attention Network (GAT) to process molecular structure graphs
@@ -30,7 +30,7 @@ This repository contains the code and resources for a machine learning model to 
 ## Setup
 1. Clone the repository
 2. Install required dependencies listed in `requirements.txt` 
-3. Get MySQL backup: [Google Drive Link](https://drive.google.com/file/d/19y6AuItwCijTmAhRmFI8UoOHwVcIEIEK/view?usp=sharing)
+3. Get MySQL backup: [Google Drive Link](https://drive.google.com/file/d/1Mfn9kSZr8s1wvfTDRZHdz8pKgg8KpZZs/view?usp=sharing)
 4. Restore database
 5. Set Configuration in `configs` 
 6. Run
