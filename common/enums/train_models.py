@@ -28,7 +28,7 @@ class TrainModel(Enum):
                                                                            'Pathway, Target, Enzyme) and then DNN.')
     GAT_Lstm_MHA = (21, Scenarios.SplitInteractionSimilarities, 'NotFound', 'GAT On SMILES, Multi-Head-Attention between text fields and other fields ('
                                                                             'Pathway, Target, Enzyme) and then DNN.')
-    GAT_Enc_Adv_DNN = (22, Scenarios.SplitInteractionSimilarities, 'NotFound', 'GAT On SMILES, Encoder, Concat AutoEncoders and then DNN')
+    GAT_Enc_Adv_DNN = (22, Scenarios.SplitInteractionSimilarities, 'GAT_Enc_Adv_DNN', 'GAT On SMILES, Encoder, Concat AutoEncoders and then DNN')
     DMDDI = (23, Scenarios.SplitInteractionSimilarities, 'NotFound', '')
 
     Drug_Enc_Con_DNN = (204, Scenarios.SplitDrugsTestWithTrain, 'NotFound', 'Reduce data dimension, join them and send to DNN')
@@ -50,7 +50,7 @@ class TrainModel(Enum):
                                                                             'Pathway, Target, Enzyme) and then DNN.')
     Drug_GAT_Lstm_MHA = (221, Scenarios.SplitDrugsTestWithTrain, 'NotFound', 'GAT On SMILES, Multi-Head-Attention between text fields and other fields ('
                                                                              'Pathway, Target, Enzyme) and then DNN.')
-    Drug_GAT_Enc_Adv_DNN = (222, Scenarios.SplitDrugsTestWithTrain, 'NotFound', 'GAT On SMILES, AutoEncoder, Concat AutoEncoders and then DNN')
+    Drug_GAT_Enc_Adv_DNN = (222, Scenarios.SplitDrugsTestWithTrain, 'GAT_Enc_Adv_DNN', 'GAT On SMILES, AutoEncoder, Concat AutoEncoders and then DNN')
     Drug_DMDDI = (250, Scenarios.SplitDrugsTestWithTrain, 'NotFound', '.')
     Drug_KNN = (251, Scenarios.SplitDrugsTestWithTrain, 'NotFound', 'This network learns by KNN.')
     Drug_SVM = (252, Scenarios.SplitDrugsTestWithTrain, 'NotFound', 'This network learns by SVM.')
@@ -75,7 +75,7 @@ class TrainModel(Enum):
                                                                                 'Pathway, Target, Enzyme) and then DNN.')
     Drug_GAT_Lstm_MHA_Test = (321, Scenarios.SplitDrugsTestWithTest, 'NotFound', 'GAT On SMILES, Multi-Head-Attention between text fields and other fields ('
                                                                                  'Pathway, Target, Enzyme) and then DNN.')
-    Drug_GAT_Enc_Adv_DNN_Test = (322, Scenarios.SplitDrugsTestWithTest, 'NotFound', 'GAT On SMILES, AutoEncoder, Concat AutoEncoders and then DNN')
+    Drug_GAT_Enc_Adv_DNN_Test = (322, Scenarios.SplitDrugsTestWithTest, 'GAT_Enc_Adv_DNN', 'GAT On SMILES, AutoEncoder, Concat AutoEncoders and then DNN')
 
     Drug_DMDDI_Test = (350, Scenarios.SplitDrugsTestWithTest, 'NotFound', '.')
     Drug_KNN_Test = (351, Scenarios.SplitDrugsTestWithTest, 'NotFound', 'This network learns by KNN.')
@@ -100,7 +100,7 @@ class TrainModel(Enum):
                                                                                 'Pathway, Target, Enzyme) and then DNN.')
     Fold_GAT_Lstm_MHA = (421, Scenarios.FoldInteractionSimilarities, 'NotFound', 'GAT On SMILES, Multi-Head-Attention between text fields and other fields ('
                                                                                  'Pathway, Target, Enzyme) and then DNN.')
-    Fold_GAT_Enc_Adv_DNN = (422, Scenarios.FoldInteractionSimilarities, 'NotFound', 'GAT On SMILES, AutoEncoder, Concat AutoEncoders and then DNN')
+    Fold_GAT_Enc_Adv_DNN = (422, Scenarios.FoldInteractionSimilarities, 'GAT_Enc_Adv_DNN', 'GAT On SMILES, AutoEncoder, Concat AutoEncoders and then DNN')
 
     Fold_DMDDI = (450, Scenarios.FoldInteractionSimilarities, 'NotFound', '.')
     Fold_KNN = (451, Scenarios.FoldInteractionSimilarities, 'NotFound', 'This network learns by KNN.')
