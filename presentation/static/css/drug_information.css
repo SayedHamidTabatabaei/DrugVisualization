@@ -17,6 +17,11 @@ h2 {
     gap: 10px;
 }
 
+.grid-container_without_temp {
+    display: grid;
+    gap: 10px;
+}
+
 .grid-item {
     background-color: #ddd;
     padding: 20px;

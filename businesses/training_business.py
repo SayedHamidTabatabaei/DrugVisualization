@@ -726,9 +726,9 @@ class TrainingBusiness(BaseBusiness):
             # Handle case where all datas are empty, e.g., set a default y-limit
             ax.set_ylim(0, 1)
 
-        ax.legend(loc='upper right', bbox_to_anchor=(1.1, 1.1), fontsize='x-small')
+        ax.legend(loc='upper right', bbox_to_anchor=(1.1, 1.1), fontsize='large')
 
-        plt.title(plot_data.compare_plot_type.name)
+        plt.title(plot_data.compare_plot_type.title, pad=40)
 
         return plt
 
