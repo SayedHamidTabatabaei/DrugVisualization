@@ -1,4 +1,4 @@
-This is XeTeX, Version 3.141592653-2.6-0.999996 (TeX Live 2024) (preloaded format=xelatex 2024.11.23)  12 JAN 2025 00:16
+This is XeTeX, Version 3.141592653-2.6-0.999996 (TeX Live 2024) (preloaded format=xelatex 2024.11.23)  2 FEB 2025 19:42
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -444,25 +444,31 @@ Package: multirow 2024/11/12 v2.9 Span multiple rows of a table
 \multirow@dima=\skip69
 \bigstrutjot=\dimen191
 )
+(c:/texlive/2024/texmf-dist/tex/latex/makecell/makecell.sty
+Package: makecell 2009/08/03 V0.1e Managing of Tab Column Heads and Cells
+\rotheadsize=\dimen192
+\c@nlinenum=\count308
+\TeXr@lab=\toks38
+)
 (c:/texlive/2024/texmf-dist/tex/latex/booktabs/booktabs.sty
 Package: booktabs 2020/01/12 v1.61803398 Publication quality tables
-\heavyrulewidth=\dimen192
-\lightrulewidth=\dimen193
-\cmidrulewidth=\dimen194
-\belowrulesep=\dimen195
-\belowbottomsep=\dimen196
-\aboverulesep=\dimen197
-\abovetopsep=\dimen198
-\cmidrulesep=\dimen199
-\cmidrulekern=\dimen256
-\defaultaddspace=\dimen257
-\@cmidla=\count308
-\@cmidlb=\count309
-\@aboverulesep=\dimen258
-\@belowrulesep=\dimen259
-\@thisruleclass=\count310
-\@lastruleclass=\count311
-\@thisrulewidth=\dimen260
+\heavyrulewidth=\dimen193
+\lightrulewidth=\dimen194
+\cmidrulewidth=\dimen195
+\belowrulesep=\dimen196
+\belowbottomsep=\dimen197
+\aboverulesep=\dimen198
+\abovetopsep=\dimen199
+\cmidrulesep=\dimen256
+\cmidrulekern=\dimen257
+\defaultaddspace=\dimen258
+\@cmidla=\count309
+\@cmidlb=\count310
+\@aboverulesep=\dimen259
+\@belowrulesep=\dimen260
+\@thisruleclass=\count311
+\@lastruleclass=\count312
+\@thisrulewidth=\dimen261
 )
 (c:/texlive/2024/texmf-dist/tex/latex/zref/zref-perpage.sty
 Package: zref-perpage 2023-09-14 v2.35 Module perpage for zref (HO)
@@ -482,13 +488,13 @@ Package zref Info: New property: page on input line 769.
 )
 (c:/texlive/2024/texmf-dist/tex/latex/zref/zref-abspage.sty
 Package: zref-abspage 2023-09-14 v2.35 Module abspage for zref (HO)
-\c@abspage=\count312
+\c@abspage=\count313
 Package zref Info: New property: abspage on input line 67.
 )
 Package zref Info: New property: pagevalue on input line 57.
 Package zref Info: New property list: perpage on input line 58.
-\c@zpage=\count313
-\c@zref@unique=\count314
+\c@zpage=\count314
+\c@zref@unique=\count315
 )
 (c:/texlive/2024/texmf-dist/tex/xelatex/xepersian/xepersian.sty
 Package: xepersian 2023/08/30 v25.0 (Release Women, Life, and Freedom) Persian 
@@ -501,10 +507,10 @@ Package: expl3 2024-11-02 L3 programming layer (loader)
 
 (c:/texlive/2024/texmf-dist/tex/latex/l3backend/l3backend-xetex.def
 File: l3backend-xetex.def 2024-05-08 L3 backend support: XeTeX
-\g__graphics_track_int=\count315
+\g__graphics_track_int=\count316
 \l__pdf_internal_box=\box65
-\g__pdf_backend_annotation_int=\count316
-\g__pdf_backend_link_int=\count317
+\g__pdf_backend_annotation_int=\count317
+\g__pdf_backend_link_int=\count318
 ))
 Package: xparse 2024-08-16 L3 Experimental document command parser
 )
@@ -513,20 +519,20 @@ Package: fontspec 2024/05/11 v2.9e Font selection for XeLaTeX and LuaLaTeX
 (c:/texlive/2024/texmf-dist/tex/latex/fontspec/fontspec-xetex.sty
 Package: fontspec-xetex 2024/05/11 v2.9e Font selection for XeLaTeX and LuaLaTe
 X
-\l__fontspec_script_int=\count318
-\l__fontspec_language_int=\count319
-\l__fontspec_strnum_int=\count320
-\l__fontspec_tmp_int=\count321
-\l__fontspec_tmpa_int=\count322
-\l__fontspec_tmpb_int=\count323
-\l__fontspec_tmpc_int=\count324
-\l__fontspec_em_int=\count325
-\l__fontspec_emdef_int=\count326
-\l__fontspec_strong_int=\count327
-\l__fontspec_strongdef_int=\count328
-\l__fontspec_tmpa_dim=\dimen261
-\l__fontspec_tmpb_dim=\dimen262
-\l__fontspec_tmpc_dim=\dimen263
+\l__fontspec_script_int=\count319
+\l__fontspec_language_int=\count320
+\l__fontspec_strnum_int=\count321
+\l__fontspec_tmp_int=\count322
+\l__fontspec_tmpa_int=\count323
+\l__fontspec_tmpb_int=\count324
+\l__fontspec_tmpc_int=\count325
+\l__fontspec_em_int=\count326
+\l__fontspec_emdef_int=\count327
+\l__fontspec_strong_int=\count328
+\l__fontspec_strongdef_int=\count329
+\l__fontspec_tmpa_dim=\dimen262
+\l__fontspec_tmpb_dim=\dimen263
+\l__fontspec_tmpc_dim=\dimen264
 
 (c:/texlive/2024/texmf-dist/tex/latex/base/fontenc.sty
 Package: fontenc 2021/04/29 v2.0v Standard LaTeX package
@@ -534,43 +540,43 @@ Package: fontenc 2021/04/29 v2.0v Standard LaTeX package
 (c:/texlive/2024/texmf-dist/tex/latex/fontspec/fontspec.cfg)))
 (c:/texlive/2024/texmf-dist/tex/xelatex/xepersian/xepersian-persiancal.sty
 Package: xepersian-persiancal 2012/07/25 v0.2 provides Persian calendar
-\XePersian@i=\count329
-\XePersian@y=\count330
-\XePersian@m=\count331
-\XePersian@d=\count332
-\XePersian@latini=\count333
-\XePersian@persiani=\count334
-\XePersian@latinii=\count335
-\XePersian@persianii=\count336
-\XePersian@latiniii=\count337
-\XePersian@persianiii=\count338
-\XePersian@latiniv=\count339
-\XePersian@persianiv=\count340
-\XePersian@latinv=\count341
-\XePersian@persianv=\count342
-\XePersian@latinvi=\count343
-\XePersian@persianvi=\count344
-\XePersian@latinvii=\count345
-\XePersian@persianvii=\count346
-\XePersian@latinviii=\count347
-\XePersian@persianviii=\count348
-\XePersian@latinix=\count349
-\XePersian@persianix=\count350
-\XePersian@latinx=\count351
-\XePersian@persianx=\count352
-\XePersian@latinxi=\count353
-\XePersian@persianxi=\count354
-\XePersian@latinxii=\count355
-\XePersian@persianxii=\count356
-\XePersian@persianxiii=\count357
-\XePersian@temp=\count358
-\XePersian@temptwo=\count359
-\XePersian@tempthree=\count360
-\XePersian@yModHundred=\count361
-\XePersian@thirtytwo=\count362
-\XePersian@dn=\count363
-\XePersian@sn=\count364
-\XePersian@mminusone=\count365
+\XePersian@i=\count330
+\XePersian@y=\count331
+\XePersian@m=\count332
+\XePersian@d=\count333
+\XePersian@latini=\count334
+\XePersian@persiani=\count335
+\XePersian@latinii=\count336
+\XePersian@persianii=\count337
+\XePersian@latiniii=\count338
+\XePersian@persianiii=\count339
+\XePersian@latiniv=\count340
+\XePersian@persianiv=\count341
+\XePersian@latinv=\count342
+\XePersian@persianv=\count343
+\XePersian@latinvi=\count344
+\XePersian@persianvi=\count345
+\XePersian@latinvii=\count346
+\XePersian@persianvii=\count347
+\XePersian@latinviii=\count348
+\XePersian@persianviii=\count349
+\XePersian@latinix=\count350
+\XePersian@persianix=\count351
+\XePersian@latinx=\count352
+\XePersian@persianx=\count353
+\XePersian@latinxi=\count354
+\XePersian@persianxi=\count355
+\XePersian@latinxii=\count356
+\XePersian@persianxii=\count357
+\XePersian@persianxiii=\count358
+\XePersian@temp=\count359
+\XePersian@temptwo=\count360
+\XePersian@tempthree=\count361
+\XePersian@yModHundred=\count362
+\XePersian@thirtytwo=\count363
+\XePersian@dn=\count364
+\XePersian@sn=\count365
+\XePersian@mminusone=\count366
 )
 (c:/texlive/2024/texmf-dist/tex/xelatex/xepersian/xepersian-mathdigitspec.sty
 Package: xepersian-mathdigitspec 2022/05/20 v1.2.0 Unicode Persian math digits 
@@ -609,29 +615,29 @@ etting in plain TeX and LaTeX
 ****************************************************
 (c:/texlive/2024/texmf-dist/tex/xelatex/bidi/biditools.sty
 Package: biditools 2022/06/15 v2.3 Programming tools for bidi package
-\@bidi@envbody=\toks38
-\@bidi@emptytoks=\toks39
-\bidi@poscount=\count366
-\bidi@tempcountb=\count367
-\bidi@temptoksa=\toks40
-\bidi@temptoksb=\toks41
-\bidi@dummies=\count368
-\bidi@are@these@correct=\toks42
-\bidi@toks@lista=\toks43
-\bidi@toks@listb=\toks44
-\bidi@stack@length=\count369
-\bidi@empty@stack=\toks45
-\bidi@looprepeat@depth=\count370
+\@bidi@envbody=\toks39
+\@bidi@emptytoks=\toks40
+\bidi@poscount=\count367
+\bidi@tempcountb=\count368
+\bidi@temptoksa=\toks41
+\bidi@temptoksb=\toks42
+\bidi@dummies=\count369
+\bidi@are@these@correct=\toks43
+\bidi@toks@lista=\toks44
+\bidi@toks@listb=\toks45
+\bidi@stack@length=\count370
+\bidi@empty@stack=\toks46
+\bidi@looprepeat@depth=\count371
 )
 (c:/texlive/2024/texmf-dist/tex/latex/xkeyval/xkeyval.sty
 Package: xkeyval 2022/06/16 v2.9 package option processing (HA)
 
 (c:/texlive/2024/texmf-dist/tex/generic/xkeyval/xkeyval.tex
 (c:/texlive/2024/texmf-dist/tex/generic/xkeyval/xkvutils.tex
-\XKV@toks=\toks46
-\XKV@tempa@toks=\toks47
+\XKV@toks=\toks47
+\XKV@tempa@toks=\toks48
 )
-\XKV@depth=\count371
+\XKV@depth=\count372
 File: xkeyval.tex 2014/12/03 v2.7a key=value parser (HA)
 ))
 \@bidi@copyins@=\insert252
@@ -639,14 +645,14 @@ File: xkeyval.tex 2014/12/03 v2.7a key=value parser (HA)
 (c:/texlive/2024/texmf-dist/tex/xelatex/bidi/latex-xetex-bidi.def
 File: latex-xetex-bidi.def 2022/07/04 v1.4.9 bidi adaptations for `latex.ltx' f
 or XeTeX engine
-\bidi@n@everypar=\toks48
-\bidi@column@check@number=\count372
+\bidi@n@everypar=\toks49
+\bidi@column@check@number=\count373
 
 (c:/texlive/2024/texmf-dist/tex/xelatex/bidi/footnote-xetex-bidi.def
 File: footnote-xetex-bidi.def 2023/01/18 v1.2 bidi footnote macros for XeTeX en
 gine
-\c@footdir@label=\count373
-\footdir@toks=\toks49
+\c@footdir@label=\count374
+\footdir@toks=\toks50
 )
 (c:/texlive/2024/texmf-dist/tex/xelatex/bidi/report-xetex-bidi.def
 File: report-xetex-bidi.def 2017/06/09 v0.8 bidi adaptations for standard repor
@@ -719,7 +725,7 @@ or XeTeX engine
 File: loadingorder-xetex-bidi.def 2017/12/29 v0.97 making sure that bidi is the
  last package loaded
 )
-\bidi@digits=\count374
+\bidi@digits=\count375
 \bidi@digits@charclass=\XeTeXcharclass1
 \bidi@sepmark@charclass=\XeTeXcharclass2
 )
@@ -748,9 +754,9 @@ File: loadingorder-xetex-bidi.def 2017/12/29 v0.97 making sure that bidi is the
 * Primary author of xepersian package: Vafa Khalighi.
 * 
 ****************************************************
-\xepersian@tcl=\count375
-\xepersian@ilg=\dimen264
-\xepersian@strutilg=\dimen265
+\xepersian@tcl=\count376
+\xepersian@ilg=\dimen265
+\xepersian@strutilg=\dimen266
 (c:/texlive/2024/texmf-dist/tex/xelatex/xepersian/loadingorder-xepersian.def
 File: loadingorder-xepersian.def 2018/09/29 v0.5 making sure that xepersian is 
 the last package loaded
@@ -860,7 +866,7 @@ s/].
 (fontspec)             - 'normal' (m/n) with NFSS spec.: <->"[../Fonts/XB
 (fontspec)             ZarIt.ttf]/OT:script=latn;language=dflt;"
 
-\c@appendixcount=\count376
+\c@appendixcount=\count377
 )
 (./main_report.aux (./firstpages.aux) (./abstract.aux) (./chap1.aux)
 (./chap2.aux) (./chap3.aux) (./chap4.aux) (./chap6.aux) (./app1.aux)
@@ -1132,7 +1138,7 @@ Overfull \hbox (95.82314pt too wide) detected at line 15
  []
 
 
-Overfull \hbox (53.57214pt too wide) detected at line 23
+Overfull \hbox (53.57214pt too wide) detected at line 24
 \TU/XBZar(0)/b/n/10 سوم: مدل پیشنهادی 
  []
 
@@ -1143,29 +1149,29 @@ Overfull \hbox (53.57214pt too wide) detected at line 23
 
 
 ]
-Overfull \hbox (30.54317pt too wide) detected at line 38
+Overfull \hbox (30.54317pt too wide) detected at line 39
 \TU/XBZar(0)/b/n/10 چهارم: نتایج 
  []
 
 
-Overfull \hbox (152.31891pt too wide) detected at line 55
+Overfull \hbox (152.31891pt too wide) detected at line 57
 \TU/XBZar(0)/b/n/10 پنجم: نتیجه‌گیری و پیشنهادات برای کارهای آینده 
  []
 
 
 
 [7]
-Overfull \hbox (79.69682pt too wide) detected at line 63
+Overfull \hbox (79.69682pt too wide) detected at line 65
 \TU/XBZar(0)/b/n/10 اول: انواع تداخلات دارویی 
  []
 
 
-Overfull \hbox (62.95203pt too wide) detected at line 64
+Overfull \hbox (62.95203pt too wide) detected at line 66
 \TU/XBZar(0)/b/n/10 دوم: معیارهای ارزیابی 
  []
 
 
-Overfull \hbox (120.78244pt too wide) detected at line 75
+Overfull \hbox (120.78244pt too wide) detected at line 77
 \TU/XBZar(0)/b/n/10 سوم: معادل‌های فارسی واژگان تخصصی 
  []
 
@@ -1392,16 +1398,18 @@ File: images/image1-1.png Graphic file (type bmp)
 
 [15]
 
-[16])
+[16]
 
-[17]
+[17])
+
+[18]
 \openout2 = `chap3.aux'.
 
  (./chap3.tex
 فصل 3.
 
 
-[18
+[19
 
 
 
@@ -1413,11 +1421,12 @@ File: images/proposed-model-2.png Graphic file (type bmp)
 <images/proposed-model-2.png>
 
 
-[19]
-
 [20]
 
 [21]
+Overfull \vbox (0.18982pt too high) has occurred while \output is active []
+
+
 
 [22]
 
@@ -1428,33 +1437,37 @@ File: images/proposed-model-2.png Graphic file (type bmp)
 [25]
 
 [26]
-File: images/gat-model.png Graphic file (type bmp)
-<images/gat-model.png>
-
 
 [27]
 
 [28]
+File: images/gat-model.png Graphic file (type bmp)
+<images/gat-model.png>
+
 
 [29]
 
 [30]
+
+[31]
 File: images/param-sharing.png Graphic file (type bmp)
 <images/param-sharing.png>
 
 
-[31]
+[32]
 
-[32])
+[33])
 
-[33]
+[34]
+
+[35]
 \openout2 = `chap4.aux'.
 
  (./chap4.tex
 فصل 4.
 
 
-[34
+[36
 
 
 
@@ -1462,37 +1475,32 @@ File: images/param-sharing.png Graphic file (type bmp)
 ]
 File: images/senario-1.png Graphic file (type bmp)
 <images/senario-1.png>
-
-
-[35]
 File: images/senario-2-matrix.png Graphic file (type bmp)
 <images/senario-2-matrix.png>
 File: images/senario-2-graph.png Graphic file (type bmp)
 <images/senario-2-graph.png>
 
 
-[36]
-
 [37]
 
 [38]
+
+[39]
+
+[40]
 File: images/s2-f1-score.png Graphic file (type bmp)
 <images/s2-f1-score.png>
 
 
-[39]
+[41]
 File: images/s3-f1-score.png Graphic file (type bmp)
 <images/s3-f1-score.png>
 
 
-[40]
+[42]
 File: images/s4-f1-score.png Graphic file (type bmp)
 <images/s4-f1-score.png>
 
-
-[41]
-
-[42]
 
 [43]
 
@@ -1506,27 +1514,47 @@ File: images/s4-f1-score.png Graphic file (type bmp)
 
 [48]
 
-[49])
+[49]
 
 [50]
+
+[51]
+LaTeX Font Info:    Calculating math sizes for size <14> on input line 422.
+
+Overfull \hbox (2.47145pt too wide) in paragraph at lines 422--422
+ [][]|\TU/XBZar(0)/m/n/14 Structure|[] 
+ []
+
+
+Overfull \hbox (3.71274pt too wide) in paragraph at lines 428--429
+[][]\TU/XBZar(0)/m/sc/12 جفت داروی Clotiazepam و Etizolam، با بیشترین شباهت در 
+ویژگی آنزیمی ([]\TU/TimesNewRoman(0)/m/n/11 0.90[]\TU/XBZar(0)/m/sc/12 )، نتایج
+ جالب‌توجهی[]
+ []
+
+
+
+[52])
+
+[53]
 \openout2 = `chap6.aux'.
 
  (./chap6.tex
 فصل 5.
 
 
-[51
+[54
 
 
 
 
 ]
 
-[52]
+[55]
 
-[53]
+[56]
 
-[54]
+[57]
 Overfull \hbox (0.42368pt too wide) in paragraph at lines 47--48
 []\TU/XBZar(0)/m/sc/12 مطالعات اخیر که از ساختارهای سه‌بعدی برای پیش‌بینی تداخل
 ات دارویی استفاده کرده‌اند، نتایج امیدوارکننده‌ای[]
@@ -1534,74 +1562,74 @@ Overfull \hbox (0.42368pt too wide) in paragraph at lines 47--48
 
 
 
-[55])
+[58])
 
-[56]
+[59]
 \openout2 = `app1.aux'.
 
  (./app1.tex
 پیوست \persianfont آ-1.
-[57
+[60
 
 
 
 
-] [58] [59] [60])
+] [61] [62] [63])
 
-[61]
+[64]
 \openout2 = `app2.aux'.
 
  (./app2.tex
 پیوست \persianfont ب-2.
 
 
-[62
+[65
 
 
 
 
 ]
 
-[63]
-
-[64]
-
-[65]
-
 [66]
 
-[67])
+[67]
 
 [68]
+
+[69]
+
+[70])
+
+[71]
 \openout2 = `app3.aux'.
 
  (./app3.tex
 پیوست \persianfont ج-3.
-\c@rownumber=\count377
+\c@rownumber=\count378
 
 
-[69
+[72
 
 
 
 
 ])
 
-[70]
+[73]
 \openout2 = `references.aux'.
 
  (./references.tex
 
-[71
+[74
 
 
 
 
 ]
 
-[72])
+[75])
 
-[73] (./main_report.aux (./firstpages.aux) (./abstract.aux) (./chap1.aux)
+[76] (./main_report.aux (./firstpages.aux) (./abstract.aux) (./chap1.aux)
 (./chap2.aux) (./chap3.aux) (./chap4.aux) (./chap6.aux) (./app1.aux)
 (./app2.aux) (./app3.aux) (./references.aux))
  ***********
@@ -1617,15 +1645,15 @@ LaTeX Font Warning: Size substitutions with differences
 LaTeX Font Warning: Some font shapes were not available, defaults substituted.
 
 Package rerunfilecheck Info: File `main_report.out' has not changed.
-(rerunfilecheck)             Checksum: B6BF4D0583BE2653F717A1E66FB56F64;16873.
+(rerunfilecheck)             Checksum: 0F97DCA91765C376574DD44B04CC2399;17494.
  ) 
 Here is how much of TeX's memory you used:
- 18530 strings out of 473995
- 357856 string characters out of 5737702
- 961863 words of memory out of 5000000
- 40984 multiletter control sequences out of 15000+600000
- 566471 words of font info for 120 fonts, out of 8000000 for 9000
+ 18726 strings out of 473995
+ 360406 string characters out of 5737702
+ 964845 words of memory out of 5000000
+ 41172 multiletter control sequences out of 15000+600000
+ 568664 words of font info for 131 fonts, out of 8000000 for 9000
  1348 hyphenation exceptions out of 8191
- 101i,16n,112p,1362b,643s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ 101i,17n,112p,1805b,643s stack positions out of 10000i,1000n,20000p,200000b,200000s
 
-Output written on main_report.pdf (83 pages).
+Output written on main_report.pdf (86 pages).
