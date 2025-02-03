@@ -19,7 +19,7 @@
 \contentsline {subsection}{\numberline {\persianfont 1-\persianfont 3-\persianfont 2}روش‌های مبتنی بر شبکه‌های عصبی}{11}{subsection.2.3.1}%
 \contentsline {subsection}{\numberline {\persianfont 2-\persianfont 3-\persianfont 2}روش‌های مبتنی بر گراف}{13}{subsection.2.3.2}%
 \contentsline {subsection}{\numberline {\persianfont 3-\persianfont 3-\persianfont 2}روش‌های مبتنی بر مدل‌های مولد}{13}{subsection.2.3.3}%
-\contentsline {subsection}{\numberline {\persianfont 4-\persianfont 3-\persianfont 2}روش‌های مبتنی بر ترکیب اطلاعات ساختاری و متنی}{14}{subsection.2.3.4}%
+\contentsline {subsection}{\numberline {\persianfont 4-\persianfont 3-\persianfont 2}روش‌های مبتنی بر ترکیب اطلاعات ساختاری و متنی}{15}{subsection.2.3.4}%
 \contentsline {section}{\numberline {\persianfont 4-\persianfont 2}شکاف تحقیقاتی}{16}{section.2.4}%
 \contentsline {chapter}{فصل~\numberline {سوم\,: مدل پیشنهادی}}{19}{chapter.3}%
 \contentsline {section}{\numberline {\persianfont 1-\persianfont 3}مرور کلی مدل پیشنهادی}{20}{section.3.1}%
@@ -32,10 +32,10 @@
 \contentsline {section}{\numberline {\persianfont 3-\persianfont 3}ویژگی‌ها و معماری مدل پیشنهادی}{28}{section.3.3}%
 \contentsline {subsection}{\numberline {\persianfont 1-\persianfont 3-\persianfont 3}مدل استخراج ویژگی و ادغام ویژگی‌ها}{28}{subsection.3.3.1}%
 \contentsline {subsection}{\numberline {\persianfont 2-\persianfont 3-\persianfont 3}جزئیات شبکه توجه گراف در بخش ساختاری}{29}{subsection.3.3.2}%
-\contentsline {subsection}{\numberline {\persianfont 3-\persianfont 3-\persianfont 3}جزئیات شبکه‌ پرسپترون چندلایه در بخش‌های شباهت و متنی}{30}{subsection.3.3.3}%
+\contentsline {subsection}{\numberline {\persianfont 3-\persianfont 3-\persianfont 3}جزئیات شبکه‌ پرسپترون چندلایه در بخش‌های شباهت و متنی}{29}{subsection.3.3.3}%
 \contentsline {subsection}{\numberline {\persianfont 4-\persianfont 3-\persianfont 3}پیش‌بینی تداخل دارویی}{31}{subsection.3.3.4}%
 \contentsline {subsection}{\numberline {\persianfont 5-\persianfont 3-\persianfont 3}مزایای اشتراک‌گذاری پارامترها در بهبود عملکرد مدل}{32}{subsection.3.3.5}%
-\contentsline {subsection}{\numberline {\persianfont 6-\persianfont 3-\persianfont 3}چالش‌ها و نوآوری‌های مدل پیشنهادی}{34}{subsection.3.3.6}%
+\contentsline {subsection}{\numberline {\persianfont 6-\persianfont 3-\persianfont 3}چالش‌ها و نوآوری‌های مدل پیشنهادی}{33}{subsection.3.3.6}%
 \contentsline {chapter}{فصل~\numberline {چهارم\,: نتایج}}{36}{chapter.4}%
 \contentsline {section}{\numberline {\persianfont 1-\persianfont 4}سناریوهای ارزیابی مدل}{37}{section.4.1}%
 \contentsline {subsection}{\numberline {\persianfont 1-\persianfont 1-\persianfont 4}سناریوی اول: اعتبارسنجی متقاطع K-Fold}{37}{subsection.4.1.1}%
