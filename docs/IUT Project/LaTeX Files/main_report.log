@@ -1,4 +1,4 @@
-This is XeTeX, Version 3.141592653-2.6-0.999996 (TeX Live 2024) (preloaded format=xelatex 2024.11.23)  3 FEB 2025 23:49
+This is XeTeX, Version 3.141592653-2.6-0.999996 (TeX Live 2024) (preloaded format=xelatex 2024.11.23)  10 FEB 2025 19:02
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1490,12 +1490,11 @@ File: images/senario-2-graph.png Graphic file (type bmp)
 [40]
 File: images/s2-f1-score.png Graphic file (type bmp)
 <images/s2-f1-score.png>
-
-
-[41]
 File: images/s3-f1-score.png Graphic file (type bmp)
 <images/s3-f1-score.png>
 
+
+[41]
 
 [42]
 File: images/s4-f1-score.png Graphic file (type bmp)
@@ -1526,13 +1525,6 @@ Overfull \hbox (2.47145pt too wide) in paragraph at lines 422--422
  []
 
 
-Overfull \hbox (3.71274pt too wide) in paragraph at lines 428--429
-[][]\TU/XBZar(0)/m/sc/12 جفت داروی Clotiazepam و Etizolam، با بیشترین شباهت در 
-ویژگی آنزیمی ([]\TU/TimesNewRoman(0)/m/n/11 0.90[]\TU/XBZar(0)/m/sc/12 )، نتایج
- جالب‌توجهی[]
- []
-
-
 
 [52])
 
@@ -1555,12 +1547,6 @@ Overfull \hbox (3.71274pt too wide) in paragraph at lines 428--429
 [56]
 
 [57]
-Overfull \hbox (0.42368pt too wide) in paragraph at lines 47--48
-[]\TU/XBZar(0)/m/sc/12 مطالعات اخیر که از ساختارهای سه‌بعدی برای پیش‌بینی تداخل
-ات دارویی استفاده کرده‌اند، نتایج امیدوارکننده‌ای[]
- []
-
-
 
 [58])
 
@@ -1648,12 +1634,12 @@ Package rerunfilecheck Info: File `main_report.out' has not changed.
 (rerunfilecheck)             Checksum: 0F97DCA91765C376574DD44B04CC2399;17494.
  ) 
 Here is how much of TeX's memory you used:
- 18720 strings out of 473995
- 360322 string characters out of 5737702
- 964845 words of memory out of 5000000
+ 18723 strings out of 473995
+ 360541 string characters out of 5737702
+ 965845 words of memory out of 5000000
  41166 multiletter control sequences out of 15000+600000
- 568664 words of font info for 131 fonts, out of 8000000 for 9000
+ 568688 words of font info for 134 fonts, out of 8000000 for 9000
  1348 hyphenation exceptions out of 8191
- 101i,17n,112p,1805b,643s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ 101i,17n,112p,1843b,643s stack positions out of 10000i,1000n,20000p,200000b,200000s
 
 Output written on main_report.pdf (86 pages).
