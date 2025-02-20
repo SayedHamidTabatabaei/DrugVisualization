@@ -1,4 +1,4 @@
-This is XeTeX, Version 3.141592653-2.6-0.999996 (TeX Live 2024) (preloaded format=xelatex 2024.11.23)  19 FEB 2025 19:44
+This is XeTeX, Version 3.141592653-2.6-0.999996 (TeX Live 2024) (preloaded format=xelatex 2024.11.23)  20 FEB 2025 12:04
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1406,10 +1406,6 @@ File: images/image1-1.png Graphic file (type bmp)
 
 [19]
 
-LaTeX Warning: Text page 20 contains only floats.
-
-
-
 [20])
 
 [21]
@@ -1534,15 +1530,15 @@ File: images/s4-f1-score.png Graphic file (type bmp)
 [53]
 
 [54]
-LaTeX Font Info:    Calculating math sizes for size <14> on input line 442.
 
-Overfull \hbox (2.47145pt too wide) in paragraph at lines 442--442
+[55]
+LaTeX Font Info:    Calculating math sizes for size <14> on input line 450.
+
+Overfull \hbox (2.47145pt too wide) in paragraph at lines 450--450
  [][]|\TU/XBZar(0)/m/n/14 Structure|[] 
  []
 
 
-
-[55]
 
 [56])
 
@@ -1651,7 +1647,7 @@ LaTeX Font Warning: Size substitutions with differences
 LaTeX Font Warning: Some font shapes were not available, defaults substituted.
 
 Package rerunfilecheck Info: File `main_report.out' has not changed.
-(rerunfilecheck)             Checksum: 0F97DCA91765C376574DD44B04CC2399;17494.
+(rerunfilecheck)             Checksum: D4F1E13ACEA00ACBE21E85DF3A095CB8;17462.
  ) 
 Here is how much of TeX's memory you used:
  18777 strings out of 473995

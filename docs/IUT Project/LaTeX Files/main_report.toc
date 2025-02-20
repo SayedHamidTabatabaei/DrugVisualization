@@ -23,19 +23,19 @@
 \contentsline {section}{\numberline {\persianfont 4-\persianfont 2}شکاف تحقیقاتی}{19}{section.2.4}%
 \contentsline {chapter}{فصل~\numberline {سوم\,: مدل پیشنهادی}}{22}{chapter.3}%
 \contentsline {section}{\numberline {\persianfont 1-\persianfont 3}مرور کلی مدل پیشنهادی}{23}{section.3.1}%
-\contentsline {section}{\numberline {\persianfont 2-\persianfont 3}جمع‌آوری و پیش‌پردازش داده‌ها}{23}{section.3.2}%
+\contentsline {section}{\numberline {\persianfont 2-\persianfont 3}جمع‌آوری و مدل‌سازی داده‌ها}{23}{section.3.2}%
 \contentsline {subsection}{\numberline {\persianfont 1-\persianfont 2-\persianfont 3}منابع داده}{25}{subsection.3.2.1}%
 \contentsline {subsection}{\numberline {\persianfont 2-\persianfont 2-\persianfont 3}طبقه‌بندی تداخلات دارویی}{26}{subsection.3.2.2}%
 \contentsline {subsection}{\numberline {\persianfont 3-\persianfont 2-\persianfont 3}تبدیل SMILES به گراف با استفاده از RDKit}{27}{subsection.3.2.3}%
-\contentsline {subsection}{\numberline {\persianfont 4-\persianfont 2-\persianfont 3}پیش‌پردازش ویژگی‌های شباهت دارویی}{28}{subsection.3.2.4}%
+\contentsline {subsection}{\numberline {\persianfont 4-\persianfont 2-\persianfont 3}مدل‌سازی ویژگی‌های شباهت دارویی}{28}{subsection.3.2.4}%
 \contentsline {subsection}{\numberline {\persianfont 5-\persianfont 2-\persianfont 3}تبدیل ویژگی‌های متنی با استفاده از SciBERT}{30}{subsection.3.2.5}%
 \contentsline {section}{\numberline {\persianfont 3-\persianfont 3}ویژگی‌ها و معماری مدل پیشنهادی}{31}{section.3.3}%
 \contentsline {subsection}{\numberline {\persianfont 1-\persianfont 3-\persianfont 3}مدل استخراج ویژگی و ادغام ویژگی‌ها}{31}{subsection.3.3.1}%
 \contentsline {subsection}{\numberline {\persianfont 2-\persianfont 3-\persianfont 3}جزئیات شبکه توجه گراف در بخش ساختاری}{32}{subsection.3.3.2}%
-\contentsline {subsection}{\numberline {\persianfont 3-\persianfont 3-\persianfont 3}جزئیات شبکه‌ پرسپترون چندلایه در بخش‌های شباهت و متنی}{32}{subsection.3.3.3}%
+\contentsline {subsection}{\numberline {\persianfont 3-\persianfont 3-\persianfont 3}جزئیات شبکه‌ پرسپترون چندلایه در بخش‌های شباهت و متنی}{33}{subsection.3.3.3}%
 \contentsline {subsection}{\numberline {\persianfont 4-\persianfont 3-\persianfont 3}پیش‌بینی تداخل دارویی}{34}{subsection.3.3.4}%
 \contentsline {subsection}{\numberline {\persianfont 5-\persianfont 3-\persianfont 3}مزایای اشتراک‌گذاری پارامترها در بهبود عملکرد مدل}{35}{subsection.3.3.5}%
-\contentsline {subsection}{\numberline {\persianfont 6-\persianfont 3-\persianfont 3}چالش‌ها و نوآوری‌های مدل پیشنهادی}{36}{subsection.3.3.6}%
+\contentsline {subsection}{\numberline {\persianfont 6-\persianfont 3-\persianfont 3}چالش‌ها و نوآوری‌های مدل پیشنهادی}{37}{subsection.3.3.6}%
 \contentsline {chapter}{فصل~\numberline {چهارم\,: نتایج}}{39}{chapter.4}%
 \contentsline {section}{\numberline {\persianfont 1-\persianfont 4}سناریوهای ارزیابی مدل}{40}{section.4.1}%
 \contentsline {subsection}{\numberline {\persianfont 1-\persianfont 1-\persianfont 4}سناریوی اول: اعتبارسنجی متقاطع K-Fold}{40}{subsection.4.1.1}%
