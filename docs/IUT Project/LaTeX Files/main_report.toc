@@ -1,8 +1,8 @@
 \textbf {\relax $\@@underline {\hbox {\beginR عنوان\endR }}\mathsurround \z@ $\relax }
 \hfill \textbf {\relax $\@@underline {\hbox {\beginR صفحه\endR }}\mathsurround \z@ $\relax }\par 
-\contentsline {section}{فهرست مطالب}{شش}{Doc-Start}%
-\contentsline {section}{فهرست شکل‌ها}{نه}{chapter*.1}%
-\contentsline {section}{فهرست جداول}{ده}{chapter*.2}%
+\contentsline {section}{فهرست مطالب}{هفت}{Doc-Start}%
+\contentsline {section}{فهرست شکل‌ها}{ده}{chapter*.1}%
+\contentsline {section}{فهرست جداول}{یازده}{chapter*.2}%
 \contentsline {section}{چکیده}{1}{chapter*.3}%
 \contentsline {chapter}{فصل~\numberline {اول\,: مقدمه}}{2}{chapter.1}%
 \contentsline {section}{\numberline {\persianfont 1-\persianfont 1}پیش‌زمینه}{2}{section.1.1}%
@@ -76,3 +76,4 @@
 \contentsline {section}{\numberline {\persianfont ب-5}نتیجه‌گیری}{75}{section.Alph2.5}%
 \contentsline {chapter}{پیوست~\numberline {سوم\,: معادل‌های فارسی واژگان تخصصی}}{76}{appendix.Alph3}%
 \contentsline {section}{مراجع}{78}{table.ج.1}%
+\contentsline {section}{چکیده انگلیسی}{82}{appendix*.27}%

@@ -1,4 +1,4 @@
-This is XeTeX, Version 3.141592653-2.6-0.999996 (TeX Live 2024) (preloaded format=xelatex 2024.11.23)  20 FEB 2025 12:04
+This is XeTeX, Version 3.141592653-2.6-0.999996 (TeX Live 2024) (preloaded format=xelatex 2024.11.23)  22 FEB 2025 14:15
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -870,7 +870,8 @@ s/].
 )
 (./main_report.aux (./firstpages.aux) (./abstract.aux) (./chap1.aux)
 (./chap2.aux) (./chap3.aux) (./chap4.aux) (./chap6.aux) (./app1.aux)
-(./app2.aux) (./app3.aux) (./references.aux))
+(./app2.aux) (./app3.aux) (./references.aux) (./abstract_english.aux)
+(./lastpages.aux))
 \openout1 = `main_report.aux'.
 
 LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 14.
@@ -1004,6 +1005,56 @@ LaTeX Font Warning: Font shape `TU/XBZar(0)/b/n' undefined
 * layout: <same size as paper>
 * layoutoffset:(h,v)=(0.0pt,0.0pt)
 * modes: 
+* h-part:(L,W,R)=(85.35826pt, 426.79135pt, 85.35826pt)
+* v-part:(T,H,B)=(56.9055pt, 686.7347pt, 101.40665pt)
+* \paperwidth=597.50787pt
+* \paperheight=845.04684pt
+* \textwidth=426.79135pt
+* \textheight=686.7347pt
+* \oddsidemargin=13.08827pt
+* \evensidemargin=13.08827pt
+* \topmargin=-52.36449pt
+* \headheight=12.0pt
+* \headsep=25.0pt
+* \topskip=10.0pt
+* \footskip=30.0pt
+* \marginparwidth=57.0pt
+* \marginparsep=11.0pt
+* \columnsep=10.0pt
+* \skip\footins=9.0pt plus 4.0pt minus 2.0pt
+* \hoffset=0.0pt
+* \voffset=0.0pt
+* \mag=1000
+* \@twocolumnfalse
+* \@twosidefalse
+* \@mparswitchfalse
+* \@reversemarginfalse
+* (1in=72.27pt=25.4mm, 1cm=28.453pt)
+
+File: iut_logo.png Graphic file (type bmp)
+<iut_logo.png>
+LaTeX Font Info:    Trying to load font information for U+msa on input line 122
+.
+ (c:/texlive/2024/texmf-dist/tex/latex/amsfonts/umsa.fd
+File: umsa.fd 2013/01/14 v3.01 AMS symbols A
+)
+LaTeX Font Info:    Trying to load font information for U+msb on input line 122
+.
+
+(c:/texlive/2024/texmf-dist/tex/latex/amsfonts/umsb.fd
+File: umsb.fd 2013/01/14 v3.01 AMS symbols B
+)
+
+[4
+
+
+]
+*geometry* verbose mode - [ newgeometry ] result:
+* driver: xetex
+* paper: a4paper
+* layout: <same size as paper>
+* layoutoffset:(h,v)=(0.0pt,0.0pt)
+* modes: 
 * h-part:(L,W,R)=(85.35826pt, 398.3386pt, 113.81102pt)
 * v-part:(T,H,B)=(113.81102pt, 629.82918pt, 101.40665pt)
 * \paperwidth=597.50787pt
@@ -1031,19 +1082,19 @@ LaTeX Font Warning: Font shape `TU/XBZar(0)/b/n' undefined
 * (1in=72.27pt=25.4mm, 1cm=28.453pt)
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 83--84
+Underfull \hbox (badness 10000) in paragraph at lines 145--146
 [][]
  []
 
 
-Overfull \hbox (0.70308pt too wide) in paragraph at lines 86--87
+Overfull \hbox (0.70308pt too wide) in paragraph at lines 148--149
 [][]\TU/XBZar(0)/b/n/12 با تمام وجود از استاد راهنمای گرامی‌ام، جناب آقای دکتر 
 مهران صفایانی، سپاسگزارم. راهنمایی‌ها[]
  []
 
 
 
-[4
+[5
 
 
 ]
@@ -1079,19 +1130,9 @@ Overfull \hbox (0.70308pt too wide) in paragraph at lines 86--87
 * \@reversemarginfalse
 * (1in=72.27pt=25.4mm, 1cm=28.453pt)
 
-LaTeX Font Info:    Trying to load font information for U+msa on input line 109
-.
- (c:/texlive/2024/texmf-dist/tex/latex/amsfonts/umsa.fd
-File: umsa.fd 2013/01/14 v3.01 AMS symbols A
-)
-LaTeX Font Info:    Trying to load font information for U+msb on input line 109
-.
 
-(c:/texlive/2024/texmf-dist/tex/latex/amsfonts/umsb.fd
-File: umsb.fd 2013/01/14 v3.01 AMS symbols B
-)
 
-[5
+[6
 
 
 ]
@@ -1128,6 +1169,16 @@ File: umsb.fd 2013/01/14 v3.01 AMS symbols B
 * (1in=72.27pt=25.4mm, 1cm=28.453pt)
 
  (./main_report.toc
+Overfull \hbox (1.68259pt too wide) detected at line 3
+ [][][]\TU/XBZar(0)/b/n/10 هفت[][][]
+ []
+
+
+Overfull \hbox (1.01364pt too wide) detected at line 5
+ [][][]\TU/XBZar(0)/b/n/10 یازده[][][]
+ []
+
+
 Overfull \hbox (24.02461pt too wide) detected at line 7
 \TU/XBZar(0)/b/n/10 اول: مقدمه 
  []
@@ -1144,7 +1195,7 @@ Overfull \hbox (53.57214pt too wide) detected at line 24
 
 
 
-[6
+[7
 
 
 
@@ -1160,7 +1211,7 @@ Overfull \hbox (152.31891pt too wide) detected at line 57
 
 
 
-[7]
+[8]
 Overfull \hbox (79.69682pt too wide) detected at line 65
 \TU/XBZar(0)/b/n/10 اول: انواع تداخلات دارویی 
  []
@@ -1181,13 +1232,13 @@ Overfull \hbox (120.78244pt too wide) detected at line 77
 
 
 
-[8] (./main_report.lof)
+[9] (./main_report.lof)
 \tf@lof=\write5
 \openout5 = `main_report.lof'.
 
 
 
-[9
+[10
 
 ] (./main_report.lot)
 \tf@lot=\write6
@@ -1195,7 +1246,7 @@ Overfull \hbox (120.78244pt too wide) detected at line 77
 
 
 
-[10
+[11
 
 ])
 \openout2 = `abstract.aux'.
@@ -1631,9 +1682,66 @@ Overfull \hbox (2.47145pt too wide) in paragraph at lines 450--450
 
 [80])
 
-[81] (./main_report.aux (./firstpages.aux) (./abstract.aux) (./chap1.aux)
+[81]
+\openout2 = `abstract_english.aux'.
+
+ (./abstract_english.tex)
+
+[82
+
+
+
+]
+\openout2 = `lastpages.aux'.
+
+ (./lastpages.tex
+*geometry* verbose mode - [ newgeometry ] result:
+* driver: xetex
+* paper: a4paper
+* layout: <same size as paper>
+* layoutoffset:(h,v)=(0.0pt,0.0pt)
+* modes: 
+* h-part:(L,W,R)=(85.35826pt, 426.79135pt, 85.35826pt)
+* v-part:(T,H,B)=(56.9055pt, 686.7347pt, 101.40665pt)
+* \paperwidth=597.50787pt
+* \paperheight=845.04684pt
+* \textwidth=426.79135pt
+* \textheight=686.7347pt
+* \oddsidemargin=13.08827pt
+* \evensidemargin=13.08827pt
+* \topmargin=-52.36449pt
+* \headheight=12.0pt
+* \headsep=25.0pt
+* \topskip=10.0pt
+* \footskip=30.0pt
+* \marginparwidth=57.0pt
+* \marginparsep=11.0pt
+* \columnsep=10.0pt
+* \skip\footins=14.22636pt
+* \hoffset=0.0pt
+* \voffset=0.0pt
+* \mag=1000
+* \@twocolumnfalse
+* \@twosidefalse
+* \@mparswitchfalse
+* \@reversemarginfalse
+* (1in=72.27pt=25.4mm, 1cm=28.453pt)
+
+File: iut_logo.png Graphic file (type bmp)
+<iut_logo.png>
+
+
+[83
+
+
+
+
+])
+
+[84] (./main_report.aux (./firstpages.aux) (./abstract.aux) (./chap1.aux)
 (./chap2.aux) (./chap3.aux) (./chap4.aux) (./chap6.aux) (./app1.aux)
-(./app2.aux) (./app3.aux) (./references.aux))
+(./app2.aux) (./app3.aux) (./references.aux) (./abstract_english.aux)
+(./lastpages.aux))
  ***********
 LaTeX2e <2024-11-01>
 L3 programming layer <2024-11-02>
@@ -1647,15 +1755,15 @@ LaTeX Font Warning: Size substitutions with differences
 LaTeX Font Warning: Some font shapes were not available, defaults substituted.
 
 Package rerunfilecheck Info: File `main_report.out' has not changed.
-(rerunfilecheck)             Checksum: D4F1E13ACEA00ACBE21E85DF3A095CB8;17462.
+(rerunfilecheck)             Checksum: 0B62751C86B724C958CED49A91BD43DD;17627.
  ) 
 Here is how much of TeX's memory you used:
- 18777 strings out of 473995
- 361638 string characters out of 5737702
+ 18844 strings out of 473995
+ 363728 string characters out of 5737702
  965845 words of memory out of 5000000
- 41218 multiletter control sequences out of 15000+600000
- 568688 words of font info for 134 fonts, out of 8000000 for 9000
+ 41264 multiletter control sequences out of 15000+600000
+ 568744 words of font info for 141 fonts, out of 8000000 for 9000
  1348 hyphenation exceptions out of 8191
  101i,17n,112p,1843b,643s stack positions out of 10000i,1000n,20000p,200000b,200000s
 
-Output written on main_report.pdf (91 pages).
+Output written on main_report.pdf (95 pages).
